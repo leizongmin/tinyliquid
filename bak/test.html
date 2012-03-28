@@ -1,0 +1,20 @@
+
+<h1>{{ name }}</h1>
+' " 
+<h2>{{ :name }}</h2>
+
+<ul>
+{% ds
+{% for item in group %}
+  <li>{{ item }}</li>
+{% endfor %}
+</ul>
+
+{ % for i in process %}
+  { { process[i] }}
+{ % end %}
+
+{% else a %}
+
+{% first: a %}
+{% first: %}
