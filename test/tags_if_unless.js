@@ -6,20 +6,20 @@ describe('Liquid.js', function () {
   it('#tags If / Else / Unless', function () {
     var text = '{% if user %}Hi{{ user.name }}{% endif %}';
     var ret = liquid.parse(text);
-    console.log(ret);
+    //console.log(ret);
     
     var fn = liquid.compile(text);
-    console.log(fn.toString());
+    //console.log(fn.toString());
     var html = fn({user: {name: 'QQ'}});
     
-    console.log(html);
+    //console.log(html);
     html.should.equal('HiQQ'); 
   });
   
   it('#tags If / Else / Unless #2', function () {
   
     var render = function (text, data) {
-      console.log(liquid.parse(text));
+      //console.log(liquid.parse(text));
       var fn = liquid.compile(text);
       var html = fn(data);
       return html;

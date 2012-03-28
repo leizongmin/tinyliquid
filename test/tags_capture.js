@@ -6,9 +6,9 @@ describe('Liquid.js', function () {
   it('#capture', function () {
   
     var render = function (text, data, filters) {
-      console.log(liquid.parse(text));
+      //console.log(liquid.parse(text));
       var fn = liquid.compile(text);
-      console.log(fn.toString());
+      //console.log(fn.toString());
       var html = fn(data, filters);
       return html;
     }

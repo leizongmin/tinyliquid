@@ -14,6 +14,13 @@ describe('utils.split()', function () {
     utils.localsWrap('null').should.equal('null');
     utils.localsWrap('empty').should.equal('empty');
     utils.localsWrap('abc').should.equal('locals.abc');
+    utils.localsWrap('abc123').should.equal('locals.abc123');
+    utils.localsWrap('_abc').should.equal('locals._abc');
+    utils.localsWrap('0abc').should.equal('"0abc"');
+    utils.localsWrap('"abc').should.equal('"\\"abc"');
+    utils.localsWrap('abc efg').should.equal('"abc efg"');
+    utils.localsWrap('abc.efg').should.equal('locals.abc.efg');
+    utils.localsWrap('abc.efg.').should.equal('"abc.efg."');
   });
   
 });

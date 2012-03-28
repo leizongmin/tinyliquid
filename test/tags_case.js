@@ -6,7 +6,7 @@ describe('Liquid.js', function () {
   it('#case', function () {
   
     var render = function (text, data, filters) {
-      console.log(liquid.parse(text));
+      //console.log(liquid.parse(text));
       var fn = liquid.compile(text);
       var html = fn(data, filters);
       return html;

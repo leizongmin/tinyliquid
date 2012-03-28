@@ -18,10 +18,10 @@ describe('Liquid.js', function () {
   it('#output and filters', function () { 
     var text = 'N={{ 5 | plus: 6,7 }}';
     var ret = liquid.parse(text);
-    console.log(ret);
+    //console.log(ret);
     
     var fn = liquid.compile(text);
-    console.log(fn.toString());
+    //console.log(fn.toString());
     var html = fn({name: 'qw'}, {plus: function () {
       var ret = 0;
       for (var i in arguments) {
@@ -29,7 +29,7 @@ describe('Liquid.js', function () {
       }
       return ret;
     }});
-    console.log(html);
+    //console.log(html);
     html.should.equal('N=18');
   });
   
