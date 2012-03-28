@@ -1,4 +1,7 @@
 
+// ½âÎö´úÂë
+exports.parse = require('./lib/template').parse;
+
 // ±àÒëº¯Êı
 exports.compile = require('./lib/template').compile;
 
