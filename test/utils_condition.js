@@ -32,7 +32,7 @@ describe('utils.condition()', function () {
     utils.condition('abc <= 1').should.equal('(locals.abc<=1)');
     utils.condition('abc != 1').should.equal('(locals.abc!=1)');
     utils.condition('abc <> 1').should.equal('(locals.abc!=1)');
-    utils.condition('abc contains "123"').should.equal('(RegExp("123", \'img\').test(locals.abc))');
+    utils.condition('abc contains "123"').should.equal('(String(locals.abc).toLowerCase().indexOf("123") !== -1)');
     utils.condition('abc == nil').should.equal('(!locals.abc)');
     utils.condition('abc == null').should.equal('(!locals.abc)');
     utils.condition('abc == empty').should.equal('(!locals.abc)');
