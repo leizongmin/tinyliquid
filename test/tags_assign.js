@@ -27,7 +27,15 @@ describe('Liquid.js', function () {
     
     render('{% assign value = true %}{{ value }}',
       {freestyle: true}).should.equal('true');
-    return;
+    
+    render('{% assign value = "HeLlO" | downcase %}{{ value }}',
+      {downcase: function (x) { return x.toLowerCase(); }
+      }).should.equal('hello');
+      
+    render('{% assign value = 1 | plus: 2 | minus: 3 %}1+2-3={{ value }}',
+      {plus: function (a, b) { return a + b; },
+       minus: function (a, b) { return a - b; }
+      }).should.equal('1+2-3=0');
       
     render('{% assign freestyle = false %}\
 {% for t in collections.tags %}{% if t == \'freestyle\' %}\
