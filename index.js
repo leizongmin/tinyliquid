@@ -8,6 +8,10 @@ exports.compile = require('./lib/template').compile;
 // äÖÈ¾º¯Êı
 exports.render = require('./lib/template').render;
 
+// ±àÒëÕûÌ×Ä£°å
+exports.compileAll = require('./lib/package').compileAll;
+
+
 // ¹ıÂËÆ÷
 exports.filters = require('./lib/filters');
 
