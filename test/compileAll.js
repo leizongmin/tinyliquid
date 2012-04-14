@@ -7,7 +7,7 @@ describe('Liquid.js', function () {
     options = options || {};
     options.original = true;
     var ret = liquid.compileAll(files, options);
-    console.log(ret);
+    //console.log(ret);
     return ret;
   }
   
@@ -118,6 +118,35 @@ describe('Liquid.js', function () {
   });
   
   // Брвы
+  it('#compileAll() example', function () {
   
+    var files = {
+      title:    '<title>{{ value }}</title>',
+      header:   '<head>{% include "title" with header %}</head>',
+      bottom:   '<footer>{% include "title" with bottom %}</footer>',
+      item:     '<li>{% include "title" with item %}</li>',
+      index:    '{% include "header" %}<ul>{% for item in items %}{% include "item" %}{% endfor %}</ul>{% include "bottom" %}'
+    };
+  
+    var fns = liquid.compileAll(files);
+    
+    fns.title({value: 'hello'}).should.equal('<title>hello</title>');
+    fns.header({header: {value: 'fine.'}}).should.equal('<head><title>fine.</title></head>');
+    fns.bottom({bottom: {value: 'fine.'}}).should.equal('<footer><title>fine.</title></footer>');
+    fns.item({item: {value: 'yeah!'}}).should.equal('<li><title>yeah!</title></li>');
+    fns.index({
+      header: {value: 'this is header'},
+      bottom: {value: 'this is bottom'},
+      items:  [{value: 'one'}, {value: 'two'}, {value: 'three'}]
+    }).should.equal('<head><title>this is header</title></head>'
+                  + '<ul>'
+                  + '<li><title>one</title></li>'
+                  + '<li><title>two</title></li>'
+                  + '<li><title>three</title></li>'
+                  + '</ul>'
+                  + '<footer><title>this is bottom</title></footer>'
+                  );
+  
+  });
   
 });

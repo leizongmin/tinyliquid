@@ -16,7 +16,7 @@ describe('Liquid.js', function () {
       //console.log(liquid.parse(text));
       var fn = liquid.compile(text, options);
       //console.log(fn.toString());
-      console.log(fn);
+      //console.log(fn);
       var html = fn(data, filters);
       return html;
     }
