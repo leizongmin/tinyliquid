@@ -2,7 +2,7 @@ var should = require('should');
 var utils = require('../lib/utils');
 
 describe('utils.AsyncDataList', function () {
-  
+  /*
   it('#saveItem', function () {
     
     var dataList = utils.AsyncDataList();
@@ -111,7 +111,7 @@ describe('utils.AsyncDataList', function () {
     });
     
   });
-  
+  */
   
   it('#getItem 3', function (done) {
     
@@ -121,8 +121,9 @@ describe('utils.AsyncDataList', function () {
         e: {
           f1: 456,
           f2: 789
-        } 
+        }
       },
+      'a.b.c.e.f2': 987,
       'a.b': 'error'
     };
     
@@ -132,19 +133,24 @@ describe('utils.AsyncDataList', function () {
       should.not.exist(err);
       should.equal(dataList.data.a.b.c.d, 123);
       
-      dataList.getItem('a.b.c.e', function (err) {
+      dataList.getItem('a.b.c.e.f2', function (err) {
         should.not.exist(err);
-        should.exist(dataList.data.a.b.c.e);
-        should.equal(dataList.data.a.b.c.e.f1, 456);
-        should.equal(dataList.data.a.b.c.e.f2, 789);
+        should.equal(dataList.data.a.b.c.e.f2, 987);
         
-        done();
+        dataList.getItem('a.b.c.e', function (err) {
+          should.not.exist(err);
+          should.exist(dataList.data.a.b.c.e);
+          should.equal(dataList.data.a.b.c.e.f1, 456);
+          should.equal(dataList.data.a.b.c.e.f2, 987);
+
+          done();
+        });
       });
     });
     
   });
   
-  
+  return;
   it('#start', function (done) {
     
     var env = {
