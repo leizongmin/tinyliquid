@@ -25,7 +25,7 @@ var run = function (title, fn, n) {
 
 
 var data = {items: []}
-var COUNT = 200;
+var COUNT = 50;
 for (var i = 0; i < COUNT; i++) {
   data.items[i] = [];
   for (var j = 0; j < COUNT; j++) {
@@ -70,7 +70,20 @@ var test_me = function () {
     ret = render(data);
   }
   run('me.render()', test_render, TEST_COUNT);
-  //console.log(ret);
+  // console.log(ret);
+  
+  var c = 0;
+  var test_advRender = function () {
+    me.advRender(render, data, {}, function (err, text) {
+      if (err)
+        throw err;
+      ret = text;
+      //c++;
+      //if (c >= TEST_COUNT)
+      //  console.log('.');
+    });
+  }
+  run('me.advRender()', test_advRender, TEST_COUNT);
 }
 
 
