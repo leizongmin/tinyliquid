@@ -114,6 +114,40 @@ describe('utils.AsyncDataList', function () {
   });
   
   
+  it('#getItem 3', function (done) {
+    
+    var dataList = utils.AsyncDataList();
+    
+    var models = {
+      'a.b.c': {
+        d: 123,
+        e: {
+          f1: 456,
+          f2: 789
+        } 
+      },
+      'a.b': 'error'
+    };
+    
+    var data = {};
+    
+    dataList.getItem('a.b.c.d', data, models, function (err) {
+      should.not.exist(err);
+      should.equal(data.a.b.c.d, 123);
+      
+      dataList.getItem('a.b.c.e', data, models, function (err) {
+        should.not.exist(err);
+        should.exist(data.a.b.c.e);
+        should.equal(data.a.b.c.e.f1, 456);
+        should.equal(data.a.b.c.e.f2, 789);
+        
+        done();
+      });
+    });
+    
+  });
+  
+  
   it('#start', function (done) {
     
     var models = {

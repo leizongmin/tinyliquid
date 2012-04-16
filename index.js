@@ -22,9 +22,6 @@ exports.compileAll = require('./lib/advtemplate').compileAll;
 // 高级渲染
 exports.advRender = require('./lib/advtemplate').advRender;
 
-// 转换为高级渲染函数
-exports.toAdvRender = require('./lib/advtemplate').toAdvRender;
-
 // 过滤器
 exports.filters = require('./lib/filters');
 
