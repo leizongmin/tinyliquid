@@ -7,20 +7,17 @@ describe('utils.AsyncDataList', function () {
     
     var dataList = utils.AsyncDataList();
     
-    var data = {};
-    dataList.saveItem('a.b.c', 123, data);
-    data.should.eql({a:{b:{c:123}}});
+    dataList.saveItem('a.b.c', 123);
+    dataList.data.should.eql({a:{b:{c:123}}});
     
-    var data = {};
-    dataList.saveItem('a.b.c', 123, data);
-    dataList.saveItem('a.b.e', 456, data);
-    dataList.saveItem('a.f', 789, data);
-    data.should.eql({a:{b:{c:123, e:456}, f:789}});
+    dataList.saveItem('a.b.c', 123);
+    dataList.saveItem('a.b.e', 456);
+    dataList.saveItem('a.f', 789);
+    dataList.data.should.eql({a:{b:{c:123, e:456}, f:789}});
     
     try {
-      var data = {};
-      dataList.saveItem('a.b.c', 123, data);
-      dataList.saveItem('a.b.c.d', 456, data);
+      dataList.saveItem('a.b.c', 123);
+      dataList.saveItem('a.b.c.d', 456);
       var isOk = false;
     }
     catch (err) {
@@ -33,35 +30,33 @@ describe('utils.AsyncDataList', function () {
   
   it('#getItem', function (done) {
     
-    var dataList = utils.AsyncDataList();
-    
     var models = {
-      'site.config': function (callback) {
+      'site.config': function (env, callback) {
         setTimeout(function () {
           return callback(null, {title: 'Just for Test'});
         }, 50);
       },
-      'site.title': function (callback) {
+      'site.title': function (env, callback) {
         setTimeout(function () {
           return callback(Error());
         }, 50);
       }, 
-      'products': function (callback) {
+      'products': function (env, callback) {
         throw Error();
       }
     };
     
-    var data = {};
+    var dataList = utils.AsyncDataList(models);
     
-    dataList.getItem('site.config', data, models, function (err) {
+    dataList.getItem('site.config', function (err) {
       should.not.exist(err);
-      should.exist(data.site.config);
-      should.equal(data.site.config.title, 'Just for Test');
+      should.exist(dataList.data.site.config);
+      should.equal(dataList.data.site.config.title, 'Just for Test');
       
-      dataList.getItem('site.title', data, models, function (err) {
+      dataList.getItem('site.title', function (err) {
         should.exist(err);
         
-        dataList.getItem('products', data, models, function (err) {
+        dataList.getItem('products', function (err) {
           should.exist(err);
           
           done();
@@ -72,12 +67,16 @@ describe('utils.AsyncDataList', function () {
   });
   
   
-  it('#getItem 2', function (done) {
+  it('#getItem father & env', function (done) {
     
-    var dataList = utils.AsyncDataList();
+    var env = {
+      path: 'test'
+    };
     
     var models = {
-      'a.b.c': function (callback) {
+      'a.b.c': function (env, callback) {
+        should.exist(env);
+        should.equal(env.path, 'test');
         setTimeout(function () {
           return callback(null, {
             d: 123,
@@ -88,24 +87,24 @@ describe('utils.AsyncDataList', function () {
           });
         }, 50);
       },
-      'a.b': function (callback) {
+      'a.b': function (env, callback) {
         setTimeout(function () {
           return callback(null, 'error');
         }, 50);
       }
     };
     
-    var data = {};
+    var dataList = utils.AsyncDataList(models, [], env);
     
-    dataList.getItem('a.b.c.d', data, models, function (err) {
+    dataList.getItem('a.b.c.d', function (err) {
       should.not.exist(err);
-      should.equal(data.a.b.c.d, 123);
+      should.equal(dataList.data.a.b.c.d, 123);
       
-      dataList.getItem('a.b.c.e', data, models, function (err) {
+      dataList.getItem('a.b.c.e', function (err) {
         should.not.exist(err);
-        should.exist(data.a.b.c.e);
-        should.equal(data.a.b.c.e.f1, 456);
-        should.equal(data.a.b.c.e.f2, 789);
+        should.exist(dataList.data.a.b.c.e);
+        should.equal(dataList.data.a.b.c.e.f1, 456);
+        should.equal(dataList.data.a.b.c.e.f2, 789);
         
         done();
       });
@@ -115,8 +114,6 @@ describe('utils.AsyncDataList', function () {
   
   
   it('#getItem 3', function (done) {
-    
-    var dataList = utils.AsyncDataList();
     
     var models = {
       'a.b.c': {
@@ -129,17 +126,17 @@ describe('utils.AsyncDataList', function () {
       'a.b': 'error'
     };
     
-    var data = {};
+    var dataList = utils.AsyncDataList(models);
     
-    dataList.getItem('a.b.c.d', data, models, function (err) {
+    dataList.getItem('a.b.c.d', function (err) {
       should.not.exist(err);
-      should.equal(data.a.b.c.d, 123);
+      should.equal(dataList.data.a.b.c.d, 123);
       
-      dataList.getItem('a.b.c.e', data, models, function (err) {
+      dataList.getItem('a.b.c.e', function (err) {
         should.not.exist(err);
-        should.exist(data.a.b.c.e);
-        should.equal(data.a.b.c.e.f1, 456);
-        should.equal(data.a.b.c.e.f2, 789);
+        should.exist(dataList.data.a.b.c.e);
+        should.equal(dataList.data.a.b.c.e.f1, 456);
+        should.equal(dataList.data.a.b.c.e.f2, 789);
         
         done();
       });
@@ -150,18 +147,32 @@ describe('utils.AsyncDataList', function () {
   
   it('#start', function (done) {
     
+    var env = {
+      test1:  'TEST_1',
+      test2:  '2_TEST'
+    };
+    
     var models = {
-      'site.config': function (callback) {
+      'site.config': function (env, callback) {
+        should.exist(env);
+        should.equal(env.test1, 'TEST_1');
+        should.equal(env.test2, '2_TEST');
         setTimeout(function () {
           return callback(null, {title: 'Just for Test'});
         }, 50);
       },
-      'site.title': function (callback) {
+      'site.title': function (env, callback) {
+        should.exist(env);
+        should.equal(env.test1, 'TEST_1');
+        should.equal(env.test2, '2_TEST');
         setTimeout(function () {
           return callback(null, 'OK');
         }, 50);
       }, 
-      'products': function (callback) {
+      'products': function (env, callback) {
+        should.exist(env);
+        should.equal(env.test1, 'TEST_1');
+        should.equal(env.test2, '2_TEST');
         return callback(null, [{title: 'Bag'}, {title: 'Ring'}]);
       },
       'error': function () {
@@ -172,7 +183,7 @@ describe('utils.AsyncDataList', function () {
     var data = {};
   
     
-    var dataList = utils.AsyncDataList(models, ['site.config', 'site.title', 'products']);
+    var dataList = utils.AsyncDataList(models, ['site.config', 'site.title', 'products'], env);
     dataList.start(function (err, data) {
       should.not.exist(err);
       data.should.eql({
@@ -188,7 +199,7 @@ describe('utils.AsyncDataList', function () {
         ]
       });
       
-      var dataList = utils.AsyncDataList(models, ['site.config', 'error', 'site.title', 'products']);
+      var dataList = utils.AsyncDataList(models, ['site.config', 'error', 'site.title', 'products'], env);
       dataList.start(function (err, data) {
         should.exist(err);
         done();
@@ -201,18 +212,32 @@ describe('utils.AsyncDataList', function () {
   
   it('#startParallel', function (done) {
     
+    var env = {
+      test1:  'TEST_1',
+      test2:  '2_TEST'
+    };
+    
     var models = {
-      'site.config': function (callback) {
+      'site.config': function (env, callback) {
+        should.exist(env);
+        should.equal(env.test1, 'TEST_1');
+        should.equal(env.test2, '2_TEST');
         setTimeout(function () {
           return callback(null, {title: 'Just for Test'});
         }, 50);
       },
-      'site.title': function (callback) {
+      'site.title': function (env, callback) {
+        should.exist(env);
+        should.equal(env.test1, 'TEST_1');
+        should.equal(env.test2, '2_TEST');
         setTimeout(function () {
           return callback(null, 'OK');
         }, 50);
       }, 
-      'products': function (callback) {
+      'products': function (env, callback) {
+        should.exist(env);
+        should.equal(env.test1, 'TEST_1');
+        should.equal(env.test2, '2_TEST');
         return callback(null, [{title: 'Bag'}, {title: 'Ring'}]);
       },
       'error': function () {
@@ -223,7 +248,7 @@ describe('utils.AsyncDataList', function () {
     var data = {};
   
     
-    var dataList = utils.AsyncDataList(models, ['site.config', 'site.title', 'products']);
+    var dataList = utils.AsyncDataList(models, ['site.config', 'site.title', 'products'], env);
     dataList.startParallel(function (err, data) {
       should.not.exist(err);
       data.should.eql({
@@ -239,7 +264,7 @@ describe('utils.AsyncDataList', function () {
         ]
       });
       
-      var dataList = utils.AsyncDataList(models, ['site.config', 'error', 'site.title', 'products']);
+      var dataList = utils.AsyncDataList(models, ['site.config', 'error', 'site.title', 'products'], env);
       dataList.startParallel(function (err, data) {
         should.exist(err);
         done();
