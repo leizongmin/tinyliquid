@@ -7,10 +7,17 @@ var filters = require('../../lib/filters');
 
 var render = function (text, data) {
   console.log(liquid.parse(text));
-  var fn = liquid.compile(text);
+  var fn = liquid.compile(text, {original: true});
   console.log(fn.toString());
   var html = fn(data, filters);
   return html;
+}
+
+var compile = function (text) {
+  console.log(liquid.parse(text));
+  var fn = liquid.compile(text, {original: true});
+  console.log(fn.toString());
+  return fn;
 }
     
 http.createServer(function (req, res) {
@@ -21,12 +28,26 @@ http.createServer(function (req, res) {
       try {
         var text = req.post.text;
         var data = JSON.parse(req.post.data);
-        res.contentType('text/html');
-        var html = render(text, data);
-        console.log('====================================');
-        console.log(html);
-        console.log('====================================');
-        res.send(html);
+        
+        if (req.post.compile) {
+          res.send(compile(text).toString());
+        }
+        else if (req.post.compile2) {
+          var r = compile(text);
+          res.sendJSON({
+            code:     r.toString(),
+            names:    r.names,
+            includes: r.includes
+          });
+        }
+        else {
+          res.contentType('text/html');
+          var html = render(text, data);
+          //console.log('====================================');
+          //console.log(html);
+          //console.log('====================================');
+          res.send(html);
+        }
       }
       catch (err) {
         res.sendError(500, err.stack);
