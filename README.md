@@ -174,7 +174,7 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
 
 *  TinyLiquid仅在模板需要用到该数据时，才会执行获取数据操作，因此你可以定义一个
   公共的获取数据接口，当渲染不同的页面时，TinyLiquid会根据需要获取相应的数据，而
-  有不会去获取模板中不需要的数据。
+  不会去获取模板中不需要的数据。
   
   
   
@@ -279,6 +279,6 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
     
 ### 过滤器  filters
 
-详见 [lib/filters.js](tinyliquid/lib/filters.js)
+详见 [lib/filters.js](tinyliquid/blob/master/lib/filters.js)
 
 
