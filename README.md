@@ -279,6 +279,6 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
     
 ### 过滤器  filters
 
-详见 [lib/filters.js](lib/filters.js)
+详见 [lib/filters.js](tinyliquid/lib/filters.js)
 
 
