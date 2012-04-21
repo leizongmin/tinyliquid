@@ -6,7 +6,7 @@ describe('Liquid.js', function () {
   it('#assign', function () {
   
     var render = function (text, data, filters) {
-      //console.log(liquid.parse(text));
+      //console.log(liquid.parse(text).code);
       var fn = liquid.compile(text);
       //console.log(fn.toString());
       var html = fn(data, filters);
@@ -54,5 +54,29 @@ describe('Liquid.js', function () {
 <p>Freestyle!</p>\
 {% endif %}', {collections: {tags: ['cat', 'hat', 'freestyle', 'pen']}})
       .should.equal('<p>Freestyle!</p>');
+     
+    
+    render('{% assign sum = 0 %}{% for i in (1..10) %}{% assign sum = i | plus: sum %}\
+{% endfor %}{{ sum }}', {})
+      .should.equal('55');
+    
+    
+    // loop局部变量优先
+    render('{%assign sum = 0%}{%assign i = 10%}{%for i in (1..10)%}\
+{%assign sum = sum | plus: i%}{%endfor%}{{sum}}')
+      .should.equal('55');
+      
+    render('{%assign sum = 0%}{%for i in (1..10)%}\
+{%assign sum = sum | plus: forloop.index%}{%endfor%}{{sum}}', {forloop: {index: 10}})
+      .should.equal('55');
+     
+    render('{%assign sum = 0%}{%assign i = 10%}{%tablerow i in (1..10) cols:1%}\
+{%assign sum = sum | plus: i%}{%endtablerow%}{{sum}}')
+      .should.equal('55');
+      
+    render('{%assign sum = 0%}{%tablerow i in (1..10) cols:2%}\
+{%assign sum = sum | plus: tablerowloop.index%}{%endtablerow%}{{sum}}', {tablerowloop: {index: 10}})
+      .should.equal('55'); 
+     
   });
 });
