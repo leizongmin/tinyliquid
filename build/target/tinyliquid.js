@@ -5,7 +5,7 @@
  */
  
 
-var tinyliquid = (function (exports) {
+var TinyLiquid = (function (exports) {
 
   var modules = {};
   
@@ -2135,5 +2135,5 @@ exports.filters = filters;
 })({});
 
 // 如果是在Node.js环境，则输出module.exports
-if (module && module.exports)
-  module.exports = tinyliquid;
+if (typeof module !== 'undefined' && module.exports)
+  module.exports = TinyLiquid;

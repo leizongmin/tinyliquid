@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TinyLiquid测试</title>
+  <meta charset="utf-8">
+  <script src="./target/tinyliquid.min.js"></script>
+  <style>
+body {
+  width: 600px;
+  margin: auto;
+}
+textarea {
+  width: 100%;
+  height: 200px;
+}
+</style>
+</head>
+<body>
+  <h1>模板代码</h1>
+  <textarea id="text"></textarea>
+  <h1>JSON数据</h1>
+  <textarea id="data">{}</textarea>
+  <hr>
+  <button onclick="compile()">渲染</button>
+  <hr>
+  <div id="page"></div>
+</body>
+</html>
+<script>
+function compile () {
+  var text = document.querySelector('#text').value;
+  var data = document.querySelector('#data').value;
+  try {
+    data = JSON.parse(data);
+    var output = TinyLiquid.render(text, data);
+    document.querySelector('#page').innerHTML = output;
+  }
+  catch (err) {
+    alert('出错了：' + err.toString());
+  }
+}
+</script>

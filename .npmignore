@@ -1,4 +1,5 @@
 benchmark/
 example/
 test/
+build/
 README.md
