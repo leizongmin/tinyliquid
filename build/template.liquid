@@ -1,0 +1,55 @@
+/**
+ * TinyLiquid模板引擎
+ *
+ * @author 老雷<leizongmin@gmail.com>
+ */
+ 
+
+var tinyliquid = (function (exports) {
+
+  var modules = {};
+  
+  /*--------------- ./lib/utils.js ----------------*/
+  modules.utils = (function (exports) {
+    {{ files.utils }}
+    return exports;
+  })({});
+  /*-----------------------------------------------*/
+  
+  /*-------------- ./lib/filters.js ---------------*/
+  modules.filters = (function (exports) {
+    {{ files.filters }}
+    return exports;
+  })({});
+  /*-----------------------------------------------*/
+  
+  /*--------------- ./lib/parser.js ---------------*/
+  modules.parser = (function (exports) {
+    {{ files.parser }}
+    return exports;
+  })({});
+  /*-----------------------------------------------*/
+  
+  /*-------------- ./lib/template.js --------------*/
+  modules.template = (function (exports) {
+    {{ files.template }}
+    return exports;
+  })({});
+  /*-----------------------------------------------*/
+  
+  /*------------ ./lib/advtemplate.js -------------*/
+  modules.advtemplate = (function (exports) {
+    {{ files.advtemplate }}
+    return exports;
+  })({});
+  /*-----------------------------------------------*/
+  
+  /*------------------ ./index.js -----------------*/
+  {{ main }} 
+  return exports;
+  /*-----------------------------------------------*/
+})({});
+
+// 如果是在Node.js环境，则输出module.exports
+if (module && module.exports)
+  module.exports = tinyliquid;

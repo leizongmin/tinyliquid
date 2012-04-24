@@ -1,27 +1,33 @@
 /**
- * Ä£°åÒıÇæ
+ * æ¨¡æ¿å¼•æ“
  *
- * @author ÀÏÀ×<leizongmin@gmail.com>
+ * @author è€é›·<leizongmin@gmail.com>
  */
  
-// °æ±¾
+
+var template = require('./lib/template');
+var advtemplate = require('./lib/advtemplate');
+var filters = require('./lib/filters'); 
+ 
+ 
+// ç‰ˆæœ¬
 exports.version = '0.0.1';
  
-// ½âÎö´úÂë
-exports.parse = require('./lib/template').parse;
+// è§£æä»£ç 
+exports.parse = template.parse;
 
-// ±àÒëº¯Êı
-exports.compile = require('./lib/template').compile;
+// ç¼–è¯‘å‡½æ•°
+exports.compile = template.compile;
 
-// äÖÈ¾º¯Êı
-exports.render = require('./lib/template').render;
+// æ¸²æŸ“å‡½æ•°
+exports.render = template.render;
 
-// ±àÒëÕûÌ×Ä£°å
-exports.compileAll = require('./lib/advtemplate').compileAll;
+// ç¼–è¯‘æ•´å¥—æ¨¡æ¿
+exports.compileAll = advtemplate.compileAll;
 
-// ¸ß¼¶äÖÈ¾
-exports.advRender = require('./lib/advtemplate').advRender;
+// é«˜çº§æ¸²æŸ“
+exports.advRender = advtemplate.advRender;
 
-// ¹ıÂËÆ÷
-exports.filters = require('./lib/filters');
+// è¿‡æ»¤å™¨
+exports.filters = filters;
 
