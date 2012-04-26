@@ -13,6 +13,18 @@
 
 -----------------------------------------
 
+下载 & 安装
+===============
+
+可通过以下方式来获取TinyLiquid模块：
+
+*  通过NPM安装：**npm install tinyliquid**
+
+*  通过git下载：**git clone git://github.com/leizongmin/tinyliquid.git**
+  
+*  在浏览器端使用：`<script src="https://raw.github.com/leizongmin/tinyliquid/master/build/target/tinyliquid.min.js"></script>`
+
+-----------------------------------------
 
 模板语法
 ==============
@@ -181,15 +193,19 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
 开始使用
 ================
 
-### 安装
+### 载入模块
 
-  直接从github上下载源码：
+  在Node.js环境下：
   
-    git clone git://github.com/leizongmin/tinyliquid.git
+    var tinyliquid = require('tinyliquid');
     
-  或者通过npm命令来安装：
+  在浏览器环境下：
   
-    npm install tinyliquid
+    <!-- 该文件可在源码里面的build/target目录获得 -->
+    <script src="tinyliquid.min.js"></script>
+    <script>
+      TinyLiquid.render('{{a}}', {a: 123});
+    </script>
     
     
 ### 编译模板  compile(text, [options])
