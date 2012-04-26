@@ -8,6 +8,7 @@
 var fs = require('fs');
 var path = require('path');
 var tinyliquid = require('../');
+var exec = require('child_process').exec;
 
 
 process.chdir(__dirname);
@@ -43,3 +44,17 @@ for (var i in dir) {
 var template = fs.readFileSync('./template.liquid', 'utf8');
 var output = tinyliquid.render(template, models);
 fs.writeFileSync('./target/tinyliquid.js', output);
+
+
+// 生成压缩文件
+exec('uglifyjs ' + path.resolve('./target/tinyliquid.js'), function (err, stdout, stderr) {
+  if (err)
+    throw err;
+  if (stderr)
+    console.error(stderr);
+  fs.writeFileSync(path.resolve('./target/tinyliquid.min.js'), stdout);
+  
+  console.log('已生成文件：');
+  console.log('    ' + path.resolve('./target/tinyliquid.js'));
+  console.log('    ' + path.resolve('./target/tinyliquid.min.js'));
+});
