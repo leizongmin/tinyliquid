@@ -45,7 +45,14 @@ F:{{ item }}\
 |D:{{ item }}\
 {% endif %}\
 {% endtablerow %}', {items: data}).should.equal('F:1|D:2|D:3F:4|D:5');
-      
+     
+    // 特殊格式写法
+    render('{% tablerow item in items cols: 3 limit: 6 %}{{ tablerowloop.col0 }}{% endtablerow %}',
+      {items:data}).should.equal('012012');
+     
+    render('{%tablerow item in items cols: 3 limit: 6 %}{{tablerowloop.col0}}{%endtablerow%}',
+      {items:data}).should.equal('012012'); 
+     
   });
 
 });
