@@ -9,39 +9,58 @@ var TinyLiquid = (function (exports) {
 
   var modules = {};
   
+  /*--------------- ./lib/md5.js ----------------*/
+  var m = {exports: {}};
+  (function (module, exports) {
+    {{ files.md5 }}
+    return exports;
+  })(m, m.exports);
+  modules.md5 = m.exports;
+  /*-----------------------------------------------*/
+  
   /*--------------- ./lib/utils.js ----------------*/
-  modules.utils = (function (exports) {
+  var m = {exports: {}};
+  (function (module, exports) {
     {{ files.utils }}
     return exports;
-  })({});
+  })(m, m.exports);
+  modules.utils = m.exports;
   /*-----------------------------------------------*/
   
   /*-------------- ./lib/filters.js ---------------*/
-  modules.filters = (function (exports) {
+  var m = {exports: {}};
+  (function (module, exports) {
     {{ files.filters }}
     return exports;
-  })({});
+  })(m, m.exports);
+  modules.filters = m.exports;
   /*-----------------------------------------------*/
   
   /*--------------- ./lib/parser.js ---------------*/
-  modules.parser = (function (exports) {
+  var m = {exports: {}};
+  (function (module, exports) {
     {{ files.parser }}
     return exports;
-  })({});
+  })(m, m.exports);
+  modules.parser = m.exports;
   /*-----------------------------------------------*/
   
   /*-------------- ./lib/template.js --------------*/
-  modules.template = (function (exports) {
+  var m = {exports: {}};
+  (function (module, exports) {
     {{ files.template }}
     return exports;
-  })({});
+  })(m, m.exports);
+  modules.template = m.exports;
   /*-----------------------------------------------*/
   
   /*------------ ./lib/advtemplate.js -------------*/
-  modules.advtemplate = (function (exports) {
+  var m = {exports: {}};
+  (function (module, exports) {
     {{ files.advtemplate }}
     return exports;
-  })({});
+  })(m, m.exports);
+  modules.advtemplate = m.exports;
   /*-----------------------------------------------*/
   
   /*------------------ ./index.js -----------------*/

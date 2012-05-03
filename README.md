@@ -100,6 +100,18 @@
     array循环的输出被保存到name当中了
     
 
+### 循环常量
+
+例：
+
+    {% cycle 'one', 'two', 'three' %},
+    {% cycle 'one', 'two', 'three' %},
+    {% cycle 'one', 'two', 'three' %},
+    {% cycle 'one', 'two', 'three' %} 
+    
+将输出：one,two,three,one
+
+    
 ### 包含文件
 
 例：

@@ -37,6 +37,7 @@ function compile () {
   }
   catch (err) {
     alert('出错了：' + err.toString());
+    console.error(err.stack);
   }
 }
 </script>
