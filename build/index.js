@@ -23,21 +23,21 @@ var readModuleFile = function (name) {
     var mn = /require\s*\(\s*['"](.*)['"]\s*\)/.exec(name)[1];
     return 'modules.' + path.basename(mn, '.js');
   });
-}
+};
 
 
 // 读入各个模块
 var models = {
   main:     readModuleFile('index'),
   files:    {}
-}
+};
 
 var dir = fs.readdirSync(path.resolve('../lib'));
 for (var i in dir) {
   if (path.extname(dir[i]) === '.js') {
     models.files[path.basename(dir[i], '.js')] = readModuleFile(dir[i])
   }
-}
+};
 
 
 // 渲染
