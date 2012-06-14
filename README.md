@@ -7,18 +7,18 @@
 *  强大灵活的语法：在模板当中，你可以使用诸如条件判断、循环、赋值、函数调用等语法
   标记来进行控制
   
-*  渲染速度快：目前仅做了简单的测试，其速度为ejs的3倍以上
+*  渲染速度快：目前仅做了简单的测试，其速度为ejs的3倍以上 [性能测试结果](https://github.com/leizongmin/tinyliquid/blob/master/benchmark/result.txt)
 
 *  异步渲染模式：可解决JavaScript程序中异步获取多个数据时，难以控制的问题
 
 *  可运行于浏览器端及Node.js环境下
 
------------------------------------------
+
 
 下载 & 安装
 ===============
 
-可通过以下方式来获取TinyLiquid模块：
+目前最新版为**v0.0.3**，可通过以下方式来获取TinyLiquid模块：
 
 *  通过NPM安装：**npm install tinyliquid**
 
@@ -26,7 +26,7 @@
   
 *  在浏览器端使用：`<script src="https://raw.github.com/leizongmin/tinyliquid/master/build/target/tinyliquid.min.js"></script>`
 
------------------------------------------
+
 
 模板语法
 ==============
@@ -152,85 +152,8 @@
     
 详细语法说明可参考这里：http://wiki.shopify.com/Liquid
 
------------------------------------------
 
 
-异步渲染模式
-===================
-
-在Node.js编程中，最令人头疼的是异步获取数据的层层嵌套，还有错综复杂的回调，而
-TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
-
-
-### 普通获取数据方式
-
-    DB.query('select * from table1', function (err, data1) {
-      // ...
-      DB.query('select * from table2', function (err, data2) {
-        // ...
-        DB.query('select * from table3', function (err, data3) {
-          // ...
-          DB.query('select * from table4', function (err, data4) {
-            // ...
-            // ...
-            render({data1: data1, data2: data2, data3: data3, data4: data4});
-          });
-        });
-      });
-    });
-
-    
-### 使用Jscex方式获取
-
-    eval(Jscex.compile("async", function () {
-    
-      var data1 = $await(DB.queryAsync('select * from table1'));
-      
-      var data2 = $await(DB.queryAsync('select * from table2'));
-      
-      var data3 = $await(DB.queryAsync('select * from table3'));
-      
-      var data4 = $await(DB.queryAsync('select * from table4'));
-      
-      render({data1: data1, data2: data2, data3: data3, data4: data4});
-    
-    })).start();
-
-
-### TinyLiquid的自动获取方式
-
-    var models = {
-      data1:  function (env, callback) {
-        DB.query('select * from table1', callback); 
-      },
-      data2:  function (env, callback) {
-        DB.query('select * from table2', callback); 
-      },
-      data3:  function (env, callback) {
-        DB.query('select * from table3', callback); 
-      },
-      data4:  function (env, callback) {
-        DB.query('select * from table4', callback); 
-      }
-    };
-    
-    TinyLiquid.advRender(render, models, {}, function (err, text) {
-      // 渲染完成时的回调函数
-    });
-    
-
-### 使用TinyLiquid的好处
-
-*  避免程序的多层嵌套
-
-*  不需要安装更多的模块
-
-*  TinyLiquid仅在模板需要用到该数据时，才会执行获取数据操作，因此你可以定义一个
-  公共的获取数据接口，当渲染不同的页面时，TinyLiquid会根据需要获取相应的数据，而
-  不会去获取模板中不需要的数据。
-  
-  
-  
 开始使用
 ================
 
@@ -240,7 +163,7 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
   
     var tinyliquid = require('tinyliquid');
     
-  在浏览器环境下：
+  在浏览器环境下：（在浏览器环境下，通过全局变量**TinyLiquid**来操作）
   
     <!-- 该文件可在源码里面的build/target目录获得 -->
     <script src="tinyliquid.min.js"></script>
@@ -333,12 +256,96 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
         console.log(text);
     });
     
+
+### 使用建议
+
+  TinyLiquid没有内置的缓存机制，因此在使用时，如果需要多次调用某个模板来进行渲染，需要
+  手动缓存编译出来的渲染函数。
+
+
+
+异步渲染模式
+===================
+
+在Node.js编程中，最令人头疼的是异步获取数据的层层嵌套，还有错综复杂的回调，而
+TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
+
+
+### 普通获取数据方式
+
+    DB.query('select * from table1', function (err, data1) {
+      // ...
+      DB.query('select * from table2', function (err, data2) {
+        // ...
+        DB.query('select * from table3', function (err, data3) {
+          // ...
+          DB.query('select * from table4', function (err, data4) {
+            // ...
+            // ...
+            render({data1: data1, data2: data2, data3: data3, data4: data4});
+          });
+        });
+      });
+    });
+
     
-### 内置函数  filters
+### 使用Jscex方式获取
+
+    eval(Jscex.compile("async", function () {
+    
+      var data1 = $await(DB.queryAsync('select * from table1'));
+      
+      var data2 = $await(DB.queryAsync('select * from table2'));
+      
+      var data3 = $await(DB.queryAsync('select * from table3'));
+      
+      var data4 = $await(DB.queryAsync('select * from table4'));
+      
+      render({data1: data1, data2: data2, data3: data3, data4: data4});
+    
+    })).start();
+
+
+### TinyLiquid的自动获取方式
+
+    var models = {
+      data1:  function (env, callback) {
+        DB.query('select * from table1', callback); 
+      },
+      data2:  function (env, callback) {
+        DB.query('select * from table2', callback); 
+      },
+      data3:  function (env, callback) {
+        DB.query('select * from table3', callback); 
+      },
+      data4:  function (env, callback) {
+        DB.query('select * from table4', callback); 
+      }
+    };
+    
+    TinyLiquid.advRender(render, models, {}, function (err, text) {
+      // 渲染完成时的回调函数
+    });
+    
+
+### 使用TinyLiquid的好处
+
+*  避免程序的多层嵌套
+
+*  不需要安装更多的模块
+
+*  TinyLiquid仅在模板需要用到该数据时，才会执行获取数据操作，因此你可以定义一个
+  公共的获取数据接口，当渲染不同的页面时，TinyLiquid会根据需要获取相应的数据，而
+  不会去获取模板中不需要的数据。
+  
+  
+  
+    
+## 内置函数  filters
 
 内置支持的函数详见 [lib/filters.js](tinyliquid/blob/master/lib/filters.js)
 
-#### 标签相关
+### 标签相关
 
 *  {{'url' | **img_tag**: 'alt'}}  生成`<img>`标签
 
@@ -348,7 +355,7 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
 
 *  {{'link' | **link_to**: 'url', 'title'}}  生成`<a>`标签
 
-#### 算数运算相关
+### 算数运算相关
 
 *  {{123 | **plus**: 456}}  相加
 
@@ -366,7 +373,7 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
 
 *  {{N | **pluralize**: 'item', 'items'}}  如果N大于1则返回items，否则返回item
 
-#### 字符串相关
+### 字符串相关
 
 *  {{'abc' | **append**: 'd'}}  在后面拼接字符串
 
@@ -408,13 +415,13 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
 
 *  {{'abcdef' | **reverse**}}  反转字符串
 
-#### 日期时间相关
+### 日期时间相关
 
 *  {{0 | **timestamp**}} 取当前毫秒时间戳，并加上0
 
 *  {{'now' | **date**: '%H:%M%S'}} 格式化日期时间字符串
 
-#### 数组、对象相关
+### 数组、对象相关
 
 *  {{obj | **keys**}}  返回对象的所有键，结果为数组
 
@@ -438,6 +445,37 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
 
 *  {{array | **sort_by**: 'prop', 'desc'}}  根据数组各个元素中的指定属性排序
 
-#### 其他
+### 其他
 
 *  {{count | **pagination**: size, currentPage}}  生成导航页码
+
+
+
+授权
+===============
+
+你可以在遵守**MIT Licence**的前提下随意使用并分发它。
+
+    Copyright (c) 2012 Lei Zongmin <leizongmin@gmail.com>
+    http://ucdok.com
+
+    The MIT License
+
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+    LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
