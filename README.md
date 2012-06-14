@@ -26,6 +26,8 @@
   
 *  在浏览器端使用：`<script src="https://raw.github.com/leizongmin/tinyliquid/master/build/target/tinyliquid.min.js"></script>`
 
+*  在express中使用：`app.register('.html', tinyliquid.__express());`
+   [示例程序](https://github.com/leizongmin/tinyliquid/blob/master/test/express/)
 
 
 模板语法
