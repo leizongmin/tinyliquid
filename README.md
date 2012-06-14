@@ -4,7 +4,7 @@
 **TinyLiquid**是一个基于**JavaScript**，兼容**Liquid**模板语法的的模板引擎。
 其具有以下特点：
   
-*  强大灵活的语法：在模板当中，你可以使用诸如条件判断、循环、赋值、过滤器等语法
+*  强大灵活的语法：在模板当中，你可以使用诸如条件判断、循环、赋值、函数调用等语法
   标记来进行控制
   
 *  渲染速度快：目前仅做了简单的测试，其速度为ejs的3倍以上
@@ -38,7 +38,7 @@
     你好, {{ name }}
     
 
-### 过滤器(Filters)
+### 函数(Filters)
 
 例：
 
@@ -295,7 +295,7 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
     // 选项
     var options = {
       parallel: false,                  // 可选，true 并行方式获取，默认为false
-      filters:  tinyliquid.filters,     // 可选，筛选器
+      filters:  tinyliquid.filters,     // 可选，自定义函数
       env:      {},                     // 可选，环境变量，即models函数中的第一个参数
     };
     
@@ -307,8 +307,8 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
     });
     
     
-### 过滤器  filters
+### 函数  filters
 
-详见 [lib/filters.js](tinyliquid/blob/master/lib/filters.js)
+内置支持的函数详见 [lib/filters.js](tinyliquid/blob/master/lib/filters.js)
 
 

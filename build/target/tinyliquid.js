@@ -238,7 +238,7 @@ exports.localsWrap = function (n, locals, saveFunc) {
 var CONST_VAL = ['nil', 'null', 'empty', 'blank', 'true', 'false'];
 
 /**
- * 解析筛选器
+ * 解析函数调用
  *
  * @param {string} js
  * @param {object} options
@@ -849,7 +849,7 @@ AsyncDataList.prototype.startParallel = function (callback) {
   var m = {exports: {}};
   (function (module, exports) {
     /**
- * 过滤器
+ * 内置函数
  *
  * @author 老雷<leizongmin@gmail.com>
  */
@@ -1605,7 +1605,7 @@ exports.output = function (text, start, context) {
   var line = text.slice(start + 2, end).trim();
   end += 2;
   
-  // 支持筛选器
+  // 支持函数调用
   var script = '$_buf.push(' + utils.filtered(line, null, context) + ');';
   
   return {start: start, end: end, script: script};
@@ -2178,7 +2178,7 @@ exports.compile = function (text, options) {
  *
  * @param {string} text 模板内容
  * @param {object} data 数据
- * @param {object} f 过滤器
+ * @param {object} f 自定义函数
  * @return {text}
  */
 exports.render = function (text, data, f) {
@@ -2329,7 +2329,7 @@ exports.compileAll = function (files, options) {
  * @param {function} render   通过compile()编译出的模板渲染函数
  * @param {object} models     获取数据的函数 {'name': function (env, callback) {}}
  * @param {object} options    选项： parallel: true 并行方式获取，默认为false
- *                                   filters: 筛选器
+ *                                   filters: 自定义函数
  *                                   env: 环境变量，即models函数中的第一个参数
  * @param {function} callback 回调 function (err, text)
  */
@@ -2376,7 +2376,7 @@ var filters = modules.filters;
  
  
 // 版本
-exports.version = '0.0.2';
+exports.version = '0.0.3';
  
 // 解析代码
 exports.parse = template.parse;
@@ -2393,7 +2393,7 @@ exports.compileAll = advtemplate.compileAll;
 // 高级渲染
 exports.advRender = advtemplate.advRender;
 
-// 过滤器
+// 内置函数
 exports.filters = filters;
 
  

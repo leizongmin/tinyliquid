@@ -28,6 +28,6 @@ exports.compileAll = advtemplate.compileAll;
 // 高级渲染
 exports.advRender = advtemplate.advRender;
 
-// 过滤器
+// 内置函数
 exports.filters = filters;
 

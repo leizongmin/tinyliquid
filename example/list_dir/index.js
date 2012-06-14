@@ -35,7 +35,7 @@ var server = http.createServer(function (req, res) {
   var env = {
     path:   params.path
   };
-  // 过滤器
+  // 自定义函数
   var filters = {
     resolve_path:   function (p, f) {
       return path.resolve(params.path, f, p);
