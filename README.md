@@ -31,22 +31,24 @@
 模板语法
 ==============
 
-### 输出
+### 输出变量 {{name}}
 
 例：
 
     你好, {{ name }}
+    你好, {{ name | escape }}  // 对变量值进行转义
     
 
-### 函数(Filters)
+### 函数调用(Filters) {{value|method}}
 
 例：
 
     大写：{{ name | upcase }}
     现在的时间是：{{ "now" | date: "%H时%M分%S秒" }}
+    嵌套：{{ name |  upcase | split: '-' }}
     
 
-### 条件判断
+### 条件判断 {%if condition%}...{%else%}...{%endif%} 
 
 例：
 
@@ -64,7 +66,7 @@
 大于或等于(>=)、小于或等于(<=)、包含字符串(contains)
 
 
-### 循环
+### 循环 {%for item in array%}...{%endfor%}  {%tablerow item in array%}...{%endtablerow%}
 
 例：
 
@@ -81,7 +83,7 @@
     {% endtablerow %}
     
     
-### 变量赋值
+### 变量赋值 {%assign name = "value"%}
 
 例：
 
@@ -90,7 +92,7 @@
     {% assign name = value | upcase %}
     
 
-### 保存局部输出
+### 保存局部输出 {%capture name%}...{%endcapture%}
 
 例：
 
@@ -99,10 +101,10 @@
         {% item %}
       {% endfor %}
     {% endcapture %}
-    array循环的输出被保存到name当中了
+    array循环的输出被保存到name当中了，通过`{{ name }}`可输出该结果
     
 
-### 常量循环
+### 常量循环 {%cycle 'one','two','three'%}
 
 例：
 
@@ -114,13 +116,38 @@
 将输出：one,two,three,one
 
     
-### 包含文件
+### 包含文件 {%include "filename"%}
 
 例：
 
     {% include "header" %}
     
     {% include "header" with data %}
+    
+    
+### 不解析部分 {%raw%}...{%endraw%}
+
+例：
+
+    {% raw %}{{ 5 | plus: 6 }}{% endraw %} is equal to {{ 5 | plus: 6 }}.
+    
+将输出：{{ 5 | plus: 6 }} is equal to 11.
+    
+    
+### 注释部分 {%comment%}...{%endcomment%}
+
+例：
+
+    Hello world. {% comment %} Now this is a single-line comment {% endcomment %} <br />
+    Hello world,
+    I think I'm gonna be happy today. {% comment %} Now this is a
+    multi-line comment that should be ignored too,
+    just like the single-line comment {% endcomment %}
+    
+将输出：
+
+    Hello world.
+    Hello world, I think I'm gonna be happy today.
     
     
 详细语法说明可参考这里：http://wiki.shopify.com/Liquid
@@ -307,8 +334,110 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
     });
     
     
-### 函数  filters
+### 内置函数  filters
 
 内置支持的函数详见 [lib/filters.js](tinyliquid/blob/master/lib/filters.js)
 
+#### 标签相关
 
+*  {{'url' | **img_tag**: 'alt'}}  生成`<img>`标签
+
+*  {{'url' | **script_tag**}}  生成`<script>`标签
+
+*  {{'url' | **stylesheet_tag**: 'media'}}  生成`<link>`CSS标签
+
+*  {{'link' | **link_to**: 'url', 'title'}}  生成`<a>`标签
+
+#### 算数运算相关
+
+*  {{123 | **plus**: 456}}  相加
+
+*  {{123 | **minus**: 456}}  相减
+
+*  {{123 | **times**: 456}}  相乘
+
+*  {{123 | **divided_by**: 456}}  相除
+
+*  {{1.23 | **round**: 2}}  四舍五入，保留小数点后2位
+
+*  {{1.23 | **integer**}}  取整
+
+*  {{1 | **random**: 2}}  返回1<=N<2的随机数
+
+*  {{N | **pluralize**: 'item', 'items'}}  如果N大于1则返回items，否则返回item
+
+#### 字符串相关
+
+*  {{'abc' | **append**: 'd'}}  在后面拼接字符串
+
+*  {{'abc' | **prepend**: 'd'}}  在前面拼接字符串
+
+*  {{'a b c' | **camelize**}}  将字符串转化为驼峰命名方式
+
+*  {{'a b c' | **capitalize**}}  字符串首字母大写
+
+*  {{'ABC' | **downcase**}}  转化为小写
+
+*  {{'abc' | **upcase**}}  转化为大写
+
+*  {{'&lt;a&gt;' | **escape**}}  HTML字符串转义
+
+*  {{'this is a book' | **handleize**}}  将字符串转化为'this-is-a-book'
+
+*  {{'abcabc' | **replace_first**: 'a', 'x'}}  替换第一次出现的字符串a为x
+
+*  {{'abcabc' | **replace**: 'a', 'x'}}  替换所有指定字符串a为x
+
+*  {{'abcabc' | **remove_first**: 'a'}}  删除第一次出现的指定字符串a
+
+*  {{'abcabc' | **remove**: 'a'}}  删除所有指定字符串a
+
+*  {{'abc\nabc' | **newline_to_br**}}  将换行符转换为<br>标签
+ 
+*  {{'a-b-c' | **split**: '-'}}  用指定字符串分割，返回数组
+
+*  {{'abcd' | **size**}}  返回字符串长度
+
+*  {{'<span>123</span>' | **strip_html**}} 去除HTML标签，返回文本123
+
+*  {{'abc\nabc' | **strip_newlines**}} 取出换行符
+
+*  {{'abcdefg' | **truncate**: 3}}  取前N个字符
+
+*  {{'this is a book' | **truncatewords**: 2}}  取前N个单词
+
+*  {{'abcdef' | **reverse**}}  反转字符串
+
+#### 日期时间相关
+
+*  {{0 | **timestamp**}} 取当前毫秒时间戳，并加上0
+
+*  {{'now' | **date**: '%H:%M%S'}} 格式化日期时间字符串
+
+#### 数组、对象相关
+
+*  {{obj | **keys**}}  返回对象的所有键，结果为数组
+
+*  {{array | **first**}}  返回数组(或对象)的第一个元素
+
+*  {{array | **last**}}  返回数组(或对象)的最后一个元素
+
+*  {{array | **join**: ','}}  将数组以指定的字符串拼接起来
+
+*  {{array | **size**}}  返回数组长度
+
+*  {{obj | **json**}}  转换为JSON格式的字符串
+
+*  {{obj | **get**: 'prop'}}  取对象的指定属性
+
+*  {{array | **reverse**}}  反转数组
+
+*  {{array | **map**: 'prop'}}  取数组各个元素的指定属性，返回数组
+
+*  {{array | **sort**: 'desc'}}  对数组进行排序，可为asc(升序)或desc(降序)
+
+*  {{array | **sort_by**: 'prop', 'desc'}}  根据数组各个元素中的指定属性排序
+
+#### 其他
+
+*  {{count | **pagination**: size, currentPage}}  生成导航页码

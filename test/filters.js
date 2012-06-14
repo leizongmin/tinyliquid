@@ -164,6 +164,11 @@ describe('filters', function () {
     filters.join(555).should.equal('')
   });
   
+  it('#replace', function () {
+    filters.replace('abcabc', 'a', 'x').should.equal('xbcxbc');
+    filters.replace('abcabc', 'c', 'x').should.equal('abxabx');
+  });
+  
   it('#replace_first', function () {
     filters.replace_first('abcabc', 'a', 'x').should.equal('xbcabc');
     filters.replace_first('abcabc', 'c', 'x').should.equal('abxabc');
