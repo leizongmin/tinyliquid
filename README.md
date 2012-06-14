@@ -270,67 +270,17 @@
 ===================
 
 在Node.js编程中，最令人头疼的是异步获取数据的层层嵌套，还有错综复杂的回调，而
-TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
+TinyLiquid的自动获取数据功能可以解决该问题。以下为使用不同方式异步获取数据的例子：
 
+*  普通获取数据方式 [https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/normal.js](https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/normal.js)
 
-### 普通获取数据方式
+*  使用Jscex获取数据方式 [https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/jscex.js](https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/jscex.js)
 
-    DB.query('select * from table1', function (err, data1) {
-      // ...
-      DB.query('select * from table2', function (err, data2) {
-        // ...
-        DB.query('select * from table3', function (err, data3) {
-          // ...
-          DB.query('select * from table4', function (err, data4) {
-            // ...
-            // ...
-            render({data1: data1, data2: data2, data3: data3, data4: data4});
-          });
-        });
-      });
-    });
+*  使用EventProxy获取数据方式 [https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/eventproxy.js](https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/eventproxy.js)
 
+*  使用TinyLiquid内置的advRender()自动获取数据方式 [https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/advrender.js](https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/advrender.js)
     
-### 使用Jscex方式获取
-
-    eval(Jscex.compile("async", function () {
-    
-      var data1 = $await(DB.queryAsync('select * from table1'));
-      
-      var data2 = $await(DB.queryAsync('select * from table2'));
-      
-      var data3 = $await(DB.queryAsync('select * from table3'));
-      
-      var data4 = $await(DB.queryAsync('select * from table4'));
-      
-      render({data1: data1, data2: data2, data3: data3, data4: data4});
-    
-    })).start();
-
-
-### TinyLiquid的自动获取方式
-
-    var models = {
-      data1:  function (env, callback) {
-        DB.query('select * from table1', callback); 
-      },
-      data2:  function (env, callback) {
-        DB.query('select * from table2', callback); 
-      },
-      data3:  function (env, callback) {
-        DB.query('select * from table3', callback); 
-      },
-      data4:  function (env, callback) {
-        DB.query('select * from table4', callback); 
-      }
-    };
-    
-    TinyLiquid.advRender(render, models, {}, function (err, text) {
-      // 渲染完成时的回调函数
-    });
-    
-
-### 使用TinyLiquid的好处
+使用TinyLiquid的好处
 
 *  避免程序的多层嵌套
 
@@ -340,6 +290,7 @@ TinyLiquid的自动获取数据功能可以解决该问题。如下面例子：
   公共的获取数据接口，当渲染不同的页面时，TinyLiquid会根据需要获取相应的数据，而
   不会去获取模板中不需要的数据。
   
+*  编写更少的代码
   
   
     
