@@ -11,7 +11,7 @@ var filters = require('./lib/filters');
  
  
 // 版本
-exports.version = '0.0.2';
+exports.version = '0.0.3';
  
 // 解析代码
 exports.parse = template.parse;

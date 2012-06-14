@@ -67,7 +67,7 @@ exports.stripQuotes = function (input) {
   if (input[ei] === '\'' || input[ei] === '"')
     e--;
   return input.substr(s, e);
-}
+};
  
 /**
  * 合并多个对象
@@ -84,7 +84,7 @@ exports.merge = function () {
       ret[j] = obj[j];
   }
   return ret;
-}
+};
 
 /**
  * 将对象转换为数组
@@ -99,7 +99,7 @@ exports.toArray = function (data) {
   for (var i in data)
     ret.push(data[i]);
   return ret;
-}
+};
 
 /**
  * 表格分割
@@ -129,7 +129,7 @@ exports.tableSplit = function (data, col, offset, limit) {
       row.push(data[di++]);
   }
   return ret;
-}
+};
 
 /**
  * 取指定范围的数字数组
@@ -147,7 +147,7 @@ exports.range = function (s, e) {
   for (; s <= e; s++)
     r.push(s);
   return r;
-}
+};
 
 /**
  * 输出文本
@@ -155,13 +155,13 @@ exports.range = function (s, e) {
  * @param {string} html
  * @return {string}
  */
-exports.escape = function(html){
+exports.escape = function (html) {
   return String(html)
     .replace(/&(?!\w+;)/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
-}
+};
 
 /**
  * 输出HTML
@@ -175,7 +175,7 @@ exports.outputHtml = function (html) {
              .replace(/"/img, '\\\"')
              .replace(/\r/img, '\\r')
              .replace(/\n/img, '\\n');
-}
+};
 var $_html = exports.outputHtml;
 
 /**
@@ -187,7 +187,7 @@ exports.errorMessage = function (msg) {
   var html = '<pre style="font-weight:bold; font-size:14px; color:red; padding:4px 20px 4px 20px; border:1px solid #CCC; background-color:#FFF5F0;">' + msg + '</pre>';
   //console.log(html);
   return html;
-}
+};
 var $_err = exports.errorMessage;
 
 /**
@@ -200,7 +200,7 @@ exports.rethrowError = function (err) {
           + 'Line: ' + $_line_num + '\n'
           + '    ' + err;
   $_buf.push($_err(msg));
-}
+};
 
 /**
  * 包装变量
@@ -233,7 +233,7 @@ exports.localsWrap = function (n, locals, saveFunc) {
   // 其他，自动转换为字符串
   else
     return '"' + n.replace(/"/ig, '\\"') + '"';
-}
+};
 // 常量
 var CONST_VAL = ['nil', 'null', 'empty', 'blank', 'true', 'false'];
 
@@ -286,7 +286,7 @@ exports.filtered = function (js, options, context) {
     ret = localsWrap(ret, inGlobalLocals(ret), context.saveLocalsName);
   
   return ret;
-}
+};
 
 /**
  * 解析条件语句
@@ -362,7 +362,7 @@ exports.condition = function (cond, context) {
     else {
       return null;
     }
-  }
+  };
   
   var ret = [];
   for (var i in conds) {
@@ -386,7 +386,7 @@ exports.condition = function (cond, context) {
     return '(' + ret.join(' ') + ')';
   else
     return ret.join(' ');
-}
+};
 
 /**
  * 空格分割字符串
@@ -402,7 +402,7 @@ exports.split = function (text) {
     var w = text.slice(lastIndex, end).trim();
     if (w.length > 0)
       ret.push(w);
-  }
+  };
   
   for (var i = 0, len = text.length; i < len; i++) {
     var c = text[i];
@@ -431,7 +431,7 @@ exports.split = function (text) {
   add(i);
   
   return ret;
-}
+};
 
 /**
  * 解析for循环
@@ -489,7 +489,7 @@ exports.forloops = function (loops, context) {
       return false;
     options[name] = value;
     return true;
-  }
+  };
   
   // 格式化参数 limit: N offset: M  =>  limit:N offset:M
   for (var i = 3; i < blocks.length; i++) {
@@ -525,7 +525,7 @@ exports.forloops = function (loops, context) {
          + '/* for loops body */';
   
   return script;
-}
+};
 
 /**
  * 解析tablerowloop循环
@@ -587,7 +587,7 @@ exports.tablerow = function (loops, context) {
       return false;
     options[name] = value;
     return true;
-  }
+  };
   
   // 格式化参数 limit: N offset: M  =>  limit:N offset:M
   for (var i = 3; i < blocks.length; i++) {
@@ -630,7 +630,7 @@ exports.tablerow = function (loops, context) {
          + '/* tablerow loops body */';
   
   return script;
-}
+};
 
 /**
  * 解析assign
@@ -656,7 +656,7 @@ exports.assign = function (expression, context) {
   }
   // console.log(ret);
   return ret;
-}
+};
 
 /**
  * 解析cycle
@@ -680,7 +680,7 @@ exports.cycle = function (strlist, context) {
   var script = '$_buf.push(' + cycleName + '.items[' + cycleName + '.i])\n'
              + '$_cycle_next(' + cycleName + ');\n';
   return script;
-}
+};
 
 
 /**
@@ -697,7 +697,7 @@ var AsyncDataList = function (models, names, env) {
   this.names = names || {};
   this.env = env || {};
   this.data = {};
-}
+};
 exports.AsyncDataList = AsyncDataList;
 
 /**
@@ -745,7 +745,7 @@ AsyncDataList.prototype.getItem = function (name, callback) {
     callback(err);
     return false;
   }
-}
+};
 
 /**
  * 保存一个数据
@@ -768,12 +768,12 @@ AsyncDataList.prototype.saveItem = function (name, value) {
     if (typeof node[key] !== 'object')
       throw Error('Cannot set childs because "' + oldns.join('.') + '" is not an object');
     return getFather(node[key], ns, oldns);
-  }
+  };
   var node = getFather(data, ns, oldns);
   node[key] = value;
   
   return data;
-}
+};
 
 /**
  * 队列式读取数据
@@ -794,13 +794,13 @@ AsyncDataList.prototype.start = function (callback) {
         return callback(null, data);
       var name = names.shift();
       self.getItem(name, next);
-    }
+    };
     next();
   }
   catch (err) {
     return callback(err);
   }
-}
+};
 
 /**
  * 并行式读取数据
@@ -828,7 +828,7 @@ AsyncDataList.prototype.startParallel = function (callback) {
         return callback(null, data);
       }
     });
-  }
+  };
   
   try {
     for (var i in names) {
@@ -838,7 +838,7 @@ AsyncDataList.prototype.startParallel = function (callback) {
   catch (err) {
     return callback(err);
   }
-}
+};
 
     return exports;
   })(m, m.exports);
@@ -866,8 +866,10 @@ AsyncDataList.prototype.startParallel = function (callback) {
 exports.img_tag = function (url, alt) {
   if (!alt)
     alt = '';
+  url = escape(url);
+  alt = escape(alt);
   return '<img src="' + url + '" alt="' + alt + '">';
-}
+};
 
 /**
  * 创建一个script标签
@@ -876,8 +878,9 @@ exports.img_tag = function (url, alt) {
  * @return {string} 
  */
 exports.script_tag = function (url) {
+  url = escape(url);
   return '<script src="' + url + '"></script>';
-}
+};
 
 /**
  * 创建一个样式表link标签
@@ -889,8 +892,10 @@ exports.script_tag = function (url) {
 exports.stylesheet_tag = function (url, media) {
   if (!media)
     media = 'all';
+  url = escape(url);
+  media = escape(media);
   return '<link href="' + url + '" rel="stylesheet" type="text/css" media="' + media + '" />';
-}
+};
 
 /**
  * A链接标签
@@ -901,10 +906,15 @@ exports.stylesheet_tag = function (url, media) {
  * @return {string}
  */
 exports.link_to = function (link, url, title) {
+  if (!url)
+    url = '';
   if (!title)
     title = '';
+  link = escape(link);
+  url = escape(url);
+  title = escape(title);
   return '<a href="' + url + '" title="' + title + '">' + link + '</a>';
-}
+};
 
 /*-----------------------------Math Filters-----------------------------------*/
 /**
@@ -915,8 +925,14 @@ exports.link_to = function (link, url, title) {
  * @return {number}
  */
 exports.plus = function (input, operand) {
-  return Number(input) + Number(operand);
-}
+  var input = Number(input);
+  var operand = Number(operand);
+  if (isNaN(input))
+    input = 0;
+  if (isNaN(operand))
+    operand = 0;
+  return  input + operand;
+};
 
 /**
  * 相减
@@ -926,8 +942,14 @@ exports.plus = function (input, operand) {
  * @return {number}
  */
 exports.minus = function (input, operand) {
-  return Number(input) - Number(operand);
-}
+  var input = Number(input);
+  var operand = Number(operand);
+  if (isNaN(input))
+    input = 0;
+  if (isNaN(operand))
+    operand = 0;
+  return  input - operand;
+};
 
 /**
  * 相乘
@@ -937,8 +959,14 @@ exports.minus = function (input, operand) {
  * @return {number}
  */
 exports.times = function (input, operand) {
-  return Number(input) * Number(operand);
-}
+  var input = Number(input);
+  var operand = Number(operand);
+  if (isNaN(input))
+    input = 0;
+  if (isNaN(operand))
+    operand = 0;
+  return  input * operand;
+};
 
 /**
  * 相除
@@ -948,8 +976,60 @@ exports.times = function (input, operand) {
  * @return {number}
  */
 exports.divided_by = function (input, operand) {
-  return Number(input) / Number(operand);
-}
+  var input = Number(input);
+  var operand = Number(operand);
+  if (isNaN(input))
+    input = 0;
+  if (isNaN(operand))
+    operand = 0;
+  return  input / operand;
+};
+
+/**
+ * 四舍五入
+ *
+ * @param {number} input
+ * @param {int} point
+ * @return {number}
+ */
+exports.round = function (input, point) {
+  if (!(point >= 0))
+    point = 0;
+  else
+    point = parseInt(point);
+  if (point < 1)
+    return Math.round(input);
+  var n = Math.pow(10, point);
+  var ret = Math.round(input * n);
+  return ret / n;
+};
+
+/**
+ * 整数
+ *
+ * @param {number} input
+ * @return {int}
+ */
+exports.integer = function (input) {
+  return parseInt(input);
+};
+
+/**
+ * 返回指定范围的随机数
+ *
+ * @param {number} m
+ * @param {number} n
+ * @return {number}
+ */
+exports.random = function (m, n) {
+  if (isNaN(m))
+    return Math.random();
+  if (isNaN(n)) {
+    n = m;
+    m = 0;
+  }
+  return Math.random() * (n - m) + m;
+};
 
 /*---------------------------Manipulation Filters-----------------------------*/
 /**
@@ -960,8 +1040,10 @@ exports.divided_by = function (input, operand) {
  * @return {string}
  */
 exports.append = function (input, characters) {
+  if (!characters)
+    return String(input);
   return String(input) + String(characters);
-}
+};
 
 /**
  * 在前面拼接字符串
@@ -971,8 +1053,10 @@ exports.append = function (input, characters) {
  * @return {string}
  */
 exports.prepend = function (input, characters) {
+  if (!characters)
+    return String(input);
   return String(characters) + String(input);
-}
+};
 
 /**
  * 将字符串转化为驼峰命名方式
@@ -985,7 +1069,7 @@ exports.camelize = function (input) {
     return a[0].toUpperCase() + a.substr(1);
   }).join('');
   return ret[0].toLowerCase() + ret.substr(1);
-}
+};
 
 /**
  * 字符串首字母大写
@@ -996,7 +1080,19 @@ exports.camelize = function (input) {
 exports.capitalize = function (input) {
   input = String(input);
   return input[0].toUpperCase() + input.substr(1);
-}
+};
+
+/**
+ * 取当前毫秒时间戳
+ *
+ * @param {int} input
+ * @return {int}
+ */
+exports.timestamp = function (input) {
+  if (isNaN(input))
+    input = 0;
+  return new Date().getTime() + input;
+};
 
 /**
  * 格式化日期字符串
@@ -1006,11 +1102,19 @@ exports.capitalize = function (input) {
  * @return {string}
  */
 exports.date = function (input, format) {
-  var time;
   if (String(input).toLowerCase() == 'now')
-    time = new Date();
-  else
-    time = new Date(input);
+    var time = new Date();
+  else {
+    var timestamp = parseInt(input);
+    if (timestamp == input)
+      var time = new Date(timestamp);
+    else
+      var time = new Date(input);
+  }
+  if (time.toString() === 'Invalid Date')
+    return 'Invalid Date';
+  if (!format)
+    format = '%Y-%m-%j %H:%M:%S';
   var dates = time.toDateString().split(/\s/);      // ["Wed", "Apr", "11", "2012"]
   var dateS = time.toLocaleDateString().split(/\s/);// ["Wednesday,", "April", "11,", "2012"]
   var times = time.toTimeString().split(/[\s:\+]/); // ["10", "37", "44", "GMT", "0800", "(中国标准时间)"]
@@ -1027,7 +1131,7 @@ exports.date = function (input, format) {
     m:      time.getMonth() + 1,  // 月份
     M:      times[1], // 分钟
     p:      Number(times[0]) < 12 ? 'AM' : 'PM',  // 上午/下午
-    S:      times[2],
+    S:      times[2], // 秒
     U:      weekNo(time),         // 当年的第几周，星期日开始
     W:      weekNo(time, true),   // 星期一开始
     w:      time.getDay(),  // 星期几(0-6)
@@ -1042,7 +1146,7 @@ exports.date = function (input, format) {
     ret = ret.replace(RegExp('%' + i, 'mg'), replace[i]);
   }
   return ret;
-}
+};
 
 function weekNo (now, mondayFirst) {
   var totalDays = 0;
@@ -1069,7 +1173,7 @@ function weekNo (now, mondayFirst) {
   if (mondayFirst && new Date(String(years)).getDay() === 0)
     week += 1;
   return week;
-}
+};
 
 /**
  * 将字符串转换为小写
@@ -1079,7 +1183,7 @@ function weekNo (now, mondayFirst) {
  */
 exports.downcase = function (input) {
   return String(input).toLowerCase();
-}
+};
 
 /**
  * 将字符串转换为大写
@@ -1089,7 +1193,7 @@ exports.downcase = function (input) {
  */
 exports.upcase = function (input) {
   return String(input).toUpperCase();
-}
+};
 
 /**
  * 字符串转义（HTML）
@@ -1103,7 +1207,7 @@ exports.escape = function (input) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
-}
+};
 
 function getFirstKey (obj) {
   if (Array.isArray(obj)) {
@@ -1113,7 +1217,7 @@ function getFirstKey (obj) {
     var keys = Object.keys(obj);
     return keys[0] || '';
   }
-}
+};
 
 function getLastKey (obj) {
   if (Array.isArray(obj)) {
@@ -1123,7 +1227,22 @@ function getLastKey (obj) {
     var keys = Object.keys(obj);
     return keys.pop() || '';
   }
-}
+};
+
+/**
+ * 返回对象的所有键
+ *
+ * @param {object} input
+ * @return {array}
+ */
+exports.keys = function (input) {
+  try {
+    return Object.keys(input);
+  }
+  catch (err) {
+    return [];
+  };
+};
 
 /**
  * 取第一个元素
@@ -1133,7 +1252,7 @@ function getLastKey (obj) {
  */
 exports.first = function (array) {
   return array[getFirstKey(array)];
-}
+};
 
 /**
  * 取最后一个元素
@@ -1143,7 +1262,7 @@ exports.first = function (array) {
  */
 exports.last = function (array) {
   return array[getLastKey(array)];
-}
+};
 
 /**
  * 转化为handle字符串
@@ -1156,7 +1275,7 @@ exports.handleize = function (input) {
               .replace(/[^0-9a-zA-Z ]/g, '')
               .replace(/[ ]+/g, '-')
               .toLowerCase();
-}
+};
 
 /**
  * 将数组以指定的字符串拼接起来
@@ -1172,7 +1291,7 @@ exports.join = function (input, segmenter) {
     return input.join(segmenter);
   else
     return '';
-}
+};
 
 /**
  * 替换第一次出现的字符串
@@ -1184,7 +1303,7 @@ exports.join = function (input, segmenter) {
  */
 exports.replace_first = function (input, substring, replacement) {
   return String(input).replace(substring, replacement);
-}
+};
 
 /**
  * 删除指定字符串
@@ -1198,7 +1317,7 @@ exports.remove = function (input, substring) {
   while (input.indexOf(substring) > -1)
     input = input.replace(substring, '');
   return input;
-}
+};
 
 /**
  * 删除第一次出现的指定字符串
@@ -1207,9 +1326,9 @@ exports.remove = function (input, substring) {
  * @param {string} substring
  * @return {string}
  */
-exports.remove = function (input, substring) {
+exports.remove_first = function (input, substring) {
   return String(input).replace(substring, '');
-}
+};
 
 /**
  * 将\n转换为<br>
@@ -1219,10 +1338,10 @@ exports.remove = function (input, substring) {
  */
 exports.newline_to_br = function (input) {
   return String(input).replace(/\n/img, '<br>');
-}
+};
 
 /**
- * 如果输入的数等于1则输出第2个参数，否则输出第3个参数
+ * 如果输入的数大于1则输出第2个参数，否则输出第3个参数
  *
  * @param {int} input
  * @param {string} singular
@@ -1231,7 +1350,7 @@ exports.newline_to_br = function (input) {
  */
 exports.pluralize = function (input, singular, plural) {
   return Number(input) > 1 ? plural : singular;
-}
+};
 
 /**
  * 返回数组或字符串的长度
@@ -1240,8 +1359,11 @@ exports.pluralize = function (input, singular, plural) {
  * @return {string}
  */
 exports.size = function (input) {
-  return input.length;
-}
+  if (!input)
+    return 0;
+  var len = input.length;
+  return len > 0 ? len : 0;
+};
 
 /**
  * 分割字符串
@@ -1251,8 +1373,10 @@ exports.size = function (input) {
  * @return {string}
  */
 exports.split = function (input, delimiter) {
+  if (!delimiter)
+    delimiter = '';
   return String(input).split(delimiter);
-}
+};
 
 /**
  * 去除HTML标签
@@ -1262,7 +1386,7 @@ exports.split = function (input, delimiter) {
  */
 exports.strip_html = function (text) {
   return String(text).replace(/<[^>]*>/img, '');
-}
+};
 
 /**
  * 去除换行符
@@ -1272,7 +1396,7 @@ exports.strip_html = function (text) {
  */
 exports.strip_newlines = function (input) {
   return String(input).replace(/\n/img, '');
-}
+};
 
 /**
  * 截断字符串
@@ -1285,7 +1409,7 @@ exports.truncate = function (input, characters) {
   if (isNaN(characters))
     characters = 100;
   return String(input).substr(0, characters);
-}
+};
 
 /**
  * 取字符串的前N个单词
@@ -1297,8 +1421,8 @@ exports.truncate = function (input, characters) {
 exports.truncatewords = function (input, words) {
   if (isNaN(words))
     words = 15;
-  return String(input).split(/ +/).slice(0, words).join(' ');
-}
+  return String(input).trim().split(/ +/).slice(0, words).join(' ');
+};
 
 /**
  * 转换为json字符串
@@ -1307,8 +1431,14 @@ exports.truncatewords = function (input, words) {
  * @return {string}
  */
 exports.json = function (input) {
-  return JSON.stringify(input);
-}
+  try {
+    var ret = JSON.stringify(input);
+  }
+  catch (err) {
+    return '{}';
+  }
+  return typeof ret !== 'string' ? '{}' : ret;
+};
 
 /**
  * 取指定属性值
@@ -1318,8 +1448,10 @@ exports.json = function (input) {
  * @return {object}
  */
 exports.get = function(obj, prop){
+  if (!obj)
+    obj = {};
   return obj[prop];
-}
+};
 
 /**
  * 反转字符串或数组
@@ -1331,7 +1463,7 @@ exports.reverse = function (obj) {
   return Array.isArray(obj)
     ? obj.reverse()
     : String(obj).split('').reverse().join('');
-}
+};
 
 /**
  * 取数组的指定列的数据
@@ -1341,26 +1473,55 @@ exports.reverse = function (obj) {
  * @return {array}
  */
 exports.map = function (arr, prop) {
+  if (!Array.isArray(arr))
+    return [];
   return arr.map(function(obj){
     return obj[prop];
   });
-}
+};
+
+/**
+ * 数组排序，默认升序
+ *
+ * @param {array} obj
+ * @param {int} order
+ * @return {array}
+ */
+exports.sort = function (obj, order) {
+  if (!Array.isArray(obj))
+    return [];
+  order = String(order).trim().toLowerCase();
+  var ret1 = order === 'desc' ? -1 : 1;
+  var ret2 = 0 - ret1;
+  return obj.sort(function (a, b) {
+    if (a > b)  return ret1;
+    if (a < b)  return ret2;
+    return 0;
+  });
+};
 
 /**
  * 按照数组元素的指定属性排序
  *
  * @param {array} obj
  * @param {string} prop
+ * @param {int} order
  * @return {array}
  */
-exports.sort_by = function (obj, prop) {
-  return Object.create(obj).sort(function(a, b){
-    a = a[prop], b = b[prop];
-    if (a > b) return 1;
-    if (a < b) return -1;
+exports.sort_by = function (obj, prop, order) {
+  if (!Array.isArray(obj))
+    return [];
+  order = String(order).trim().toLowerCase();
+  var ret1 = order === 'desc' ? -1 : 1;
+  var ret2 = 0 - ret1;
+  return Object.create(obj).sort(function (a, b) {
+    a = a[prop];
+    b = b[prop];
+    if (a > b) return ret1;
+    if (a < b) return ret2;
     return 0;
   });
-}
+};
 
 /**
  * 根据数量生成导航页码
@@ -1396,19 +1557,19 @@ exports.pagination = function (count, size, page) {
     list.push(maxPage);
   }
   
-  ret = {
+  var ret = {
     current:    page,
     next:       page + 1,
     previous:   page - 1,
     list:       list
-  }
+  };
   if (ret.next > maxPage)
     ret.next = maxPage;
   if (ret.previous < 1)
     ret.previous = 1;
   
   return ret;
-}
+};
     return exports;
   })(m, m.exports);
   modules.filters = m.exports;
@@ -1448,7 +1609,7 @@ exports.output = function (text, start, context) {
   var script = '$_buf.push(' + utils.filtered(line, null, context) + ');';
   
   return {start: start, end: end, script: script};
-}
+};
 
  
 exports.tags = function (text, start, context) {
@@ -1476,7 +1637,7 @@ exports.tags = function (text, start, context) {
       script += '$_line_num = ' + context.line_num + ';\n';
     else
       script += '\n$_line_num = ' + context.line_num + ';\n';
-  }
+  };
   
   // 当前在raw标记内，则只有遇到 enddraw 标记时才能终止
   if (context.isRaw) {
@@ -1501,13 +1662,13 @@ exports.tags = function (text, start, context) {
       line:     line,
       line_num: context.line_num
     });
-  }
+  };
   
   // 退出嵌套
   var outLoop = function () {
     context.loop--;
     context.loopName.pop();
-  }
+  };
   
   // 嵌套结束标记不匹配
   var loopNotMatch = function () {
@@ -1517,7 +1678,7 @@ exports.tags = function (text, start, context) {
       end:        end,
       line:       line
     }
-  }
+  };
   
   // 意外的标记
   var syntaxError = function () {
@@ -1527,7 +1688,7 @@ exports.tags = function (text, start, context) {
       end:        end,
       line:       line
     }
-  }
+  };
   
   // 无法识别的标记
   var unknowTag = function () {
@@ -1537,7 +1698,7 @@ exports.tags = function (text, start, context) {
       end:        end,
       line:       line
     }
-  }
+  };
   
   // 当前嵌套名称
   if (context.loopName.length > 0)
@@ -1773,7 +1934,7 @@ exports.tags = function (text, start, context) {
   }
   
   return {start: start, end: end, script: script}
-}
+};
     return exports;
   })(m, m.exports);
   modules.parser = m.exports;
@@ -1812,7 +1973,7 @@ exports.parse = function (text, options) {
   
   scripts.add = function (s) {
     scripts.push(s);
-  }
+  };
   
   // 初始化编译环境
   context.loop = 0;           // { 嵌套层数
@@ -1836,7 +1997,7 @@ exports.parse = function (text, options) {
       context.includes[name] = 1;
     else
       context.includes[name]++;
-  }
+  };
   context.cycles = {};        // cycle标记中的变量列表
   context.addCycle = function (key, list) {  // 添加cycle
     context.cycles[key] = list;
@@ -1873,7 +2034,7 @@ exports.parse = function (text, options) {
     scripts.add('$_buf.push(\'' + html_bottom + '\');');
     
     html_start = text.length;
-  }
+  };
   
   for (var i = 0, len; len = text.length, i < len; i++) {
     var block = text.substr(i, 2);
@@ -1954,7 +2115,7 @@ exports.parse = function (text, options) {
   // console.log('includes', context.includes);
   
   return {code: code, names: context.varNames, includes: context.includes};
-}
+};
 
 /**
  * 编译代码(可运行的函数代码)
@@ -2010,7 +2171,7 @@ exports.compile = function (text, options) {
   catch (err) {
     throw Error('Compile error: ' + err);
   }
-}
+};
 
 /**
  * 渲染
@@ -2023,7 +2184,7 @@ exports.compile = function (text, options) {
 exports.render = function (text, data, f) {
   var fn = exports.compile(text);
   return fn(data, f);
-}
+};
 
     return exports;
   })(m, m.exports);
@@ -2075,7 +2236,7 @@ exports.compileAll = function (files, options) {
         ns[n] = c;
       else
         ns[n] += c;
-    }
+    };
     
     // 初始化ns
     var t = pCodes[f];
@@ -2103,11 +2264,11 @@ exports.compileAll = function (files, options) {
         m(i);
         
       return true;
-    }
+    };
     m(f);
     
     return ns;
-  }
+  };
   
   // 计算深度的依赖关系
   for (var i in files) {
@@ -2159,7 +2320,7 @@ exports.compileAll = function (files, options) {
   }
   
   return cFn;
-}
+};
 
 
 /**
@@ -2187,13 +2348,13 @@ exports.advRender = function (render, models, options, callback) {
     catch (err) {
       return callback(err);
     }
-  }
+  };
   
   if (options.parallel)
     dataList.startParallel(cb);
   else
     dataList.start(cb);
-}
+};
 
 
     return exports;
@@ -2215,7 +2376,7 @@ var filters = modules.filters;
  
  
 // 版本
-exports.version = '0.0.1';
+exports.version = '0.0.2';
  
 // 解析代码
 exports.parse = template.parse;
