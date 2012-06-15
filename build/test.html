@@ -17,13 +17,17 @@ textarea {
 </head>
 <body>
   <h1>模板代码</h1>
-  <textarea id="text"></textarea>
+  <textarea id="text">{% if a==1 %}123{% else %}456{% endif %}</textarea>
   <h1>JSON数据</h1>
   <textarea id="data">{}</textarea>
   <hr>
   <button onclick="compile()">渲染</button>
   <hr>
+  <h3>页面</h3>
   <div id="page"></div>
+  <hr>
+  <h3>JavaScript代码</h3>
+  <div id="code"></div>
 </body>
 </html>
 <script>
@@ -34,6 +38,12 @@ function compile () {
     data = JSON.parse(data);
     var output = TinyLiquid.render(text, data);
     document.querySelector('#page').innerHTML = output;
+    var fn = TinyLiquid.compile(text, {original: true});
+    var code = fn.toString().replace(/&(?!\w+;)/g, '&amp;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;')
+                            .replace(/"/g, '&quot;')
+    document.querySelector('#code').innerHTML = '<pre>' + code + '</pre>';
   }
   catch (err) {
     alert('出错了：' + err.toString());

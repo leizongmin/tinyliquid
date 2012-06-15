@@ -38,9 +38,41 @@ describe('utils.condition()', function () {
     utils.condition('abc == empty').should.equal('(!locals.abc)');
     utils.condition('abc != nil').should.equal('(locals.abc)');
     utils.condition('abc <> null').should.equal('(locals.abc)');
+    utils.condition('abc == "abc"').should.equal('(locals.abc=="abc")');
+    utils.condition('abc != "abc"').should.equal('(locals.abc!="abc")');
     should.equal(utils.condition('abc === 1'), null);
     should.equal(utils.condition('abc a 1'), null);
     should.equal(utils.condition('abc > empty'), null);
+  });
+  
+  it('#multi condition', function () {
+    utils.condition('a == 1 and b == 2').should.equal('((locals.a==1) && (locals.b==2))');
+    utils.condition('a == 1 and b == 2 or c > 3').should.equal('((locals.a==1) && (locals.b==2) || (locals.c>3))');
+    utils.condition('user and user.friends and user.friends.length > 10')
+      .should.equal('((locals.user) && (locals.user.friends) && (locals.user.friends.length>10))');
+  });
+  
+  it('#other format', function () {
+    utils.condition('abc>1').should.equal('(locals.abc>1)');
+    utils.condition('abc>=1').should.equal('(locals.abc>=1)');
+    utils.condition('abc==1').should.equal('(locals.abc==1)');
+    utils.condition('abc<1').should.equal('(locals.abc<1)');
+    utils.condition('abc<=1').should.equal('(locals.abc<=1)');
+    utils.condition('abc!=1').should.equal('(locals.abc!=1)');
+    utils.condition('abc<>1').should.equal('(locals.abc!=1)');
+    utils.condition('abc==nil').should.equal('(!locals.abc)');
+    utils.condition('abc==null').should.equal('(!locals.abc)');
+    utils.condition('abc==empty').should.equal('(!locals.abc)');
+    utils.condition('abc!=nil').should.equal('(locals.abc)');
+    utils.condition('abc<>null').should.equal('(locals.abc)');
+    utils.condition('abc=="abc"').should.equal('(locals.abc=="abc")');
+    utils.condition('abc!="abc"').should.equal('(locals.abc!="abc")');
+    should.equal(utils.condition('abc===1'), null);
+    should.equal(utils.condition('abc>empty'), null);
+    utils.condition('a==1 and b==2').should.equal('((locals.a==1) && (locals.b==2))');
+    utils.condition('a==1 and b==2 or c>3').should.equal('((locals.a==1) && (locals.b==2) || (locals.c>3))');
+    utils.condition('user and user.friends and user.friends.length > 10')
+      .should.equal('((locals.user) && (locals.user.friends) && (locals.user.friends.length>10))');
   });
   
 });
