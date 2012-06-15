@@ -30,7 +30,7 @@ var test = function (COUNT, TEST_COUNT) {
   if (isNaN(COUNT))
     COUNT = 100;
   if (isNaN(TEST_COUNT))
-    TEST_COUNT = 100;
+    TEST_COUNT = 1000;
   for (var i = 0; i < COUNT; i++) {
     data.items[i] = [];
     for (var j = 0; j < COUNT; j++) {
@@ -121,6 +121,10 @@ var test = function (COUNT, TEST_COUNT) {
 test(1, 1);
 test(5);
 test(10);
+test(20);
+test(40);
+test(60);
+test(800);
 test(100);
 test(200);
 

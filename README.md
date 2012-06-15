@@ -7,7 +7,7 @@
 *  强大灵活的语法：在模板当中，你可以使用诸如条件判断、循环、赋值、函数调用等语法
   标记来进行控制
   
-*  渲染速度快：目前仅做了简单的测试，其速度为ejs的3倍以上 [性能测试结果](https://github.com/leizongmin/tinyliquid/blob/master/benchmark/result.txt)
+*  渲染速度快：目前仅做了简单的测试，其速度为ejs的4倍以上 [性能测试结果](https://github.com/leizongmin/tinyliquid/blob/master/benchmark/result.txt)
 
 *  异步渲染模式：可解决JavaScript程序中异步获取多个数据时，难以控制的问题
 

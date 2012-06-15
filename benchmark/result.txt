@@ -3,17 +3,17 @@ using 1 data items to test...
   Test ejs.compile()
     spent 3 ms
   Test ejs.render()
-    spent 1 ms
+    spent 2 ms
 ==========================
   Test juicer.compile()
-    spent 36 ms
+    spent 31 ms
   Test juicer.render()
     spent 1 ms
 ==========================
   Test me.compile()
-    spent 5 ms
+    spent 6 ms
   Test me.render()
-    spent 1 ms
+    spent 0 ms
   Test me.advRender()
     spent 0 ms
 
@@ -22,83 +22,102 @@ using 1 data items to test...
 using 25 data items to test...
 -----------------------------------------------
   Test ejs.compile()
-    spent 0.35 ms
+    spent 0.262 ms
   Test ejs.render()
-    spent 0.48 ms
+    spent 0.336 ms
 ==========================
   Test juicer.compile()
-    spent 0.01 ms
+    spent 0.006 ms
   Test juicer.render()
-    spent 0.07 ms
+    spent 0.049 ms
 ==========================
   Test me.compile()
-    spent 0.8 ms
+    spent 0.555 ms
   Test me.render()
-    spent 0.17 ms
+    spent 0.124 ms
   Test me.advRender()
-    spent 0.2 ms
+    spent 0.135 ms
 
 
 
 using 100 data items to test...
 -----------------------------------------------
   Test ejs.compile()
-    spent 0.27 ms
+    spent 0.234 ms
   Test ejs.render()
-    spent 1.27 ms
+    spent 1.174 ms
 ==========================
   Test juicer.compile()
-    spent 0 ms
+    spent 0.007 ms
   Test juicer.render()
-    spent 0.19 ms
+    spent 0.169 ms
 ==========================
   Test me.compile()
-    spent 0.53 ms
+    spent 0.508 ms
   Test me.render()
-    spent 0.41 ms
+    spent 0.264 ms
   Test me.advRender()
-    spent 0.38 ms
+    spent 0.263 ms
 
 
 
-using 10000 data items to test...
+using 400 data items to test...
 -----------------------------------------------
   Test ejs.compile()
-    spent 0.28 ms
+    spent 0.234 ms
   Test ejs.render()
-    spent 118.97 ms
+    spent 4.445 ms
 ==========================
   Test juicer.compile()
-    spent 0 ms
+    spent 0.008 ms
   Test juicer.render()
-    spent 21.07 ms
+    spent 0.64 ms
 ==========================
   Test me.compile()
-    spent 0.68 ms
+    spent 0.495 ms
   Test me.render()
-    spent 26.69 ms
+    spent 0.672 ms
   Test me.advRender()
-    spent 26.6 ms
+    spent 0.67 ms
 
 
 
-using 40000 data items to test...
+using 1600 data items to test...
 -----------------------------------------------
   Test ejs.compile()
-    spent 0.29 ms
+    spent 0.233 ms
   Test ejs.render()
-    spent 555.96 ms
+    spent 17.523 ms
 ==========================
   Test juicer.compile()
-    spent 0.01 ms
+    spent 0.007 ms
   Test juicer.render()
-    spent 147.39 ms
+    spent 2.806 ms
 ==========================
   Test me.compile()
-    spent 0.78 ms
+    spent 0.518 ms
   Test me.render()
-    spent 174.97 ms
+    spent 2.098 ms
   Test me.advRender()
-    spent 178.75 ms
+    spent 2.136 ms
 
 
+
+using 3600 data items to test...
+-----------------------------------------------
+  Test ejs.compile()
+    spent 0.246 ms
+  Test ejs.render()
+    spent 41.051 ms
+==========================
+  Test juicer.compile()
+    spent 0.008 ms
+  Test juicer.render()
+    spent 6.487 ms
+==========================
+  Test me.compile()
+    spent 0.502 ms
+  Test me.render()
+    spent 4.243 ms
+  Test me.advRender()
+    spent 4.316 ms
