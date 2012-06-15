@@ -16,11 +16,13 @@ describe('Liquid.js', function () {
     
     render('{% capture attribute_name %}{{ item.title | handleize }}-{{ i }}-color{% endcapture %}\
 {{ attribute_name }}',
-      {item: {title: 'OK'}}, {handleize: function (a) { return a; }}).should.equal('OK--color');
+      {item: {title: 'OK'}, i: 123}, {handleize: function (a) { return a; }}).should.equal('OK-123-color');
         
     render('YY-{% capture name %}{{ title }}-{{ page }}{% endcapture %}\
 {% if name %}{{ name }}{% else %}Fuck!{% endif %}-End',
       {title: 'Cat', page: 12}).should.equal('YY-Cat-12-End');    
         
+    render('Number:{% capture a%}{% for i in (1..10) %}{{i}}{%endfor%}{% endcapture %}{% capture b%}{% for i in (1..5) %}0{{i}}{%endfor%}{% endcapture %}'
+         + '{{a}} and {{b}}').should.equal('Number:12345678910 and 0102030405');
   });
 });
