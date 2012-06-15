@@ -199,7 +199,7 @@ exports.rethrowError = function (err) {
   var msg = 'An error occurred while rendering\n'
           + 'Line: ' + $_line_num + '\n'
           + '    ' + err;
-  $_buf.push($_err(msg));
+  $_buf+=($_err(msg));
 };
 
 /**
@@ -691,7 +691,7 @@ exports.cycle = function (strlist, context) {
   context.addCycle(cycleKey, list);
   
   var cycleName = '$_cycle_' + cycleKey;
-  var script = '$_buf.push(' + cycleName + '.items[' + cycleName + '.i])\n'
+  var script = '$_buf+=(' + cycleName + '.items[' + cycleName + '.i])\n'
              + '$_cycle_next(' + cycleName + ');\n';
   return script;
 };
@@ -1632,7 +1632,7 @@ exports.output = function (text, start, context) {
   end += 2;
   
   // 支持函数调用
-  var script = '$_buf.push(' + utils.filtered(line, null, context) + ');';
+  var script = '$_buf+=(' + utils.filtered(line, null, context) + ');';
   
   return {start: start, end: end, script: script};
 };
@@ -1819,8 +1819,8 @@ exports.tags = function (text, start, context) {
           script += '} catch (err) {\n'
                   + '  $_rethrow(err);\n'
                   + '}\n'
-                  + 'return $_buf.join(\'\');\n'
-                  + '})([]);';
+                  + 'return $_buf;\n'
+                  + '})();';
           outLoop();
         }
         break;
@@ -1903,7 +1903,8 @@ exports.tags = function (text, start, context) {
         enterLoop(line_left);
         var n = utils.localsWrap(line_right, null, context.saveLocalsName);
         setLineNumber();
-        script += 'global.' + n + ' = ' + n + ' = (function ($_buf) {\n'
+        script += 'global.' + n + ' = ' + n + ' = (function () {\n'
+                + 'var $_buf = \'\';\n'
                 + 'try {\n'
                 + '/* captures */\n';
         break;
@@ -1932,9 +1933,9 @@ exports.tags = function (text, start, context) {
             setLineNumber();
             script += '/* === include "' + inc_tag.name + '"' + (inc_tag.with ? ' with "' + inc_tag.with + '"' : '') + ' === */\n'
                     + 'try {\n'
-                    + '$_buf.push((function (locals) {\n'
+                    + '$_buf+=((function (locals) {\n'
                     + context.files[inc_tag.name] + '\n'
-                    + 'return $_buf.join(\'\');\n'
+                    + 'return $_buf;\n'
                     + '})(' + (inc_tag.with ? utils.localsWrap(inc_tag.with) : 'locals') + '));\n'
                     + '} catch (err) {\n'
                     + '  $_rethrow(err);\n'
@@ -2055,9 +2056,9 @@ exports.parse = function (text, options) {
     // 输出出错信息
     html_error = utils.outputHtml(html_error);
     scripts.splice(0, scripts.length);
-    scripts.add('$_buf.push(\'' + html_top + '\');');
-    scripts.add('$_buf.push($_err(\'' + html_error + '\'));');
-    scripts.add('$_buf.push(\'' + html_bottom + '\');');
+    scripts.add('$_buf+=(\'' + html_top + '\');');
+    scripts.add('$_buf+=($_err(\'' + html_error + '\'));');
+    scripts.add('$_buf+=(\'' + html_bottom + '\');');
     
     html_start = text.length;
   };
@@ -2094,7 +2095,7 @@ exports.parse = function (text, options) {
       var html = text.slice(html_start, ret.start);
       if (html.length > 0) {
         html = utils.outputHtml(html);
-        scripts.add('$_buf.push(\'' + html + '\');');
+        scripts.add('$_buf+=(\'' + html + '\');');
       }
       // 代码
       scripts.add(ret.script);
@@ -2108,7 +2109,7 @@ exports.parse = function (text, options) {
   var html = text.slice(html_start, len);
   if (html.length > 0) {
     html = utils.outputHtml(html);
-    scripts.add('$_buf.push(\'' + html + '\');');
+    scripts.add('$_buf+=(\'' + html + '\');');
   }
   
   // 检查是否出错(嵌套是否匹配)
@@ -2131,7 +2132,7 @@ exports.parse = function (text, options) {
   
   // 包装
   var wrap_top =    '/* == Template Begin == */\n'
-               +    'var $_buf = [];\n'
+               +    'var $_buf = \'\';\n'
                +    'var $_line_num = 0;\n'
                +    define_cycle;
   var wrap_bottom = '\n/* == Template End == */\n';
@@ -2172,7 +2173,7 @@ exports.compile = function (text, options) {
              + '} catch (err) {\n'
              + '  $_rethrow(err);\n'
              + '}\n'
-             + 'return $_buf.join(\'\');\n'
+             + 'return $_buf;\n'
              + '})';
   //console.log(script);
   try {
