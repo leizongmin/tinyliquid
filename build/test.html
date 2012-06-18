@@ -3,10 +3,10 @@
 <head>
   <title>TinyLiquid测试</title>
   <meta charset="utf-8">
-  <script src="./target/tinyliquid.min.js"></script>
+  <script src="./target/tinyliquid.js"></script>
   <style>
 body {
-  width: 600px;
+  width: 960px;
   margin: auto;
 }
 textarea {
@@ -35,15 +35,20 @@ function compile () {
   var text = document.querySelector('#text').value;
   var data = document.querySelector('#data').value;
   try {
+    try {
+      var fn = TinyLiquid.compile(text, {original: true});
+      var code = fn.toString().replace(/&(?!\w+;)/g, '&amp;')
+                              .replace(/</g, '&lt;')
+                              .replace(/>/g, '&gt;')
+                              .replace(/"/g, '&quot;')
+      document.querySelector('#code').innerHTML = '<pre>' + code + '</pre>';
+    }
+    catch (err) {
+      console.error(err.stack);
+    }
     data = JSON.parse(data);
     var output = TinyLiquid.render(text, data);
     document.querySelector('#page').innerHTML = output;
-    var fn = TinyLiquid.compile(text, {original: true});
-    var code = fn.toString().replace(/&(?!\w+;)/g, '&amp;')
-                            .replace(/</g, '&lt;')
-                            .replace(/>/g, '&gt;')
-                            .replace(/"/g, '&quot;')
-    document.querySelector('#code').innerHTML = '<pre>' + code + '</pre>';
   }
   catch (err) {
     alert('出错了：' + err.toString());

@@ -230,6 +230,23 @@ exports.localsWrap = function (n, locals, saveFunc) {
       saveFunc(n);
     return locals + n;
   }
+  // 变量索引
+  var left = n.indexOf('[');
+  var right = n.lastIndexOf(']');
+  if (left !== -1 && right !== -1) {
+    if (typeof saveFunc === 'function') {
+      n.split('[').forEach(function (item) {
+        var i = item.indexOf(']');
+        if (i === -1)
+          return;
+        var n = item.substr(0, i);
+        if (!/^['"].*['"]$/.test(n) && !/^\d[\d\.]*\d?$/.test(n) &&
+            /^[a-zA-Z_][a-zA-Z0-9_\.]*$/.test(n))
+          saveFunc(n);
+      });
+    }
+    return locals + n.replace(/\.?\[/img, '[' + locals);
+  }
   // 其他，自动转换为字符串
   else
     return '"' + n.replace(/"/ig, '\\"') + '"';
@@ -1844,6 +1861,16 @@ exports.tags = function (text, start, context) {
         enterLoop(line_left);
         setLineNumber();
         script += 'if (!' + utils.condition(line_right, context) + ') {';
+        break;
+      // elsif / elseif
+      case 'elsif':
+      case 'elseif':
+        if (loopName !== 'if')
+          loopNotMatch();
+        else {
+          setLineNumber();
+          script += '} else if ' + utils.condition(line_right, context) + ' {';
+        }
         break;
       // case 判断
       case 'case':
