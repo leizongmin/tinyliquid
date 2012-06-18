@@ -27,6 +27,16 @@ describe('Liquid.js', function () {
     
     render('{% assign value = true %}{{ value }}',
       {freestyle: true}).should.equal('true');
+      
+    render('{% assign value = [] %}{{value}}').should.equal('');
+    
+    render('{% assign value = array() %}{{value}}').should.equal('');
+    
+    render('{% assign value = {} %}{% assign value.a = 20 %}{{value.a}}').should.equal('20');
+    
+    render('{% assign value = object() %}{% assign value.a = 50 %}{{value.a}}').should.equal('50');
+    
+    render('{% assign value = {"a":55} %}{{value.a}}').should.equal('55');
     
     render('{% assign value = "HeLlO" | downcase %}{{ value }}',
       {downcase: function (x) { return x.toLowerCase(); }
