@@ -31,6 +31,11 @@ describe('utils.split()', function () {
       .should.equal('locals.abc[locals.cde[locals.hi.j].k][locals.fg]');
     utils.localsWrap('a.[b.[c.[e].[f.[g]].[h]].h.[i.[j]].k].l.[m].n')
       .should.equal('locals.a[locals.b[locals.c[locals.e][locals.f[locals.g]][locals.h]].h[locals.i[locals.j]].k].l[locals.m].n');
+    utils.localsWrap('abc[cde]').should.equal('locals.abc[locals.cde]');
+    utils.localsWrap('abc[cde].fg').should.equal('locals.abc[locals.cde].fg');
+    utils.localsWrap('abc[cde][fg]').should.equal('locals.abc[locals.cde][locals.fg]');
+    utils.localsWrap('abc[cde[hi.j].k].[fg]')
+      .should.equal('locals.abc[locals.cde[locals.hi.j].k][locals.fg]');
   });
   
   it('#analysis', function () {
