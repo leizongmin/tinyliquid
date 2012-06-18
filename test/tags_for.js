@@ -35,6 +35,16 @@ describe('Liquid.js', function () {
     render('{%for item in array limit: 2 offset: 2%}{{item}}{%endfor%}',
       {array: [1,2,3,4,5,6]}).should.equal('34');
       
+    // 参数为变量
+    render('{% for item in array limit:limit offset:offset %}{{ item }}{% endfor %}',
+      {array: [1,2,3,4,5,6], limit:2, offset:2}).should.equal('34');
+    
+    render('{% for item in array limit:limit %}{{ item }}{% endfor %}',
+      {array: [1,2,3,4,5,6], limit:2}).should.equal('12');
+      
+    render('{% for item in array offset:offset %}{{ item }}{% endfor %}',
+      {array: [1,2,3,4,5,6], offset:3}).should.equal('456');
+      
   });
   
   
