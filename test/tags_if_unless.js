@@ -101,6 +101,10 @@ describe('Liquid.js', function () {
           {user: {payments: ''}}).should.equal('you haven\'t paid yet!');
     render('{% if user.payments == empty %}you haven\'t paid yet!{% endif %}',
           {user: {payments: 'dddsds'}}).should.equal('');
+          
+    render('{% if 0 == 0 %}0{% elsif 1 == 1%}1{% else %}2{% endif %}').should.equal('0');
+    render('{% if 0 != 0 %}0{% elsif 1 == 1%}1{% else %}2{% endif %}').should.equal('1');
+    render('{% if 0 != 0 %}0{% elsif 1 != 1%}1{% else %}2{% endif %}').should.equal('2');
   });
   
 });
