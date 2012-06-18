@@ -70,13 +70,5 @@ describe('Liquid.js', function () {
 {%assign sum = sum | plus: forloop.index%}{%endfor%}{{sum}}', {forloop: {index: 10}})
       .should.equal('55');
      
-    render('{%assign sum = 0%}{%assign i = 10%}{%tablerow i in (1..10) cols:1%}\
-{%assign sum = sum | plus: i%}{%endtablerow%}{{sum}}')
-      .should.equal('55');
-      
-    render('{%assign sum = 0%}{%tablerow i in (1..10) cols:2%}\
-{%assign sum = sum | plus: tablerowloop.index%}{%endtablerow%}{{sum}}', {tablerowloop: {index: 10}})
-      .should.equal('55'); 
-     
   });
 });
