@@ -33,6 +33,8 @@ describe('utils.condition()', function () {
     utils.condition('abc != 1').should.equal('(locals.abc!=1)');
     utils.condition('abc <> 1').should.equal('(locals.abc!=1)');
     utils.condition('abc contains "123"').should.equal('(String(locals.abc).toLowerCase().indexOf("123") !== -1)');
+    utils.condition('abc hasVaule "123"').should.equal('(Array.isArray(locals.abc) ? (locals.abc.indexOf("123") !== -1 ? true : false) : (function () {  for (var i in locals.abc) if (locals.abc == "123") return true;  return false; })())');
+    utils.condition('abc hasKey "123"').should.equal('(locals.abc && typeof locals.abc["123"] !== \'undefined\')');
     utils.condition('abc == nil').should.equal('(!locals.abc)');
     utils.condition('abc == null').should.equal('(!locals.abc)');
     utils.condition('abc == empty').should.equal('(!locals.abc)');
