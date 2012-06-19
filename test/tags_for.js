@@ -45,14 +45,18 @@ describe('Liquid.js', function () {
     render('{% for item in array offset:offset %}{{ item }}{% endfor %}',
       {array: [1,2,3,4,5,6], offset:3}).should.equal('456');
       
+    // 循环变量为对象
+    render('{% for item in object %}{{item}}{% endfor %}', {object: {a:123, b:456, c:'abc'}})
+      .should.equal('123456abc');
+      
   });
   
   
   
-  it('#forloop.last and forloop.first', function () {
+  it('#forloop', function () {
   
     var render = function (text, data, filters) {
-      //console.log(liquid.parse(text));
+      //console.log(liquid.parse(text).code);
       var fn = liquid.compile(text);
       //console.log(fn.toString());
       var html = fn(data, filters);
@@ -84,6 +88,18 @@ describe('Liquid.js', function () {
       
     render('{% for item in array limit:2 offset:2 %}{{ item }}{{ forloop.last }}{% endfor %}',
       {array: [1,2,3,4,5,6]}).should.equal('3false4true');
+      
+    render('{%for item in array%} {{forloop.index}} {%endfor%}', {array: [1,2,3]})
+      .should.equal(' 1  2  3 ');
+      
+    render('{%for item in array%} {{forloop.index0}} {%endfor%}', {array: [1,2,3]})
+      .should.equal(' 0  1  2 ');
+    
+    render('{%for item in array%} {{forloop.rindex0}} {%endfor%}', {array: [1,2,3]})
+      .should.equal(' 2  1  0 ');
+    
+    render('{%for item in array%} {{forloop.rindex}} {%endfor%}', {array: [1,2,3]})
+      .should.equal(' 3  2  1 ');
   });
   
   it('#range', function () {
