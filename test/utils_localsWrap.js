@@ -24,6 +24,10 @@ describe('utils.split()', function () {
   });
   
   it('#variable index', function () {
+    utils.localsWrap('abc[0]').should.equal('locals.abc[0]');
+    utils.localsWrap('abc.[0]').should.equal('locals.abc[0]');
+    utils.localsWrap('abc["cde"]').should.equal('locals.abc["cde"]');
+    utils.localsWrap('abc.["cde"]').should.equal('locals.abc["cde"]');
     utils.localsWrap('abc.[cde]').should.equal('locals.abc[locals.cde]');
     utils.localsWrap('abc.[cde].fg').should.equal('locals.abc[locals.cde].fg');
     utils.localsWrap('abc.[cde].[fg]').should.equal('locals.abc[locals.cde][locals.fg]');
