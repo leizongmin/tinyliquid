@@ -112,4 +112,18 @@ describe('Liquid.js', function () {
       {length: 6}).should.equal('34');
       
   });
+  
+  it('#for...else...endfor', function () {
+    var render = function (text, data, filters) {
+      //console.log(liquid.parse(text).code);
+      var fn = liquid.compile(text);
+      //console.log(fn.toString());
+      var html = fn(data, filters);
+      return html;
+    }
+    
+    render('{%for item in array%}+{%else%}-{%endfor%}', {array: [1,2,3]}).should.equal('+++');
+    render('{%for item in array%}+{%else%}-{%endfor%}', {array: []}).should.equal('-');
+    render('{%for item in array%}+{%else%}-{%endfor%}', {array: null}).should.equal('-');
+  });
 });
