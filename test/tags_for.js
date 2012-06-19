@@ -100,6 +100,9 @@ describe('Liquid.js', function () {
     
     render('{%for item in array%} {{forloop.rindex}} {%endfor%}', {array: [1,2,3]})
       .should.equal(' 3  2  1 ');
+      
+    render('{% for i in array %}{{forloop.name}}={{i}}{% unless forloop.last%},{%endunless%}{%endfor%}', {array: [1,2,3]})
+      .should.equal('i=1,i=2,i=3');
   });
   
   it('#range', function () {
