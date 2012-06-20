@@ -10,8 +10,9 @@ var advtemplate = require('./lib/advtemplate');
 var filters = require('./lib/filters'); 
  
 
-// 兼容Liquid中数组的size属性
+// 兼容Liquid中数组和字符串的size属性
 Object.defineProperty(Array.prototype, 'size', {get: function () { return this.length; }});
+Object.defineProperty(String.prototype, 'size', {get: function () { return this.length; }});
 
 // 版本
 exports.version = '0.0.4';
