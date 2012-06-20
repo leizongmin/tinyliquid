@@ -6,7 +6,7 @@ var liquid = require('../../');
 var filters = require('../../lib/filters');
 
 var render = function (text, data) {
-  console.log(liquid.parse(text));
+  console.log(liquid.parse(text).code);
   var fn = liquid.compile(text, {original: true});
   console.log(fn.toString());
   var html = fn(data, filters);
@@ -14,8 +14,14 @@ var render = function (text, data) {
 }
 
 var compile = function (text) {
-  console.log(liquid.parse(text));
-  var fn = liquid.compile(text, {original: true});
+  var code = liquid.parse(text).code;
+  try {
+    var fn = liquid.compile(text, {original: true});
+  }
+  catch (err) {
+    console.log(err.stack);
+    return code;
+  }
   console.log(fn.toString());
   return fn;
 }
@@ -59,3 +65,4 @@ http.createServer(function (req, res) {
   }
 
 }).listen(8888);
+console.log('Server listen on http://127.0.0.1:8888/');

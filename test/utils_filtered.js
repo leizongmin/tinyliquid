@@ -34,4 +34,20 @@ describe('utils.filtered()', function () {
     utils.filtered('"abc"|call1:c|call2:b|call3:a').should.equal('filters.call3(filters.call2(filters.call1("abc", locals.c), locals.b), locals.a)'); 
   });
   
+  it('#string with separator', function () {
+    utils.filtered('abc|call:"e f g"').should.equal('filters.call(locals.abc, "e f g")');
+    utils.filtered('abc|call:\'e f g\'').should.equal('filters.call(locals.abc, \'e f g\')');
+    utils.filtered('abc|call:  "e f g"').should.equal('filters.call(locals.abc, "e f g")');
+    utils.filtered('abc|call:"e,f,g"').should.equal('filters.call(locals.abc, "e,f,g")');
+    utils.filtered('abc|call:\'e,f,g\'').should.equal('filters.call(locals.abc, \'e,f,g\')');
+    utils.filtered('abc|call:  "e,f,g"').should.equal('filters.call(locals.abc, "e,f,g")');
+    utils.filtered('abc|call:"e, f ,g"').should.equal('filters.call(locals.abc, "e, f ,g")');
+    utils.filtered('abc|call:" e, f ,g"').should.equal('filters.call(locals.abc, " e, f ,g")');
+    utils.filtered('abc|call:a,b,c,"e,f,g"').should.equal('filters.call(locals.abc, locals.a, locals.b, locals.c, "e,f,g")');
+    utils.filtered('abc|call:"",""').should.equal('filters.call(locals.abc, "", "")');
+    utils.filtered('abc|call:"abc",""').should.equal('filters.call(locals.abc, "abc", "")');
+    utils.filtered('abc|call:".",""').should.equal('filters.call(locals.abc, ".", "")');
+    utils.filtered('abc|call:"http://"').should.equal('filters.call(locals.abc, "http://")');
+  });
+  
 });

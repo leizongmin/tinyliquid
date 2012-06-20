@@ -7,6 +7,7 @@ describe('utils.split()', function () {
     utils.localsWrap('123').should.equal('123');
     utils.localsWrap('123.456').should.equal('123.456');
     utils.localsWrap('"123"').should.equal('"123"');
+    utils.localsWrap('"%B %d, %Y"').should.equal('"%B %d, %Y"');
     utils.localsWrap('true').should.equal('true');
     utils.localsWrap('false').should.equal('false');
     utils.localsWrap('blank').should.equal('blank');
@@ -16,11 +17,13 @@ describe('utils.split()', function () {
     utils.localsWrap('abc').should.equal('locals.abc');
     utils.localsWrap('abc123').should.equal('locals.abc123');
     utils.localsWrap('_abc').should.equal('locals._abc');
-    utils.localsWrap('0abc').should.equal('"0abc"');
-    utils.localsWrap('"abc').should.equal('"\\"abc"');
-    utils.localsWrap('abc efg').should.equal('"abc efg"');
+    utils.localsWrap('0abc').should.equal('locals["0abc"]');
+    // utils.localsWrap('"abc').should.equal('locals["\\"abc"]');
+    utils.localsWrap('abc efg').should.equal('locals["abc efg"]');
     utils.localsWrap('abc.efg').should.equal('locals.abc.efg');
-    utils.localsWrap('abc.efg.').should.equal('"abc.efg."');
+    utils.localsWrap('abc.efg.').should.equal('locals.abc.efg');
+    utils.localsWrap('abc-efg').should.equal('locals["abc-efg"]');
+    utils.localsWrap('xxx.abc-efg').should.equal('locals.xxx["abc-efg"]');
   });
   
   it('#variable index', function () {
@@ -40,10 +43,11 @@ describe('utils.split()', function () {
     utils.localsWrap('abc[cde][fg]').should.equal('locals.abc[locals.cde][locals.fg]');
     utils.localsWrap('abc[cde[hi.j].k].[fg]')
       .should.equal('locals.abc[locals.cde[locals.hi.j].k][locals.fg]');
+    utils.localsWrap('a.b-c.[e].f-g')
+      .should.equal('locals.a["b-c"][locals.e]["f-g"]');
   });
   
-  it('#analysis', function () {
-  
+  it('#analysis', function () { 
     var v = [];
     utils.localsWrap('abc.efg.hi', undefined, function (a) { v.push(a) });
     v.should.eql(['abc.efg.hi']);
@@ -51,6 +55,10 @@ describe('utils.split()', function () {
     var v = [];
     utils.localsWrap('a.[b.[c.[e].[f.[g]].[h]].h.[i.[j]].k].l.[m].n', undefined, function (a) { v.push(a) });
     v.should.eql(['e', 'g', 'h', 'j', 'm']);
+  });
+  
+  it('#filtered', function () {
+    utils.filtered('abc.efg | append: "bbc"').should.equal('filters.append(locals.abc.efg, "bbc")');
   });
   
 });
