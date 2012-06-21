@@ -145,4 +145,20 @@ describe('Liquid.js', function () {
     render('{%for item in array%}+{%else%}-{%endfor%}', {array: []}).should.equal('-');
     render('{%for item in array%}+{%else%}-{%endfor%}', {array: null}).should.equal('-');
   });
+  
+  it('#strict', function () {
+    var render = function (text, data, filters) {
+      //console.log(liquid.parse(text).code);
+      var fn = liquid.compile(text);
+      //console.log(fn.toString());
+      var html = fn(data, filters);
+      return html;
+    }
+    
+    render('{%for item in array limit:1%}{{item}}{%endfor%}-{%for item in array limit:2 offset:1%}{{item}}{%endfor%}'
+          + '-{%for item in array%}{{item}}{%endfor%}', {array: [1,2,3,4,5]})
+      .should.equal('1-23-12345');
+    render('{%for item in array%}{{item}}{%endfor%}-{{array.a}}{{array.b}}', {array: {a:1, b:2, c:3, f:4, g:5}})
+      .should.equal('12345-12');
+  });
 });
