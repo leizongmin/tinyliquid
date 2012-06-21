@@ -53,8 +53,20 @@ describe('utils.split()', function () {
     v.should.eql(['abc.efg.hi']);
     
     var v = [];
+    utils.localsWrap('abc.[efg]', undefined, function (a) { v.push(a) });
+    v.should.eql(['abc', 'efg']);
+    
+    var v = [];
+    utils.localsWrap('abc.efg[hij]', undefined, function (a) { v.push(a) });
+    v.should.eql(['abc.efg', 'hij']);
+    
+    var v = [];
+    utils.localsWrap('abc.e-f-g[hij]', undefined, function (a) { v.push(a) });
+    v.should.eql(['abc.e-f-g', 'hij']);
+    
+    var v = [];
     utils.localsWrap('a.[b.[c.[e].[f.[g]].[h]].h.[i.[j]].k].l.[m].n', undefined, function (a) { v.push(a) });
-    v.should.eql(['e', 'g', 'h', 'j', 'm']);
+    v.should.eql(['a', 'e', 'g', 'h', 'j', 'm']);
   });
   
   it('#filtered', function () {
