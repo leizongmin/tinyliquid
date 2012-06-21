@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * 模板引擎
  *
@@ -11,11 +13,17 @@ var filters = require('./lib/filters');
  
 
 // 兼容Liquid中数组和字符串的size属性
-Object.defineProperty(Array.prototype, 'size', {get: function () { return this.length; }});
-Object.defineProperty(String.prototype, 'size', {get: function () { return this.length; }});
+try {
+  Object.defineProperty(Array.prototype, 'size', {get: function () { return this.length; }});
+}
+catch (err) {}
+try {
+  Object.defineProperty(String.prototype, 'size', {get: function () { return this.length; }});
+}
+catch (err) {}
 
 // 版本
-exports.version = '0.0.4';
+exports.version = '0.0.5';
  
 // 解析代码
 exports.parse = wrap('parse', template.parse);

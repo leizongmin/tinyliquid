@@ -1,7 +1,7 @@
 {
   "name":           "tinyliquid",
   "main":           "./index.js",
-  "version":        "0.0.4",
+  "version":        "0.0.5",
   "description":    "A tiny liquid template engine",
   "author":         "leizongmin <leizongmin@gmail.com> (http://ucdok.com)",
   "repository": {

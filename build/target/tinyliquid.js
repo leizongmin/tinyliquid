@@ -12,7 +12,9 @@ var TinyLiquid = (function (exports) {
   /*--------------- ./lib/md5.js ----------------*/
   var m = {exports: {}};
   (function (module, exports) {
-    /*
+    'use strict';
+
+/*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
  * Digest Algorithm, as defined in RFC 1321.
  * Version 2.2 Copyright (C) Paul Johnston 1999 - 2009
@@ -32,7 +34,9 @@ module.exports = hex_md5;
   /*--------------- ./lib/utils.js ----------------*/
   var m = {exports: {}};
   (function (module, exports) {
-    /**
+    'use strict';
+
+/**
  * 工具函数
  *
  * @author 老雷<leizongmin@gmail.com>
@@ -230,6 +234,20 @@ exports.localsWrap = function (n, locals, saveFunc) {
       saveFunc(n);
     return locals + n;
   }
+  // console.log(n, new Error().stack);
+  //转换为字符串索引
+  n = n.replace(/\.?(([\w\d\_]*[^\w\d\_\.\[\]]+[\w\d\_]*)|([\d]+[\w].*))\.?/img, function (a) {
+    if (/^["']|["']$/img.test(a))
+      return a;
+    if (a[0] === '.')
+      a = a.substr(1);
+    if (a.substr(-1) === '.')
+      a = a.substr(0, a.length - 1);
+    a = a.replace(/"/img, '\\"');
+    return '["' + a + '"]';
+  });
+  n = n.replace(/"\]/img, '"].');
+  
   // 变量索引
   var left = n.indexOf('[');
   var right = n.lastIndexOf(']');
@@ -245,15 +263,19 @@ exports.localsWrap = function (n, locals, saveFunc) {
           saveFunc(n);
       });
     }
-    // return locals + n.replace(/\.?\[/img, '[' + locals);
-    return locals + n.replace(/\.?\[/img, '[' + locals)
-          .replace(RegExp((locals + '[\'"\\d]').replace(/\./img, '\\.'), 'img'), function (a) {
-            return a.substr(locals.length);
-          });
+    n = n.replace(/\.?\[/img, '[' + locals)
+         .replace(RegExp((locals + '[\'"\\d]').replace(/\./img, '\\.'), 'img'), function (a) {
+           return a.substr(locals.length);
+         });
   }
-  // 其他，自动转换为字符串
+  
+  if (n.substr(-1) === '.')
+    n = n.substr(0, n.length - 1);
+  // console.log('--------', n);
+  if (n[0] === '[')
+    return locals.substr(0, locals.length - 1) + n;
   else
-    return '"' + n.replace(/"/ig, '\\"') + '"';
+    return locals + n;
 };
 // 常量
 var CONST_VAL = ['nil', 'null', 'empty', 'blank', 'true', 'false'];
@@ -283,28 +305,26 @@ exports.filtered = function (js, options, context) {
   var isFirst = true;
   var hasFilters = false;
   
-  var inGlobalLocals = function () { return null; };
-  
-  var ret = js.split('|').reduce(function (js, filter) {
+  var ret = exports.splitBy(js, '|').reduce(function (js, filter) {
     hasFilters = true;
-    var parts = filter.split(':');
+    var parts = exports.splitBy(filter, ':');
     var name = parts.shift();
-    var args = parts.shift() || '';
+    var args = (parts.shift() || '').trim();
     if (isFirst) {
-      js = localsWrap(js, inGlobalLocals(js), context.saveLocalsName);
+      js = localsWrap(js, null, context.saveLocalsName);
       isFirst = false;
     }
     if (args) {
-      var a = args.split(',');
+      var a = exports.splitBy(args, ',');
       for (var i in a)
-        a[i] = localsWrap(a[i], inGlobalLocals(a[i]), context.saveLocalsName);
+        a[i] = localsWrap(a[i], null, context.saveLocalsName);
       args = ', ' + a.join(', ');
     }
-    return options.filters + name + '(' + js + args + ')';
+    return options.filters + name.trim() + '(' + js + args + ')';
   });
   
   if (!hasFilters)
-    ret = localsWrap(ret, inGlobalLocals(ret), context.saveLocalsName);
+    ret = localsWrap(ret, null, context.saveLocalsName);
   
   return ret;
 };
@@ -478,6 +498,36 @@ exports.split = function (text) {
   }
   add(i);
   
+  return ret;
+};
+
+/**
+ * 使用指定字符分割
+ *
+ * @param {string} text
+ * @param {string} sep
+ * @return {array}
+ */
+exports.splitBy = function (text, sep) {
+  var arr = text.split(sep);
+  var ret = [];
+  for (var i = 0, len = arr.length; i < len; i++) {
+    var g = arr[i];
+    // 合并误分割的字符串内分割符
+    var gl = g.trimLeft();
+    var gr = g.trimRight();
+    if ((gl[0] === '"' || gl[0] === "'") && gl[0] !== gr.substr(-1)) {
+      var j = i;
+      do {
+        j++;
+      } while (j < len && arr[j].trimRight().substr(-1) !== gl[0])
+      if (j < len) {
+        g = arr.slice(i, j + 1).join(sep);
+        i = j;
+      }
+    }
+    ret.push(g.trim());
+  }
   return ret;
 };
 
@@ -910,7 +960,9 @@ AsyncDataList.prototype.startParallel = function (callback) {
   /*-------------- ./lib/filters.js ---------------*/
   var m = {exports: {}};
   (function (module, exports) {
-    /**
+    'use strict';
+
+/**
  * 内置函数
  *
  * @author 老雷<leizongmin@gmail.com>
@@ -1644,6 +1696,15 @@ exports.pagination = function (count, size, page) {
   
   return ret;
 };
+
+//------------------------------------------------------------------------------
+var ns = Object.keys(exports);
+for (var i in ns) {
+  var n = ns[i];
+  var n2 = n[0].toUpperCase() + n.substr(1);
+  exports[n2] = exports[n];
+}
+
     return exports;
   })(m, m.exports);
   modules.filters = m.exports;
@@ -1652,7 +1713,9 @@ exports.pagination = function (count, size, page) {
   /*--------------- ./lib/parser.js ---------------*/
   var m = {exports: {}};
   (function (module, exports) {
-    /**
+    'use strict';
+
+/**
  * 代码分析器
  *
  * @author 老雷<leizongmin@gmail.com>
@@ -2036,7 +2099,9 @@ exports.tags = function (text, start, context) {
   /*-------------- ./lib/template.js --------------*/
   var m = {exports: {}};
   (function (module, exports) {
-    /**
+    'use strict';
+
+/**
  * 模板引擎
  *
  * @author 老雷<leizongmin@gmail.com>
@@ -2224,6 +2289,7 @@ exports.compile = function (text, options) {
   var tpl = exports.parse(text, options);
   
   var script = '(function (locals, filters) { \n'
+             + '\'use strict\';\n'
              + 'locals = locals || {};\n'
              + 'filters = filters || {};\n'
              + 'var global = {locals: locals, filters: filters};\n'
@@ -2287,7 +2353,9 @@ exports.render = function (text, data, f) {
   /*------------ ./lib/advtemplate.js -------------*/
   var m = {exports: {}};
   (function (module, exports) {
-    /**
+    'use strict';
+
+/**
  * 编译整套模板
  *
  * @author 老雷<leizongmin@gmail.com>
@@ -2456,7 +2524,9 @@ exports.advRender = function (render, models, options, callback) {
   /*-----------------------------------------------*/
   
   /*------------------ ./index.js -----------------*/
-  /**
+  'use strict';
+
+/**
  * 模板引擎
  *
  * @author 老雷<leizongmin@gmail.com>
@@ -2467,9 +2537,19 @@ var template = modules.template;
 var advtemplate = modules.advtemplate;
 var filters = modules.filters; 
  
- 
+
+// 兼容Liquid中数组和字符串的size属性
+try {
+  Object.defineProperty(Array.prototype, 'size', {get: function () { return this.length; }});
+}
+catch (err) {}
+try {
+  Object.defineProperty(String.prototype, 'size', {get: function () { return this.length; }});
+}
+catch (err) {}
+
 // 版本
-exports.version = '0.0.4';
+exports.version = '0.0.5';
  
 // 解析代码
 exports.parse = wrap('parse', template.parse);
