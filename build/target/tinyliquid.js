@@ -101,7 +101,8 @@ exports.toArray = function (data) {
     return data;
   var ret = [];
   for (var i in data)
-    ret.push(data[i]);
+    if (i !== 'size')
+      ret.push(data[i]);
   return ret;
 };
 
@@ -234,9 +235,17 @@ exports.localsWrap = function (n, locals, saveFunc) {
       saveFunc(n);
     return locals + n;
   }
-  // console.log(n, new Error().stack);
+  
+  var i = n.indexOf('[');
+  if (i !== -1 && typeof saveFunc === 'function') {
+    var s = n.substr(0, i);
+    if (s.substr(-1) === '.')
+      s = s.substr(0, s.length - 1);
+    saveFunc(s);
+  }
+  
   //转换为字符串索引
-  n = n.replace(/\.?(([\w\d\_]*[^\w\d\_\.\[\]]+[\w\d\_]*)|([\d]+[\w].*))\.?/img, function (a) {
+  n = n.replace(/\.?((([\w\d\_]*[^\w\d\_\.\[\]]+[\w\d\_]*)+)|([\d]+[\w].*))\.?/img, function (a) {
     if (/^["']|["']$/img.test(a))
       return a;
     if (a[0] === '.')
@@ -339,7 +348,9 @@ exports.filtered = function (js, options, context) {
 exports.condition = function (cond, context) {
   if (!context)
     context = {};
-  var localsWrap = exports.localsWrap;
+  var localsWrap = function (a) {
+    return exports.localsWrap(a, null, context.saveLocalsName);
+  };
   
   var blocks = exports.split(cond);
   // console.log(blocks);
@@ -368,11 +379,11 @@ exports.condition = function (cond, context) {
   var vempty = ['nil', 'null', 'empty', 'blank'];
   var one = function (ca) {
     if (ca.length === 1) {
-      return '(' + localsWrap(ca[0], null, context.saveLocalsName) + ')';
+      return '(' + localsWrap(ca[0]) + ')';
     }
     if (ca.length === 3) {
-      var op1 = localsWrap(ca[0], null, context.saveLocalsName);
-      var op2 = localsWrap(ca[2], null, context.saveLocalsName);
+      var op1 = localsWrap(ca[0]);
+      var op2 = localsWrap(ca[2]);
       ca[1] = ca[1].toLowerCase();
       // console.log(ca[1]);
       // contains 语句
@@ -572,7 +583,9 @@ exports.forloops = function (loops, context) {
   }
   
   // 将对象转换为数组
-  header += array + ' = $_array(' + array + ');\n';
+  var _array = '$_loop_arr_' + loopIndex;
+  header += 'var ' + _array + ' = $_array(' + array + ');\n';
+  array = _array;
   
   // 允许增加的标记属性
   var OPTIONS = ['limit', 'offset'];
@@ -671,7 +684,9 @@ exports.tablerow = function (loops, context) {
   }
   
   // 将对象转换为数组
-  header += array + ' = $_array(' + array + ');\n';
+  var _array = '$_loop_arr_' + loopIndex;
+  header += 'var ' + _array + ' = $_array(' + array + ');\n';
+  array = _array;
   
   // 允许增加的标记属性
   var OPTIONS = ['cols', 'limit', 'offset'];
@@ -2288,18 +2303,23 @@ exports.compile = function (text, options) {
   // 编译代码
   var tpl = exports.parse(text, options);
   
-  var script = '(function (locals, filters) { \n'
+  if (options.original)
+    var utilsFun = 'var $_html = ' + utils.outputHtml.toString() + ';\n'
+                 + 'var $_err = ' + utils.errorMessage.toString() + ';\n'
+                 + 'var $_rethrow = ' + utils.rethrowError.toString() + ';\n'
+                 + 'var $_merge = ' + utils.merge.toString() + ';\n'
+                 + 'var $_range = ' + utils.range.toString() + ';\n'
+                 + 'var $_array = ' + utils.toArray.toString() + ';\n'
+                 //+ 'var $_table = ' + utils.tableSplit.toString() + ';\n'
+  else
+    var utilsFun = '';
+  
+  var script = '(function (locals, filters, $_html, $_err, $_rethrow, $_merge, $_range, $_array) { \n'
              + '\'use strict\';\n'
              + 'locals = locals || {};\n'
              + 'filters = filters || {};\n'
              + 'var global = {locals: locals, filters: filters};\n'
-             + 'var $_html = ' + utils.outputHtml.toString() + ';\n'
-             + 'var $_err = ' + utils.errorMessage.toString() + ';\n'
-             + 'var $_rethrow = ' + utils.rethrowError.toString() + ';\n'
-             + 'var $_merge = ' + utils.merge.toString() + ';\n'
-             + 'var $_range = ' + utils.range.toString() + ';\n'
-             + 'var $_array = ' + utils.toArray.toString() + ';\n'
-             //+ 'var $_table = ' + utils.tableSplit.toString() + ';\n'
+             + utilsFun
              + 'try { \n'
              + tpl.code + '\n'
              + '} catch (err) {\n'
@@ -2321,7 +2341,8 @@ exports.compile = function (text, options) {
       
     // 封装filters
     var fnWrap = function (d, f) {
-      return fn(d, f || filters);
+      return fn(d, f || filters, utils.outputHtml, utils.errorMessage, utils.rethrowError,
+                utils.merge, utils.range, utils.toArray);
     };
     fnWrap.names = fn.names;
     fnWrap.includes = fn.includes;
