@@ -160,5 +160,7 @@ describe('Liquid.js', function () {
       .should.equal('1-23-12345');
     render('{%for item in array%}{{item}}{%endfor%}-{{array.a}}{{array.b}}', {array: {a:1, b:2, c:3, f:4, g:5}})
       .should.equal('12345-12');
+    render('{%for item in array%}{{item}}{%endfor%}-{{array.a}}{{array.b}}', {array: {a:1, b:2, c:3, size:3}})
+      .should.equal('123-12');
   });
 });
