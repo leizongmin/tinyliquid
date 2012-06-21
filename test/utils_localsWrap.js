@@ -23,7 +23,10 @@ describe('utils.split()', function () {
     utils.localsWrap('abc.efg').should.equal('locals.abc.efg');
     utils.localsWrap('abc.efg.').should.equal('locals.abc.efg');
     utils.localsWrap('abc-efg').should.equal('locals["abc-efg"]');
+    utils.localsWrap('a-b-c').should.equal('locals["a-b-c"]');
+    utils.localsWrap('a-b-c-e').should.equal('locals["a-b-c-e"]');
     utils.localsWrap('xxx.abc-efg').should.equal('locals.xxx["abc-efg"]');
+    utils.localsWrap('xxx.a-b-c').should.equal('locals.xxx["a-b-c"]');
   });
   
   it('#variable index', function () {
