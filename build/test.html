@@ -13,6 +13,10 @@ textarea {
   width: 100%;
   height: 200px;
 }
+.line-num {
+  color: blue;
+  background-color: yellow;
+}
 </style>
 </head>
 <body>
@@ -25,6 +29,12 @@ textarea {
   <hr>
   <h3>页面</h3>
   <div id="page"></div>
+  <hr>
+  <h3>包含文件</h3>
+  <div id="includes"></div>
+  <hr>
+  <h3>引用变量</h3>
+  <div id="names"></div>
   <hr>
   <h3>JavaScript代码</h3>
   <div id="code"></div>
@@ -40,8 +50,19 @@ function compile () {
       var code = fn.toString().replace(/&(?!\w+;)/g, '&amp;')
                               .replace(/</g, '&lt;')
                               .replace(/>/g, '&gt;')
-                              .replace(/"/g, '&quot;')
+                              .replace(/"/g, '&quot;');
+      code = code.replace(/(var\s*)?\$_line_num\s*=\s*\d+;/img, function (a) {
+        return '<span class="line-num">' + a + '</span>'
+      });
       document.querySelector('#code').innerHTML = '<pre>' + code + '</pre>';
+      var t = [];
+      for (var i in fn.includes)
+        t.push('<strong>' + i + '</strong>: ' + fn.includes[i]);
+      document.querySelector('#includes').innerHTML = t.join('<br>');
+       var t = [];
+      for (var i in fn.names)
+        t.push('<strong>' + i + '</strong>: ' + fn.names[i]);
+      document.querySelector('#names').innerHTML = t.join('<br>');
     }
     catch (err) {
       console.error(err.stack);
