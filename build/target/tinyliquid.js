@@ -388,14 +388,15 @@ exports.condition = function (cond, context) {
       // console.log(ca[1]);
       // contains 语句
       if (ca[1] === 'contains') {
-        return '(String(' + op1
+        return '(Array.isArray(' + op1 + ') ? (' + op1 + '.indexOf(' + op2 + ') !== -1) : '
+             + '(String(' + op1
              + ').toLowerCase().indexOf(' + op2
-             + ') !== -1)';
+             + ') !== -1))';
       }
       // hasValue 语句
-      else if (ca[1] === 'hasvaule') {
+      else if (ca[1] === 'hasvalue') {
         return '(Array.isArray(' + op1 + ') ? (' + op1 + '.indexOf(' + op2 + ') !== -1 ? true : false) : '
-             + '(function () {  for (var i in ' + op1 + ') if (' + op1 + ' == ' + op2 + ') return true;'
+             + '(function () {  for (var i in ' + op1 + ') if (' + op1 + '[i] == ' + op2 + ') return true;'
              + '  return false; })())';
       }
       // hasKey 语句
@@ -1853,254 +1854,292 @@ exports.tags = function (text, start, context) {
     }
   };
   
+  var methods = {
+    enterLoop:    enterLoop,
+    outLoop:      outLoop,
+    loopNotMatch: loopNotMatch,
+    syntaxError:  syntaxError,
+    unknowTag:    unknowTag,
+    filtered:     utils.filtered,
+    localsWrap:   utils.localsWrap
+  };
+  
   // 当前嵌套名称
   if (context.loopName.length > 0)
     var loopName = context.loopName[context.loopName.length - 1].name;
   else
     var loopName = '';
   
+  context.ignoreOutput = false;
+  
   // 简单标记(一般为标记结尾)
   if (space_start === -1) {
-    switch (line) {
-      // raw 标记
-      case 'raw':
-        context.isRaw = true;
-        setLineNumber();
-        script += '/* raw */';
-        break;
-      // endif
-      case 'endif':
-        if (loopName !== 'if')
-          loopNotMatch();
-        else {
+    // 是否为自定义标记
+    if (typeof context.customTags[line] === 'function') {
+      setLineNumber();
+      var s = context.customTags[line]([], line, context, methods);
+      if (s === null)
+        syntaxError();
+      else if (typeof s === 'string')
+        script += s + '\n';
+    }
+    else {
+      switch (line) {
+        // raw 标记
+        case 'raw':
+          context.isRaw = true;
           setLineNumber();
-          script += '}';
-          outLoop();
-        }
-        break;
-      // endunless
-      case 'endunless':
-        if (loopName !== 'unless')
-          loopNotMatch();
-        else {
-          setLineNumber();
-          script += '}';
-          outLoop();
-        }
-        break;
-      // else
-      case 'else':
-        if (loopName === 'if' || loopName === 'unless') {
-          setLineNumber();
-          script += '} else {';
-          setLineNumber();
-        }
-        else if (loopName === 'case') {
-          setLineNumber();
-          script += 'break;\n' +
-                    'default:';
-          setLineNumber();
-        }
-        else if (loopName === 'for') {
-          setLineNumber();
-          script += '}\n'
-                  + 'if (forloop.length < 1) {';
-        }
-        else
-          loopNotMatch();
-        break;
-      // endcase
-      case 'endcase':
-        if (loopName !== 'case')
-          loopNotMatch();
-        else {
-          setLineNumber();
-          script += '}';
-          outLoop();
-        }
-        break;
-      // endfor
-      case 'endfor':
-        if (loopName !== 'for')
-          loopNotMatch();
-        else {
-          setLineNumber();
-          script += '}\n'
-                  + '})($_merge(locals));';
-          outLoop();
-        }
-        break;
-      // endtablerow
-      case 'endtablerow':
-        if (loopName !== 'tablerow')
-          loopNotMatch();
-        else {
-          setLineNumber();
-          script += '$_buf += \'</td>\';\n'
-                  + '}\n'
-                  + '$_buf += \'</tr>\\n\';\n'
-                  + '}\n'
-                  + '})($_merge(locals));';
-          outLoop();
-        }
-        break;
-      // endcapture
-      case 'endcapture':
-        if (loopName !== 'capture')
-          loopNotMatch();
-        else {
-          setLineNumber();
-          script += '} catch (err) {\n'
-                  + '  $_rethrow(err);\n'
-                  + '}\n'
-                  + 'return $_buf;\n'
-                  + '})();';
-          outLoop();
-        }
-        break;
-      // 出错
-      default:
-        unknowTag();
+          script += '/* raw */';
+          break;
+        // endif
+        case 'endif':
+          if (loopName !== 'if')
+            loopNotMatch();
+          else {
+            setLineNumber();
+            script += '}';
+            outLoop();
+          }
+          break;
+        // endunless
+        case 'endunless':
+          if (loopName !== 'unless')
+            loopNotMatch();
+          else {
+            setLineNumber();
+            script += '}';
+            outLoop();
+          }
+          break;
+        // else
+        case 'else':
+          if (loopName === 'if' || loopName === 'unless') {
+            setLineNumber();
+            script += '} else {';
+            setLineNumber();
+          }
+          else if (loopName === 'case') {
+            setLineNumber();
+            script += 'break;\n' +
+                      'default:';
+            setLineNumber();
+          }
+          else if (loopName === 'for') {
+            setLineNumber();
+            script += '}\n'
+                    + 'if (forloop.length < 1) {';
+          }
+          else
+            loopNotMatch();
+          break;
+        // endcase
+        case 'endcase':
+          if (loopName !== 'case')
+            loopNotMatch();
+          else {
+            setLineNumber();
+            script += '}';
+            outLoop();
+          }
+          break;
+        // endfor
+        case 'endfor':
+          if (loopName !== 'for')
+            loopNotMatch();
+          else {
+            setLineNumber();
+            script += '}\n'
+                    + '})($_merge(locals));';
+            outLoop();
+          }
+          break;
+        // endtablerow
+        case 'endtablerow':
+          if (loopName !== 'tablerow')
+            loopNotMatch();
+          else {
+            setLineNumber();
+            script += '$_buf += \'</td>\';\n'
+                    + '}\n'
+                    + '$_buf += \'</tr>\\n\';\n'
+                    + '}\n'
+                    + '})($_merge(locals));';
+            outLoop();
+          }
+          break;
+        // endcapture
+        case 'endcapture':
+          if (loopName !== 'capture')
+            loopNotMatch();
+          else {
+            setLineNumber();
+            script += '} catch (err) {\n'
+                    + '  $_rethrow(err);\n'
+                    + '}\n'
+                    + 'return $_buf;\n'
+                    + '})();';
+            outLoop();
+          }
+          break;
+        // 出错
+        default:
+          unknowTag();
+      }
     }
   }
   // 复杂标记(一般为标记开头)
   else {
     var line_left = line.substr(0, space_start);
     var line_right = line.substr(space_start).trim();
-    switch (line_left) {
-      // if / unless 判断
-      case 'if':
-        enterLoop(line_left);
-        setLineNumber();
-        script += 'if ' + utils.condition(line_right, context) + ' {';
-        break;
-      case 'unless':
-        enterLoop(line_left);
-        setLineNumber();
-        script += 'if (!' + utils.condition(line_right, context) + ') {';
-        break;
-      // elsif / elseif
-      case 'elsif':
-      case 'elseif':
-        if (loopName !== 'if')
-          loopNotMatch();
-        else {
+    // 是否为自定义标记
+    if (typeof context.customTags[line_left] === 'function') {
+      setLineNumber();
+      var s = context.customTags[line_left](line_right.split(/\s+/), line_right, context, methods);
+      if (s === null)
+        syntaxError();
+      else if (typeof s === 'string')
+        script += s + '\n';
+    }
+    else {
+      switch (line_left) {
+        // if / unless 判断
+        case 'if':
+          enterLoop(line_left);
           setLineNumber();
-          script += '} else if ' + utils.condition(line_right, context) + ' {';
-        }
-        break;
-      // case 判断
-      case 'case':
-        enterLoop(line_left);
-        setLineNumber();
-        script += 'switch (' + utils.localsWrap(line_right, null, context.saveLocalsName) + ') {';
-        break;
-      case 'when':
-        if (context.hasWhen)
-          script += 'break;\n';
-        if (loopName !== 'case')
-          loopNotMatch();
-        else {
-          script += 'case ' + utils.localsWrap(line_right, null, context.saveLocalsName) + ':';
+          script += 'if ' + utils.condition(line_right, context) + ' {';
+          break;
+        case 'unless':
+          enterLoop(line_left);
           setLineNumber();
-          context.hasWhen = true;
-        }
-        break;  
-      // for 循环
-      case 'for':
-        enterLoop(line_left);
-        var s = utils.forloops(line_right, context);
-        if (s === null)
-          syntaxError();
-        else {
-          setLineNumber();
-          script += s;
-        }
-        break;
-      // tablerow 循环
-      case 'tablerow':
-        enterLoop(line_left);
-        var s = utils.tablerow(line_right, context);
-        if (s === null)
-          syntaxError();
-        else {
-          setLineNumber();
-          script += s;
-        }
-        break;
-      // assign 定义变量
-      case 'assign':
-        var eq_op = line_right.indexOf('=');
-        if (eq_op === -1) {
-          syntaxError();
-        }
-        else {
-          var assign_name = utils.localsWrap(line_right.substr(0, eq_op).trim(), null, context.saveLocalsName);
-          context.assignNames[assign_name] = true;
-          var assign_expr = utils.assign(line_right.substr(eq_op + 1).trim(), context);
-          setLineNumber();
-          script += 'global.' + assign_name + ' = ' + assign_expr + ';';
-        }
-        break;
-      // capture 定义变量块
-      case 'capture':
-        enterLoop(line_left);
-        var n = utils.localsWrap(line_right, null, context.saveLocalsName);
-        setLineNumber();
-        script += 'global.' + n + ' = ' + n + ' = (function () {\n'
-                + 'var $_buf = \'\';\n'
-                + 'try {\n'
-                + '/* captures */\n';
-        break;
-      // include 标记
-      case 'include':
-        var inc_blocks = utils.split(line_right);
-        var inc_tag = {};
-        var inc_ok = false;
-        if (inc_blocks.length === 1) {
-          inc_tag.name = utils.stripQuotes(inc_blocks[0]);
-          inc_ok = true;
-        }
-        else if (inc_blocks.length === 3) {
-          inc_tag.name = utils.stripQuotes(inc_blocks[0]);
-          inc_tag.with = utils.stripQuotes(inc_blocks[2]);
-          inc_ok = true;
-        }
-        else {
-          syntaxError();
-        }
-        if (inc_ok) {
-          // 添加到依赖的资源文件
-          context.addIncludes(inc_tag.name);
-          // 如果提供了该资源文件，则插入代码
-          if (context.files[inc_tag.name]) {
+          script += 'if (!' + utils.condition(line_right, context) + ') {';
+          break;
+        // elsif / elseif
+        case 'elsif':
+        case 'elseif':
+          if (loopName !== 'if')
+            loopNotMatch();
+          else {
             setLineNumber();
-            script += '/* === include "' + inc_tag.name + '"' + (inc_tag.with ? ' with "' + inc_tag.with + '"' : '') + ' === */\n'
-                    + 'try {\n'
-                    + '$_buf+=((function (locals) {\n'
-                    + context.files[inc_tag.name] + '\n'
-                    + 'return $_buf;\n'
-                    + '})(' + (inc_tag.with ? utils.localsWrap(inc_tag.with) : 'locals') + '));\n'
-                    + '} catch (err) {\n'
-                    + '  $_rethrow(err);\n'
-                    + '}\n'
-                    + '/* === end include "' + inc_tag.name + '" === */';
+            script += '} else if ' + utils.condition(line_right, context) + ' {';
           }
-        }
-        break;
-      // cycle 循环字符串
-      case 'cycle':
-        var s = utils.cycle(line_right, context);
-        if (s === null)
-          syntaxError();
-        else {
+          break;
+        // case 判断
+        case 'case':
+          enterLoop(line_left);
           setLineNumber();
-          script += s;
-        }
-        break;
-      // 其他
-      default:
-        unknowTag();
+          script += 'switch (' + utils.localsWrap(line_right, null, context.saveLocalsName) + ') {';
+          break;
+        case 'when':
+          if (context.hasWhen) {
+            script += 'break;\n';
+            context.ignoreOutput = false;
+          }
+          else
+            context.ignoreOutput = true;
+          if (loopName !== 'case')
+            loopNotMatch();
+          else {
+            script += 'case ' + utils.localsWrap(line_right, null, context.saveLocalsName) + ':';
+            setLineNumber();
+            context.hasWhen = true;
+          }
+          break;  
+        // for 循环
+        case 'for':
+          enterLoop(line_left);
+          var s = utils.forloops(line_right, context);
+          if (s === null)
+            syntaxError();
+          else {
+            setLineNumber();
+            script += s;
+          }
+          break;
+        // tablerow 循环
+        case 'tablerow':
+          enterLoop(line_left);
+          var s = utils.tablerow(line_right, context);
+          if (s === null)
+            syntaxError();
+          else {
+            setLineNumber();
+            script += s;
+          }
+          break;
+        // assign 定义变量
+        case 'assign':
+          var eq_op = line_right.indexOf('=');
+          if (eq_op === -1) {
+            syntaxError();
+          }
+          else {
+            var assign_name = utils.localsWrap(line_right.substr(0, eq_op).trim(), null, context.saveLocalsName);
+            context.assignNames[assign_name] = true;
+            var assign_expr = utils.assign(line_right.substr(eq_op + 1).trim(), context);
+            setLineNumber();
+            script += 'global.' + assign_name + ' = ' + assign_expr + ';';
+          }
+          break;
+        // capture 定义变量块
+        case 'capture':
+          enterLoop(line_left);
+          var n = utils.localsWrap(line_right, null, context.saveLocalsName);
+          setLineNumber();
+          script += 'global.' + n + ' = ' + n + ' = (function () {\n'
+                  + 'var $_buf = \'\';\n'
+                  + 'try {\n'
+                  + '/* captures */\n';
+          break;
+        // include 标记
+        case 'include':
+          var inc_blocks = utils.split(line_right);
+          var inc_tag = {};
+          var inc_ok = false;
+          if (inc_blocks.length === 1) {
+            inc_tag.name = utils.stripQuotes(inc_blocks[0]);
+            inc_ok = true;
+          }
+          else if (inc_blocks.length === 3) {
+            inc_tag.name = utils.stripQuotes(inc_blocks[0]);
+            inc_tag.with = utils.stripQuotes(inc_blocks[2]);
+            inc_ok = true;
+          }
+          else {
+            syntaxError();
+          }
+          if (inc_ok) {
+            // 添加到依赖的资源文件
+            context.addIncludes(inc_tag.name);
+            // 如果提供了该资源文件，则插入代码
+            if (context.files[inc_tag.name]) {
+              setLineNumber();
+              script += '/* === include "' + inc_tag.name + '"' + (inc_tag.with ? ' with "' + inc_tag.with + '"' : '') + ' === */\n'
+                      + 'try {\n'
+                      + '$_buf+=((function (locals) {\n'
+                      + context.files[inc_tag.name] + '\n'
+                      + 'return $_buf;\n'
+                      + '})(' + (inc_tag.with ? utils.localsWrap(inc_tag.with) : 'locals') + '));\n'
+                      + '} catch (err) {\n'
+                      + '  $_rethrow(err);\n'
+                      + '}\n'
+                      + '/* === end include "' + inc_tag.name + '" === */';
+            }
+          }
+          break;
+        // cycle 循环字符串
+        case 'cycle':
+          var s = utils.cycle(line_right, context);
+          if (s === null)
+            syntaxError();
+          else {
+            setLineNumber();
+            script += s;
+          }
+          break;
+        // 其他
+        default:
+          unknowTag();
+      }
     }
   }
   
@@ -2138,6 +2177,7 @@ var filters = modules.filters;
  */
 exports.parse = function (text, options) {
   options = options || {};
+  options.tags = options.tags || {};
   
   var line_number = 1; // 行号
   var html_start = 0;  // HTML代码开始
@@ -2149,9 +2189,11 @@ exports.parse = function (text, options) {
   };
   
   // 初始化编译环境
+  context.customTags = options.tags;  // 自定义的标记解析
   context.loop = 0;           // { 嵌套层数
   context.loopName = [];      // 当前嵌套标记名称
   context.isRaw = false;      // 是否为raw标记
+  context.ignoreOutput = false; // 忽略该部分的HTML代码
   context.assignNames = {};   // 使用assign标记定义的变量名称
   context.varNames = {};      // 变量的名称及引用的次数
   context.saveLocalsName = function (name) {  // 使用变量名称
@@ -2239,7 +2281,7 @@ exports.parse = function (text, options) {
     if (ret !== null) {
       //console.log(ret);
       var html = text.slice(html_start, ret.start);
-      if (html.length > 0) {
+      if (html.length > 0 && context.ignoreOutput !== true) {
         html = utils.outputHtml(html);
         scripts.add('$_buf+=(\'' + html + '\');');
       }
@@ -2253,7 +2295,7 @@ exports.parse = function (text, options) {
   
   // 最后一部分的HTML
   var html = text.slice(html_start, len);
-  if (html.length > 0) {
+  if (html.length > 0 && context.ignoreOutput !== true) {
     html = utils.outputHtml(html);
     scripts.add('$_buf+=(\'' + html + '\');');
   }
@@ -2295,6 +2337,7 @@ exports.parse = function (text, options) {
  *
  * @param {string} text 模板内容
  * @param {object} options 选项  files:子模版文件代码, original:是否返回原始代码
+ *                               tags:自定义标记解析
  * @return {function}
  */
 exports.compile = function (text, options) {
@@ -2514,10 +2557,15 @@ exports.advRender = function (render, models, options, callback) {
   var names = Object.keys(render.names);
   var dataList = AsyncDataList(models, names, options.env);
   
-  var cb = function (err, data) {
+  var cb = function (err, d) {
     if (err)
       return callback(err);
     try {
+      var data = {};
+      for (var i in models)
+        data[i] = models[i];
+      for (var i in d)
+        data[i] = d[i];
       var text = render(data, options.filters);
       return callback(null, text);
     }
@@ -2564,7 +2612,7 @@ try {
 catch (err) {}
 
 // 版本
-exports.version = '0.0.5';
+exports.version = '0.0.6';
  
 // 解析代码
 exports.parse = wrap('parse', template.parse);

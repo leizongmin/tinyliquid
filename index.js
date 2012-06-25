@@ -23,7 +23,7 @@ try {
 catch (err) {}
 
 // 版本
-exports.version = '0.0.5';
+exports.version = '0.0.6';
  
 // 解析代码
 exports.parse = wrap('parse', template.parse);
