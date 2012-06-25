@@ -105,6 +105,35 @@ describe('Liquid.js', function () {
     render('{% if 0 == 0 %}0{% elsif 1 == 1%}1{% else %}2{% endif %}').should.equal('0');
     render('{% if 0 != 0 %}0{% elsif 1 == 1%}1{% else %}2{% endif %}').should.equal('1');
     render('{% if 0 != 0 %}0{% elsif 1 != 1%}1{% else %}2{% endif %}').should.equal('2');
+    
+    render('{% if array contains a %}true{% else %}false{% endif %}', {array: [1,2,3,4,5], a: 5})
+      .should.equal('true');
+    render('{% if array contains a %}true{% else %}false{% endif %}', {array: [1,2,3,4,5], a: 10})
+      .should.equal('false');
+    render('{% if array contains a %}true{% else %}false{% endif %}', {array: ['a', 'b', 'c'], a: 'b'})
+      .should.equal('true');
+    render('{% if array contains a %}true{% else %}false{% endif %}', {array: ['a', 'b', 'c'], a: 'e'})
+      .should.equal('false');
+    render('{% if str contains a %}true{% else %}false{% endif %}', {str: 'abcd', a: 'b'})
+      .should.equal('true');
+    render('{% if str contains a %}true{% else %}false{% endif %}', {str: 'abcd', a: 'e'})
+      .should.equal('false');
+      
+    render('{% if array hasValue a %}true{% else %}false{% endif %}', {array: [1,2,3,4,5], a: 5})
+      .should.equal('true');
+    render('{% if array hasValue a %}true{% else %}false{% endif %}', {array: [1,2,3,4,5], a: 10})
+      .should.equal('false');
+    render('{% if obj hasValue a %}true{% else %}false{% endif %}', {obj:{a:1, b:2, c:3}, a: 3})
+      .should.equal('true');
+    render('{% if obj hasValue a %}true{% else %}false{% endif %}', {obj:{a:1, b:2, c:3}, a: 5})
+      .should.equal('false');
+      
+    render('{% if obj hasKey a %}true{% else %}false{% endif %}', {obj:{a:1, b:2, c:3}, a: 'b'})
+      .should.equal('true');
+    render('{% if obj hasKey a %}true{% else %}false{% endif %}', {obj:{a:1, b:2, c:3}, a: 'e'})
+      .should.equal('false');
+    render('{% if obj hasKey "a" %}true{% else %}false{% endif %}', {obj:{a:1, b:2, c:3}})
+      .should.equal('true');
   });
   
 });
