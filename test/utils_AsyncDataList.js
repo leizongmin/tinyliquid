@@ -2,7 +2,7 @@ var should = require('should');
 var utils = require('../lib/utils');
 
 describe('utils.AsyncDataList', function () {
-  /*
+  
   it('#saveItem', function () {
     
     var dataList = utils.AsyncDataList();
@@ -111,7 +111,7 @@ describe('utils.AsyncDataList', function () {
     });
     
   });
-  */
+  
   
   it('#getItem 3', function (done) {
     
