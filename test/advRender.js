@@ -13,7 +13,7 @@ describe('advRender', function () {
         }, 50);
       },
       'man.name':    function (env, callback) {
-        var name = env.fullname ? '雷宗民' : '老雷';
+        var name = env.fullname ? '小雷' : '老雷';
         setTimeout(function () {
           return callback(null, name);
         }, 100);
@@ -36,7 +36,7 @@ describe('advRender', function () {
       
       liquid.advRender(fn, models, {env: {fullname: true}}, function (err, text) {
         should.not.exist(err);
-        text.should.equal('654321abc-调查: 姓名:雷宗民, 年龄:23');
+        text.should.equal('654321abc-调查: 姓名:小雷, 年龄:23');
       
         var fn = liquid.compile('{{ title }}: {{ error }}');
         liquid.advRender(fn, models, {}, function (err, text) { 

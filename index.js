@@ -12,15 +12,22 @@ var advtemplate = require('./lib/advtemplate');
 var filters = require('./lib/filters'); 
  
 
-// 兼容Liquid中数组和字符串的size属性
+// 兼容Liquid中数组和字符串的size,first,last属性
 try {
   Object.defineProperty(Array.prototype, 'size', {get: function () { return this.length; }});
+  Object.defineProperty(Array.prototype, 'first', {get: function () { var a = this; return a[0]; }});
+  Object.defineProperty(Array.prototype, 'last', {get: function () { var a = this; return a[a.length - 1]; }});
 }
-catch (err) {}
+catch (err) {
+  console.error(err.stack);
+}
+// 兼容Liquid中字符串的size属性
 try {
   Object.defineProperty(String.prototype, 'size', {get: function () { return this.length; }});
 }
-catch (err) {}
+catch (err) {
+  console.error(err.stack);
+}
 
 // 版本
 exports.version = '0.0.6';
