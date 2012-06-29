@@ -81,6 +81,12 @@ exports.makeErrorInfo = function (filename, text, code, callback) {
     return callback.apply(null, arguments);
   };
   child_process.exec(process.execPath + ' ' + tmpfilename, function (err, stdout, stderr) {
+    if (!err) {
+      console.error(stdout);
+      console.error(stderr);
+      return;
+    }
+    
     var errs = err.stack.split(/\r?\n/);
     var codeLines = code.split(/\r?\n/);
     var textLines = text.split(/\r?\n/);
