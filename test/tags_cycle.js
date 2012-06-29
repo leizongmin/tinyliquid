@@ -12,7 +12,7 @@ describe('Liquid.js', function () {
       var html = fn(data, filters);
       return html;
     }
-    
+    /*
     // 使用字符串
     render("{% cycle 'one', 'two', 'three' %},\
 {% cycle 'one', 'two', 'three' %},\
@@ -51,6 +51,11 @@ describe('Liquid.js', function () {
 {% endfor %}\
 {%  cycle 'one', 'two', 'three' %}")
     .should.equal('one,two,three,one,two,three,one,two,three,one,two');
- 
+    */
+    // 分组
+    render("{% for item in (1..3) %}{% cycle 'group 1': 'one', 'two', 'three' %},{% endfor %}")
+      .should.equal('one,two,three,');
+    render("{% for item in (1..6) %}{% cycle 'group 1' : 'one', 'two', 'three' %},{% endfor %}")
+      .should.equal('one,two,three,one,two,three,');
   });
 });
