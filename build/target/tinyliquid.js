@@ -199,10 +199,11 @@ var $_err = exports.errorMessage;
  * 抛出运行时出错信息
  *
  * @param {Error} err
+ * @param {string} filename
  */
-exports.rethrowError = function (err) {
+exports.rethrowError = function (err, filename) {
   var msg = 'An error occurred while rendering\n'
-          + 'Line: ' + $_line_num + '\n'
+          + 'Line: ' + $_line_num + (filename !== '' ? '  File: ' + filename : '') + '\n'
           + '    ' + err;
   $_buf+=($_err(msg));
 };
@@ -282,9 +283,14 @@ exports.localsWrap = function (n, locals, saveFunc) {
     n = n.substr(0, n.length - 1);
   // console.log('--------', n);
   if (n[0] === '[')
-    return locals.substr(0, locals.length - 1) + n;
+    var ret = locals.substr(0, locals.length - 1) + n;
   else
-    return locals + n;
+    var ret = locals + n;
+    
+  // 修正一些很奇怪的问题
+  ret = ret.replace(/\.\["/img, '["')
+           .replace(/"\]\.\]/img, '"]]');
+  return ret;
 };
 // 常量
 var CONST_VAL = ['nil', 'null', 'empty', 'blank', 'true', 'false'];
@@ -361,8 +367,14 @@ exports.condition = function (cond, context) {
     var b = blocks[i];
     switch (b) {
       // 连接元素
+      case '&&':
+      case '||':
       case 'and':
       case 'or':
+        if (b === '&&')
+          b = 'and';
+        else if (b === '||')
+          b = 'or';
         condi++;
         conds[condi] = b;
         condi++;
@@ -796,12 +808,28 @@ exports.assign = function (expression, context) {
 exports.cycle = function (strlist, context) {
   var localsWrap = exports.localsWrap;
   
-  var list = strlist.split(/\s*,\s*/);
+  var list = exports.splitBy(strlist, ',');
+  
+  var hasKey = false;
+  var _list = exports.splitBy(list[0], ':');
+  if (_list.length > 1) {
+    hasKey = _list[0];
+    list[0] = _list[1];
+  }
+  else if (list[0].substr(-1) === ':') {
+    hasKey = list[0].substr(0, list[0].length - 1);
+    list.splice(0, 1);
+  }
+  else if (list[1] === ':') {
+    hasKey = list[0];
+    list.splice(0, 2);
+  }
+  // console.log(hasKey, list);
   for (var i in list) {
     list[i] = localsWrap(list[i], null, context.saveLocalsName);
   }
   
-  var cycleKey = md5(list.join(',')).substr(0, 8);
+  var cycleKey = md5((hasKey || list.join(','))).substr(0, 8);
   context.addCycle(cycleKey, list);
   
   var cycleName = '$_cycle_' + cycleKey;
@@ -996,8 +1024,8 @@ AsyncDataList.prototype.startParallel = function (callback) {
 exports.img_tag = function (url, alt) {
   if (!alt)
     alt = '';
-  url = escape(url);
-  alt = escape(alt);
+  url = exports.escape(url);
+  alt = exports.escape(alt);
   return '<img src="' + url + '" alt="' + alt + '">';
 };
 
@@ -1008,7 +1036,7 @@ exports.img_tag = function (url, alt) {
  * @return {string} 
  */
 exports.script_tag = function (url) {
-  url = escape(url);
+  url = exports.escape(url);
   return '<script src="' + url + '"></script>';
 };
 
@@ -1022,8 +1050,8 @@ exports.script_tag = function (url) {
 exports.stylesheet_tag = function (url, media) {
   if (!media)
     media = 'all';
-  url = escape(url);
-  media = escape(media);
+  url = exports.escape(url);
+  media = exports.escape(media);
   return '<link href="' + url + '" rel="stylesheet" type="text/css" media="' + media + '" />';
 };
 
@@ -1040,9 +1068,9 @@ exports.link_to = function (link, url, title) {
     url = '';
   if (!title)
     title = '';
-  link = escape(link);
-  url = escape(url);
-  title = escape(title);
+  link = exports.escape(link);
+  url = exports.escape(url);
+  title = exports.escape(title);
   return '<a href="' + url + '" title="' + title + '">' + link + '</a>';
 };
 
@@ -1742,7 +1770,7 @@ var template = modules.template;
 
 
 exports.output = function (text, start, context) {
-  if (context.isRaw)
+  if (context.isRaw || context.isComment)
     return null;
   
   // 查找结束标记
@@ -1754,6 +1782,8 @@ exports.output = function (text, start, context) {
   var lineend = text.indexOf('\n', start);
   if (lineend > -1 && lineend < end)
     return null;
+  
+  context.ignoreOutput = false;
   
   var line = text.slice(start + 2, end).trim();
   end += 2;
@@ -1799,6 +1829,19 @@ exports.tags = function (text, start, context) {
       context.isRaw = false;
       setLineNumber();
       script += '/* endraw */';
+      return {start: start, end: end, script: script};
+    }
+    else {
+      return null;
+    }
+  }
+  
+  // 当前在comment标记内，则只有遇到 endcomment 标记时才能终止
+  if (context.isComment) {
+    if (line === 'endcomment') {
+      context.isComment = false;
+      context.ignoreOutput = true;
+      setLineNumber();
       return {start: start, end: end, script: script};
     }
     else {
@@ -1981,6 +2024,11 @@ exports.tags = function (text, start, context) {
             outLoop();
           }
           break;
+        // comment
+        case 'comment':
+          setLineNumber();
+          context.isComment = true;
+          break;
         // 出错
         default:
           unknowTag();
@@ -2153,7 +2201,7 @@ exports.tags = function (text, start, context) {
   /*-------------- ./lib/template.js --------------*/
   var m = {exports: {}};
   (function (module, exports) {
-    'use strict';
+    //'use strict';
 
 /**
  * 模板引擎
@@ -2193,6 +2241,7 @@ exports.parse = function (text, options) {
   context.loop = 0;           // { 嵌套层数
   context.loopName = [];      // 当前嵌套标记名称
   context.isRaw = false;      // 是否为raw标记
+  context.isComment = false;  // 是否为comment标记
   context.ignoreOutput = false; // 忽略该部分的HTML代码
   context.assignNames = {};   // 使用assign标记定义的变量名称
   context.varNames = {};      // 变量的名称及引用的次数
@@ -2295,7 +2344,7 @@ exports.parse = function (text, options) {
   
   // 最后一部分的HTML
   var html = text.slice(html_start, len);
-  if (html.length > 0 && context.ignoreOutput !== true) {
+  if (html.length > 0) {
     html = utils.outputHtml(html);
     scripts.add('$_buf+=(\'' + html + '\');');
   }
@@ -2337,7 +2386,8 @@ exports.parse = function (text, options) {
  *
  * @param {string} text 模板内容
  * @param {object} options 选项  files:子模版文件代码, original:是否返回原始代码
- *                               tags:自定义标记解析
+ *                               tags:自定义标记解析,  filename:当前模板文件名(用于显示出错信息)
+ *                               noeval:不执行eval(用于调试)，直接返回 {code, names, includes}
  * @return {function}
  */
 exports.compile = function (text, options) {
@@ -2346,8 +2396,8 @@ exports.compile = function (text, options) {
   // 编译代码
   var tpl = exports.parse(text, options);
   
-  var script = '(function (locals, filters, $_html, $_err, $_rethrow, $_merge, $_range, $_array) { \n'
-             + '\'use strict\';\n'
+  var script = '(function (locals, filters) { \n'
+             //+ '\'use strict\';\n'
              + 'locals = locals || {};\n'
              + 'filters = filters || {};\n'
              + 'var global = {locals: locals, filters: filters};\n'
@@ -2361,11 +2411,21 @@ exports.compile = function (text, options) {
              + 'try { \n'
              + tpl.code + '\n'
              + '} catch (err) {\n'
-             + '  $_rethrow(err);\n'
+             + '  $_rethrow(err, "' + (options.filename || '').replace(/"/img, '\\"') + '");\n'
              + '}\n'
              + 'return $_buf;\n'
              + '})';
   //console.log(script);
+  
+  // 用于调试
+  if (options.noeval) {
+    return {
+      code:     script,
+      names:    tpl.names,
+      includes: tpl.includes
+    };
+  }
+  
   try {
     var fn = eval(script);
     
@@ -2532,6 +2592,7 @@ exports.compileAll = function (files, options) {
   var cFn = {};
   var opt = utils.merge(options, {files: pFiles});
   for (var i in files) {
+    opt.filename = i;
     var tpl = template.compile(files[i], opt);
     cFn[i] = tpl;
     cFn[i].names = pCodes[i].names;
@@ -2601,18 +2662,25 @@ var advtemplate = modules.advtemplate;
 var filters = modules.filters; 
  
 
-// 兼容Liquid中数组和字符串的size属性
+// 兼容Liquid中数组和字符串的size,first,last属性
 try {
   Object.defineProperty(Array.prototype, 'size', {get: function () { return this.length; }});
+  Object.defineProperty(Array.prototype, 'first', {get: function () { var a = this; return a[0]; }});
+  Object.defineProperty(Array.prototype, 'last', {get: function () { var a = this; return a[a.length - 1]; }});
 }
-catch (err) {}
+catch (err) {
+  console.error(err.stack);
+}
+// 兼容Liquid中字符串的size属性
 try {
   Object.defineProperty(String.prototype, 'size', {get: function () { return this.length; }});
 }
-catch (err) {}
+catch (err) {
+  console.error(err.stack);
+}
 
 // 版本
-exports.version = '0.0.6';
+exports.version = '0.0.7';
  
 // 解析代码
 exports.parse = wrap('parse', template.parse);
