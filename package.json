@@ -1,15 +1,26 @@
 {
   "name":           "tinyliquid",
   "main":           "./index.js",
-  "version":        "0.0.6",
-  "description":    "A tiny liquid template engine",
-  "author":         "leizongmin <leizongmin@gmail.com> (http://ucdok.com)",
+  "version":        "0.0.7",
+  "description":    "A liquid template engine",
+  "keywords":       ["liquid", "template"],
+  "author":         {
+    "name":         "Lei Zongmin",
+    "email":        "leizongmin@gmail.com"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/leizongmin/tinyliquid.git"
   },
   "engines": {
-    "node":         ">= 0.6.0"
+    "node":         ">= 0.4.0"
   },
-  "dependencies":	{}
+  "dependencies":	{},
+  "devDependencies": {
+    "should":       "*",
+    "mocha":        "1.2"
+  },
+  "bin": {
+    "tinyliquid":   "./bin/tinyliquid"
+  }
 }
