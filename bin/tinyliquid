@@ -57,11 +57,13 @@ var testDir = function () {
   process.on('exit', function () {
     C();
     errorList.forEach(function (line) {
-      W('file: %s', line.filename);
-      W('  [%s]: %s', line.lineNum, line.line);
-      W('  ---');
-      W('  - code: %s', line.code);
-      W('  - error: %s', line.error);
+      var L = colorConsole.log;
+      L('file: \x1B[33m%s\x1B[39m', line.filename);
+      L('  \x1B[32m[%s]\x1B[39m', line.lineNum);
+      L('    \x1B[33m%s\x1B[39m', line.line);
+      L('  ---');
+      L('  - code:  \x1B[36m%s\x1B[39m', line.code);
+      L('  - error: \x1B[33m%s\x1B[39m', line.error);
       C();
     });
     if (errorList.length > 0)
