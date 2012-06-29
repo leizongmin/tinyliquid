@@ -22,6 +22,8 @@ describe('utils.condition()', function () {
     utils.condition('abc or cde').should.equal('((locals.abc) || (locals.cde))');
     utils.condition('abc or 123').should.equal('((locals.abc) || (123))');
     utils.condition('abc or "abc"').should.equal('((locals.abc) || ("abc"))');
+    utils.condition('abc && "abc"').should.equal('((locals.abc) && ("abc"))');
+    utils.condition('abc || "abc"').should.equal('((locals.abc) || ("abc"))');
   });
   
   it('#normal', function () {
