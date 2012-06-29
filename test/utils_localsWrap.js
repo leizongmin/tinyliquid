@@ -48,6 +48,9 @@ describe('utils.split()', function () {
       .should.equal('locals.abc[locals.cde[locals.hi.j].k][locals.fg]');
     utils.localsWrap('a.b-c.[e].f-g')
       .should.equal('locals.a["b-c"][locals.e]["f-g"]');
+    utils.localsWrap('abc.[c-d-e]').should.equal('locals.abc[locals["c-d-e"]]');
+    utils.localsWrap('abc.[c-d[e-f]]').should.equal('locals.abc[locals["c-d"][locals["e-f"]]]');
+    utils.localsWrap('abc.[c-d.[e-f]]').should.equal('locals.abc[locals["c-d"][locals["e-f"]]]');
   });
   
   it('#analysis', function () { 
