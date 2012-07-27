@@ -26,7 +26,7 @@ try {
   Object.defineProperty(String.prototype, 'size', {get: function () { return this.length; }});
 }
 catch (err) {
-  console.error(err.stack);
+  // console.error(err.stack);
 }
 
 // 版本
