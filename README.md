@@ -1,3 +1,6 @@
+English user [see here](https://github.com/leizongmin/tinyliquid/blob/master/README_en.md)
+===============
+
 关于TinyLiquid
 ===============
 
@@ -18,7 +21,7 @@
 下载 & 安装
 ===============
 
-目前最新版为**v0.0.3**，可通过以下方式来获取TinyLiquid模块：
+目前最新版为**v0.0.8**，可通过以下方式来获取TinyLiquid模块：
 
 *  通过NPM安装：**npm install tinyliquid**
 
