@@ -19,7 +19,7 @@ try {
   Object.defineProperty(Array.prototype, 'last', {get: function () { var a = this; return a[a.length - 1]; }});
 }
 catch (err) {
-  console.error(err.stack);
+  // console.error(err.stack);
 }
 // 兼容Liquid中字符串的size属性
 try {
