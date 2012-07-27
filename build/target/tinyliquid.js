@@ -184,11 +184,11 @@ exports.escape = function (html) {
  * @return {string}
  */
 exports.outputHtml = function (html) {
-  return html.replace(/\\/img, '\\')
-             .replace(/'/img, '\\\'')
-             .replace(/"/img, '\\\"')
-             .replace(/\r/img, '\\r')
-             .replace(/\n/img, '\\n');
+  return html.replace(/\\/g, '\\\\')
+             .replace(/'/g, '\\\'')
+             .replace(/"/g, '\\\"')
+             .replace(/\r/g, '\\r')
+             .replace(/\n/g, '\\n');
 };
 var $_html = exports.outputHtml;
 
