@@ -43,7 +43,16 @@ module.exports = hex_md5;
  */
  
 
-var md5 = modules.md5;
+// MD5函数，在Node.js进程中使用crypto模块
+try {
+  var crypto = modules.crypto;
+  var md5 = function (text) {
+    return crypto.createHash('md5').update(text).digest('hex');
+  };
+} catch(e) {
+  var md5 = modules.md5;
+}
+
 
 /**
  * MD5
@@ -81,7 +90,7 @@ exports.stripQuotes = function (input) {
  * @return {object}
  */
 exports.merge = function () {
-  var ret = {}
+  var ret = {};
   for (var i in arguments) {
     var obj = arguments[i];
     for (var j in obj)
@@ -207,6 +216,8 @@ exports.rethrowError = function (err, filename) {
           + '    ' + err;
   $_buf+=($_err(msg));
 };
+
+var $_buf;
 
 /**
  * 包装变量
@@ -1022,11 +1033,7 @@ AsyncDataList.prototype.startParallel = function (callback) {
  * @return {string}
  */
 exports.img_tag = function (url, alt) {
-  if (!alt)
-    alt = '';
-  url = exports.escape(url);
-  alt = exports.escape(alt);
-  return '<img src="' + url + '" alt="' + alt + '">';
+  return '<img src="' + exports.escape(url) + '" alt="' + exports.escape(alt || '') + '">';
 };
 
 /**
@@ -1036,8 +1043,7 @@ exports.img_tag = function (url, alt) {
  * @return {string} 
  */
 exports.script_tag = function (url) {
-  url = exports.escape(url);
-  return '<script src="' + url + '"></script>';
+  return '<script src="' + exports.escape(url) + '"></script>';
 };
 
 /**
@@ -1048,11 +1054,7 @@ exports.script_tag = function (url) {
  * @return {string}
  */
 exports.stylesheet_tag = function (url, media) {
-  if (!media)
-    media = 'all';
-  url = exports.escape(url);
-  media = exports.escape(media);
-  return '<link href="' + url + '" rel="stylesheet" type="text/css" media="' + media + '" />';
+  return '<link href="' + exports.escape(url) + '" rel="stylesheet" type="text/css" media="' + exports.escape(media || 'all') + '" />';
 };
 
 /**
@@ -1064,14 +1066,7 @@ exports.stylesheet_tag = function (url, media) {
  * @return {string}
  */
 exports.link_to = function (link, url, title) {
-  if (!url)
-    url = '';
-  if (!title)
-    title = '';
-  link = exports.escape(link);
-  url = exports.escape(url);
-  title = exports.escape(title);
-  return '<a href="' + url + '" title="' + title + '">' + link + '</a>';
+  return '<a href="' + exports.escape(url || '') + '" title="' + exports.escape(title || '') + '">' + exports.escape(link) + '</a>';
 };
 
 /*-----------------------------Math Filters-----------------------------------*/
@@ -1083,12 +1078,8 @@ exports.link_to = function (link, url, title) {
  * @return {number}
  */
 exports.plus = function (input, operand) {
-  var input = Number(input);
-  var operand = Number(operand);
-  if (isNaN(input))
-    input = 0;
-  if (isNaN(operand))
-    operand = 0;
+  input = Number(input) || 0;
+  operand = Number(operand) || 0;
   return  input + operand;
 };
 
@@ -1100,12 +1091,8 @@ exports.plus = function (input, operand) {
  * @return {number}
  */
 exports.minus = function (input, operand) {
-  var input = Number(input);
-  var operand = Number(operand);
-  if (isNaN(input))
-    input = 0;
-  if (isNaN(operand))
-    operand = 0;
+  input = Number(input) || 0;
+  operand = Number(operand) || 0;
   return  input - operand;
 };
 
@@ -1117,12 +1104,8 @@ exports.minus = function (input, operand) {
  * @return {number}
  */
 exports.times = function (input, operand) {
-  var input = Number(input);
-  var operand = Number(operand);
-  if (isNaN(input))
-    input = 0;
-  if (isNaN(operand))
-    operand = 0;
+  input = Number(input) || 0;
+  operand = Number(operand) || 0;
   return  input * operand;
 };
 
@@ -1134,12 +1117,8 @@ exports.times = function (input, operand) {
  * @return {number}
  */
 exports.divided_by = function (input, operand) {
-  var input = Number(input);
-  var operand = Number(operand);
-  if (isNaN(input))
-    input = 0;
-  if (isNaN(operand))
-    operand = 0;
+  input = Number(input) || 0;
+  operand = Number(operand) || 0; 
   return  input / operand;
 };
 
@@ -1151,15 +1130,11 @@ exports.divided_by = function (input, operand) {
  * @return {number}
  */
 exports.round = function (input, point) {
-  if (!(point >= 0))
-    point = 0;
-  else
-    point = parseInt(point);
+  point = parseInt(point, 10) || 0;
   if (point < 1)
     return Math.round(input);
   var n = Math.pow(10, point);
-  var ret = Math.round(input * n);
-  return ret / n;
+  return Math.round(input * n) / n;
 };
 
 /**
@@ -1169,7 +1144,7 @@ exports.round = function (input, point) {
  * @return {int}
  */
 exports.integer = function (input) {
-  return parseInt(input);
+  return parseInt(input, 10) || 0;
 };
 
 /**
@@ -1180,9 +1155,11 @@ exports.integer = function (input) {
  * @return {number}
  */
 exports.random = function (m, n) {
-  if (isNaN(m))
+  m = parseInt(m); 
+  n = parseInt(n);
+  if (!isFinite(m))
     return Math.random();
-  if (isNaN(n)) {
+  if (!isFinite(n)) {
     n = m;
     m = 0;
   }
@@ -1223,10 +1200,10 @@ exports.prepend = function (input, characters) {
  * @return {string}
  */
 exports.camelize = function (input) {
-  var ret = String(input).split(/[^a-zA-Z0-9]/).map(function (a) {
-    return a[0].toUpperCase() + a.substr(1);
-  }).join('');
-  return ret[0].toLowerCase() + ret.substr(1);
+  input = String(input);
+  return input.replace(/[^a-zA-Z0-9]+(\w)/g, function(_, ch) {
+    return ch.toUpperCase();
+  });
 };
 
 /**
@@ -1247,8 +1224,7 @@ exports.capitalize = function (input) {
  * @return {int}
  */
 exports.timestamp = function (input) {
-  if (isNaN(input))
-    input = 0;
+  input = parseInt(input, 10) || 0;
   return new Date().getTime() + input;
 };
 
@@ -1263,13 +1239,13 @@ exports.date = function (input, format) {
   if (String(input).toLowerCase() == 'now')
     var time = new Date();
   else {
-    var timestamp = parseInt(input);
+    var timestamp = parseInt(input, 10);
     if (timestamp == input)
       var time = new Date(timestamp);
     else
       var time = new Date(input);
   }
-  if (time.toString() === 'Invalid Date')
+  if (!time || !isFinite(time.valueOf()))
     return 'Invalid Date';
   if (!format)
     format = '%Y-%m-%j %H:%M:%S';
@@ -1297,11 +1273,11 @@ exports.date = function (input, format) {
     X:      time.toTimeString(),
     y:      dates[3].substr(-2),  // 年份
     Y:      dates[3],
-    Z:      times[4],   // 时区
+    Z:      times[4]    // 时区
   };
   var ret = String(format);
   for (var i in replace) {
-    ret = ret.replace(RegExp('%' + i, 'mg'), replace[i]);
+    ret = ret.replace(new RegExp('%' + i, 'g'), replace[i]);
   }
   return ret;
 };
@@ -1331,7 +1307,7 @@ function weekNo (now, mondayFirst) {
   if (mondayFirst && new Date(String(years)).getDay() === 0)
     week += 1;
   return week;
-};
+}
 
 /**
  * 将字符串转换为小写
@@ -1399,7 +1375,7 @@ exports.keys = function (input) {
   }
   catch (err) {
     return [];
-  };
+  }
 };
 
 /**
@@ -1565,7 +1541,7 @@ exports.strip_html = function (text) {
  * @return {string}
  */
 exports.strip_newlines = function (input) {
-  return String(input).replace(/\n/img, '');
+  return String(input).replace(/[\r\n]+/g, '');
 };
 
 /**
@@ -1576,7 +1552,8 @@ exports.strip_newlines = function (input) {
  * @return {string}
  */
 exports.truncate = function (input, characters) {
-  if (isNaN(characters))
+  characters = parseInt(characters, 10); 
+  if (!isFinite(characters) || characters < 0)
     characters = 100;
   return String(input).substr(0, characters);
 };
@@ -1585,11 +1562,12 @@ exports.truncate = function (input, characters) {
  * 取字符串的前N个单词
  *
  * @param {string} input
- * @param {int} n
+ * @param {int} words
  * @return {string}
  */
 exports.truncatewords = function (input, words) {
-  if (isNaN(words))
+  words = parseInt(words, 10);  
+  if (!isFinite(words) || words < 0)
     words = 15;
   return String(input).trim().split(/ +/).slice(0, words).join(' ');
 };
@@ -1626,13 +1604,13 @@ exports.get = function(obj, prop){
 /**
  * 反转字符串或数组
  *
- * @param {string|array} obj
+ * @param {string|array} arr
  * @return {string|array}
  */
-exports.reverse = function (obj) {
-  return Array.isArray(obj)
-    ? obj.reverse()
-    : String(obj).split('').reverse().join('');
+exports.reverse = function (arr) {
+  return Array.isArray(arr)
+    ? arr.reverse()
+    : String(arr).split('').reverse().join('');
 };
 
 /**
@@ -1646,24 +1624,24 @@ exports.map = function (arr, prop) {
   if (!Array.isArray(arr))
     return [];
   return arr.map(function(obj){
-    return obj[prop];
+    return obj && obj[prop];
   });
 };
 
 /**
  * 数组排序，默认升序
  *
- * @param {array} obj
+ * @param {array} arr
  * @param {int} order
  * @return {array}
  */
-exports.sort = function (obj, order) {
-  if (!Array.isArray(obj))
+exports.sort = function (arr, order) {
+  if (!Array.isArray(arr))
     return [];
   order = String(order).trim().toLowerCase();
   var ret1 = order === 'desc' ? -1 : 1;
   var ret2 = 0 - ret1;
-  return obj.sort(function (a, b) {
+  return arr.sort(function (a, b) {
     if (a > b)  return ret1;
     if (a < b)  return ret2;
     return 0;
@@ -1703,9 +1681,9 @@ exports.sort_by = function (obj, prop, order) {
  */
 exports.pagination = function (count, size, page) {
   if (count % size === 0)
-    var maxPage = parseInt(count / size);
+    var maxPage = parseInt(count / size, 10);
   else
-    var maxPage = parseInt(count / size) + 1;
+    var maxPage = parseInt(count / size, 10) + 1;
     
   if (isNaN(page) || page < 1)
     page = 1;
@@ -1742,6 +1720,7 @@ exports.pagination = function (count, size, page) {
 };
 
 //------------------------------------------------------------------------------
+// 所有函数名可以以大写字母开头
 var ns = Object.keys(exports);
 for (var i in ns) {
   var n = ns[i];
@@ -1888,9 +1867,9 @@ exports.tags = function (text, start, context) {
   };
   
   // 无法识别的标记
-  var unknowTag = function () {
+  var unknownTag = function () {
     context.error = {
-      message:    'UnknowTag: ' + line,
+      message:    'unknownTag: ' + line,
       start:      start,
       end:        end,
       line:       line
@@ -1902,7 +1881,7 @@ exports.tags = function (text, start, context) {
     outLoop:      outLoop,
     loopNotMatch: loopNotMatch,
     syntaxError:  syntaxError,
-    unknowTag:    unknowTag,
+    unknownTag:   unknownTag,
     filtered:     utils.filtered,
     localsWrap:   utils.localsWrap
   };
@@ -2031,7 +2010,7 @@ exports.tags = function (text, start, context) {
           break;
         // 出错
         default:
-          unknowTag();
+          unknownTag();
       }
     }
   }
@@ -2186,7 +2165,7 @@ exports.tags = function (text, start, context) {
           break;
         // 其他
         default:
-          unknowTag();
+          unknownTag();
       }
     }
   }
@@ -2669,14 +2648,14 @@ try {
   Object.defineProperty(Array.prototype, 'last', {get: function () { var a = this; return a[a.length - 1]; }});
 }
 catch (err) {
-  console.error(err.stack);
+  // console.error(err.stack);
 }
 // 兼容Liquid中字符串的size属性
 try {
   Object.defineProperty(String.prototype, 'size', {get: function () { return this.length; }});
 }
 catch (err) {
-  console.error(err.stack);
+  // console.error(err.stack);
 }
 
 // 版本
