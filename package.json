@@ -4,10 +4,11 @@
   "version":        "0.0.8",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
-  "author":         {
-    "name":         "Lei Zongmin",
-    "email":        "leizongmin@gmail.com"
-  },
+  "author":         "Lei Zongmin <leizongmin@gmail.com>",
+  "contributors": [
+    {"name": "Lei Zongmin", "email": "leizongmin@gmail.com"},
+    {"name": "Simon Sturmer", "email": "sstur@me.com"}
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/leizongmin/tinyliquid.git"
