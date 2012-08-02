@@ -21,16 +21,21 @@ English user [see here](https://github.com/leizongmin/tinyliquid/blob/master/REA
 下载 & 安装
 ===============
 
-目前最新版为**v0.0.8**，可通过以下方式来获取TinyLiquid模块：
+目前最新版为**v0.0.9**，可通过以下方式来获取TinyLiquid模块：
 
 *  通过NPM安装：**npm install tinyliquid**
 
 *  通过git下载：**git clone git://github.com/leizongmin/tinyliquid.git**
   
-*  在浏览器端使用：`<script src="https://raw.github.com/leizongmin/tinyliquid/master/build/target/tinyliquid.min.js"></script>`
+*  在**浏览器**端使用：`<script src="https://raw.github.com/leizongmin/tinyliquid/master/build/target/tinyliquid.min.js"></script>`
 
-*  在express中使用：`app.register('.html', tinyliquid.__express());`
-   [示例程序](https://github.com/leizongmin/tinyliquid/blob/master/test/express/)
+*  在**Express 3.x**中使用：
+
+[示例程序](https://github.com/leizongmin/tinyliquid/blob/master/test/express/)：
+
+    app.set('view engine', 'liquid');
+    app.engine('liquid', require('tinyliquid').__express());
+
 
 
 模板语法
@@ -414,9 +419,9 @@ TinyLiquid的自动获取数据功能可以解决该问题。以下为使用不�
 
     Copyright (c) 2012 Lei Zongmin <leizongmin@gmail.com>
     http://ucdok.com
-
+    
     The MIT License
-
+    
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the
     "Software"), to deal in the Software without restriction, including
@@ -424,10 +429,10 @@ TinyLiquid的自动获取数据功能可以解决该问题。以下为使用不�
     distribute, sublicense, and/or sell copies of the Software, and to
     permit persons to whom the Software is furnished to do so, subject to
     the following conditions:
-
+    
     The above copyright notice and this permission notice shall be
     included in all copies or substantial portions of the Software.
-
+    
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND

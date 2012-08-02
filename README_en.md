@@ -16,16 +16,21 @@ About TinyLiquid
 Download & Installation
 ===============
 
-The latest version **v0.0.8** to get TinyLiquid module in the following ways:
+The latest version **v0.0.9** to get TinyLiquid module in the following ways:
 
 *  NPM installation: **npm install tinyliquid**
 
 *  git: **git clone git://github.com/leizongmin/tinyliquid.git**
   
-*  In the browser: `<script src="https://raw.github.com/leizongmin/tinyliquid/master/build/target/tinyliquid.min.js"></script>`
+*  In the **browser**: `<script src="https://raw.github.com/leizongmin/tinyliquid/master/build/target/tinyliquid.min.js"></script>`
 
-*  In Express: `app.register('.html', tinyliquid.__express());`
-   [sample](https://github.com/leizongmin/tinyliquid/blob/master/test/express)
+*  In **Express 3.x**:
+
+[sample](https://github.com/leizongmin/tinyliquid/blob/master/test/express)
+
+    app.set('view engine', 'liquid');
+    app.engine('liquid', require('tinyliquid').__express());
+
 
 
 Template Syntax
@@ -408,9 +413,9 @@ You can feel free to use and distribute it under the premise of compliance with 
 
     Copyright (c) 2012 Lei Zongmin <leizongmin@gmail.com>
     http://ucdok.com
-
+    
     The MIT License
-
+    
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the
     "Software"), to deal in the Software without restriction, including
@@ -418,10 +423,10 @@ You can feel free to use and distribute it under the premise of compliance with 
     distribute, sublicense, and/or sell copies of the Software, and to
     permit persons to whom the Software is furnished to do so, subject to
     the following conditions:
-
+    
     The above copyright notice and this permission notice shall be
     included in all copies or substantial portions of the Software.
-
+    
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
