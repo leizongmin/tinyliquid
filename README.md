@@ -29,12 +29,7 @@ English user [see here](https://github.com/leizongmin/tinyliquid/blob/master/REA
   
 *  在**浏览器**端使用：`<script src="https://raw.github.com/leizongmin/tinyliquid/master/build/target/tinyliquid.min.js"></script>`
 
-*  在**Express 3.x**中使用：
-
-[示例程序](https://github.com/leizongmin/tinyliquid/blob/master/test/express/)：
-
-    app.set('view engine', 'liquid');
-    app.engine('liquid', require('tinyliquid').__express());
+*  在**Express 3.x**中使用：模块[express-liquid](https://github.com/leizongmin/express-liquid)
 
 
 

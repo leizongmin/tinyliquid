@@ -24,12 +24,7 @@ The latest version **v0.0.9** to get TinyLiquid module in the following ways:
   
 *  In the **browser**: `<script src="https://raw.github.com/leizongmin/tinyliquid/master/build/target/tinyliquid.min.js"></script>`
 
-*  In **Express 3.x**:
-
-[sample](https://github.com/leizongmin/tinyliquid/blob/master/test/express)
-
-    app.set('view engine', 'liquid');
-    app.engine('liquid', require('tinyliquid').__express());
+*  In **Express 3.x**: module [express-liquid](https://github.com/leizongmin/express-liquid)
 
 
 

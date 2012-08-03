@@ -50,8 +50,6 @@ exports.advRender = wrap('advRender', advtemplate.advRender);
 // 内置函数
 exports.filters = filters;
 
-// 支持在express内渲染
-exports.__express = wrap('__express', require('./lib/express'));
 
 
 // 用于测试函数被调用次数及来源
