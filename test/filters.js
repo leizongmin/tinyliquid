@@ -258,6 +258,13 @@ describe('filters', function () {
     filters.reverse('abcde').should.equal('edcba');
     filters.reverse([1,2,3,4,5]).should.eql([5,4,3,2,1]);
   });
+
+  it('#indexOf', function () {
+    filters.indexOf('abcdeac', 'c').should.equal(2);
+    filters.indexOf('abcdeac', 'c', 3).should.equal(6);
+    filters.indexOf('abcdeac', 'f').should.equal(-1);
+    filters.indexOf([1,2,3,4,5], 5).should.equal(4);
+  });
   
   it('#map', function () {
     filters.map().should.eql([]);
