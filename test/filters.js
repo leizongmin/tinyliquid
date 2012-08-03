@@ -237,6 +237,12 @@ describe('filters', function () {
     filters.json('What is this?').should.equal(JSON.stringify('What is this?'));
     filters.json({a:123, b: 456}).should.equal(JSON.stringify({a:123, b: 456}));
   });
+
+  it('#substr', function () {
+    filters.substr('abcd', 1).should.equal('bcd');
+    filters.substr('abcd', 2, 1).should.equal('c');
+    filters.substr('abcd', -2).should.equal('cd');
+  });
   
   it('#get', function () {
     should.equal(filters.get(null, 'abc'), undefined);

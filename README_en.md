@@ -370,6 +370,8 @@ Built-in functions see: [lib/filters.js](tinyliquid/blob/master/lib/filters.js)
 
 *  {{'abcdef' | **reverse**}}  Reverse the characters in the string
 
+*  {{'ancdefg' | **substr**: N, M}}  Extracts parts of a string, beginning at the character at the specified posistion N, and returns the specified number of characters M.
+
 ### Date and Time
 
 *  {{0 | **timestamp**}} Take the current time in milliseconds and add 0
