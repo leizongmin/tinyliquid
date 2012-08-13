@@ -1,5 +1,7 @@
-About TinyLiquid
+TinyLiquid
 ===============
+
+[![Build Status](https://secure.travis-ci.org/leizongmin/tinyliquid.png?branch=master)](http://travis-ci.org/leizongmin/tinyliquid)
 
 **TinyLiquid** is a **JavaScript** compatible **Liquid** template syntax template engine. Has the following characteristics:
   

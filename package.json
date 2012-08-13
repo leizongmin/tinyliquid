@@ -24,5 +24,8 @@
   },
   "bin": {
     "tinyliquid":   "./bin/tinyliquid"
+  },
+  "scripts": {
+    "test":         "make test"
   }
 }

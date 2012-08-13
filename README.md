@@ -1,8 +1,10 @@
 English user [see here](https://github.com/leizongmin/tinyliquid/blob/master/README_en.md)
 ===============
 
-关于TinyLiquid
+TinyLiquid
 ===============
+
+[![Build Status](https://secure.travis-ci.org/leizongmin/tinyliquid.png?branch=master)](http://travis-ci.org/leizongmin/tinyliquid)
 
 **TinyLiquid**是一个基于**JavaScript**，兼容**Liquid**模板语法的的模板引擎。
 其具有以下特点：
