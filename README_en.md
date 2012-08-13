@@ -271,13 +271,13 @@ In the Node.js programming, the most troubling is the asynchronous access to dat
 and TinyLiquid of automatic access to data can solve the problem. To use different ways to get data asynchronously
 example:
 
-*  Common way: [https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/normal.js](https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/normal.js)
+*  Common way: [https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/normal.js](https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/normal.js)
 
-*  Use *Jscex* way: [https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/jscex.js](https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/jscex.js)
+*  Use *Jscex* way: [https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/jscex.js](https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/jscex.js)
 
-*  Use *EventProxy* way: [https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/eventproxy.js](https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/eventproxy.js)
+*  Use *EventProxy* way: [https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/eventproxy.js](https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/eventproxy.js)
 
-*  Use the TinyLiquid built-in *advRender()* way: [https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/advrender.js](https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/advrender.js)
+*  Use the TinyLiquid built-in *advRender()* way: [https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/advrender.js](https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/advrender.js)
     
 Reasons to use TinyLiquid:
 

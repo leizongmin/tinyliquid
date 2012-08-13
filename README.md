@@ -277,13 +277,13 @@ TinyLiquid
 在Node.js编程中，最令人头疼的是异步获取数据的层层嵌套，还有错综复杂的回调，而
 TinyLiquid的自动获取数据功能可以解决该问题。以下为使用不同方式异步获取数据的例子：
 
-*  普通获取数据方式 [https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/normal.js](https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/normal.js)
+*  普通获取数据方式 [https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/normal.js](https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/normal.js)
 
-*  使用Jscex获取数据方式 [https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/jscex.js](https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/jscex.js)
+*  使用Jscex获取数据方式 [https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/jscex.js](https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/jscex.js)
 
-*  使用EventProxy获取数据方式 [https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/eventproxy.js](https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/eventproxy.js)
+*  使用EventProxy获取数据方式 [https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/eventproxy.js](https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/eventproxy.js)
 
-*  使用TinyLiquid内置的advRender()自动获取数据方式 [https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/advrender.js](https://github.com/leizongmin/tinyliquid/blob/master/test/different_ways/advrender.js)
+*  使用TinyLiquid内置的advRender()自动获取数据方式 [https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/advrender.js](https://github.com/leizongmin/tinyliquid/blob/master/example/different_ways/advrender.js)
     
 使用TinyLiquid的好处
 
