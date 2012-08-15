@@ -1,4 +1,4 @@
-/**
+/*!
  * TinyLiquid模板引擎
  *
  * @author 老雷<leizongmin@gmail.com>
@@ -198,7 +198,9 @@ var $_html = exports.outputHtml;
  * @param {string} msg
  */
 exports.errorMessage = function (msg) {
-  var html = '<pre style="font-weight:bold; font-size:14px; color:red; padding:4px 20px 4px 20px; border:1px solid #CCC; background-color:#FFF5F0;">' + msg + '</pre>';
+  var html = '<pre style="font-family:Courier; font-weight:bold; font-size:14px; color:red; padding:4px 20px 4px 20px; border:1px solid #CCC; background-color:#FFF5F0; line-height:1.6em;\
+white-space:pre-wrap; white-space:-moz-pre-wrap; white-space:-pre-wrap; white-space:-o-pre-wrap; word-wrap:break-word; z-index:9999">'
+           + msg + '</pre>';
   //console.log(html);
   return html;
 };
@@ -212,7 +214,7 @@ var $_err = exports.errorMessage;
  */
 exports.rethrowError = function (err, filename) {
   var msg = 'An error occurred while rendering\n'
-          + 'Line: ' + $_line_num + (filename !== '' ? '  File: ' + filename : '') + '\n'
+          + 'Line: ' + $_line_num + (filename ? '  File: ' + filename : '') + '\n'
           + '    ' + err;
   $_buf+=($_err(msg));
 };
@@ -1545,7 +1547,7 @@ exports.strip_newlines = function (input) {
 };
 
 /**
- * 截断字符串
+ * 取字符串前N个字符
  *
  * @param {string} input
  * @param {int} characters
@@ -1589,6 +1591,21 @@ exports.json = function (input) {
 };
 
 /**
+ * 从起始索引号提取字符串中指定数目的字符
+ *
+ * @param {string} input
+ * @param {int} start
+ * @param {int} length
+ * @return {string}
+ */
+exports.substr = function (input, start, length) {
+  return String(input).substr(start, length);
+}
+
+/**
+ * 
+
+/**
  * 取指定属性值
  *
  * @param {object} obj
@@ -1611,6 +1628,19 @@ exports.reverse = function (arr) {
   return Array.isArray(arr)
     ? arr.reverse()
     : String(arr).split('').reverse().join('');
+};
+
+/**
+ * 返回字符串所在的位置 或 返回该值在数组中的位置
+ *
+ * @param {string|array} arr
+ * @param {object} searchvalue
+ * @param {int} fromindex
+ * @return {int}
+ */
+exports.indexOf = function (arr, searchvalue, fromindex) {
+  if (!Array.isArray(arr)) arr = String(arr);
+  return arr.indexOf(searchvalue, fromindex);
 };
 
 /**
@@ -2104,7 +2134,7 @@ exports.tags = function (text, start, context) {
             context.assignNames[assign_name] = true;
             var assign_expr = utils.assign(line_right.substr(eq_op + 1).trim(), context);
             setLineNumber();
-            script += 'global.' + assign_name + ' = ' + assign_expr + ';';
+            script += 'global.' + assign_name + ' = ' + assign_name + ' = ' + assign_expr + ';';
           }
           break;
         // capture 定义变量块
@@ -2659,7 +2689,7 @@ catch (err) {
 }
 
 // 版本
-exports.version = '0.0.7';
+exports.version = '0.0.9';
  
 // 解析代码
 exports.parse = wrap('parse', template.parse);
@@ -2679,8 +2709,6 @@ exports.advRender = wrap('advRender', advtemplate.advRender);
 // 内置函数
 exports.filters = filters;
 
-// 支持在express内渲染
-exports.__express = wrap('__express', modules.express);
 
 
 // 用于测试函数被调用次数及来源
