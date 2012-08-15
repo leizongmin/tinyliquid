@@ -71,7 +71,7 @@ describe('Liquid.js', function () {
       .should.equal('55');
     
     
-    // loop¾Ö²¿±äÁ¿ÓÅÏÈ
+    // loopå±€éƒ¨å˜é‡ä¼˜å…ˆ
     render('{%assign sum = 0%}{%assign i = 10%}{%for i in (1..10)%}\
 {%assign sum = sum | plus: i%}{%endfor%}{{sum}}')
       .should.equal('55');
@@ -79,6 +79,10 @@ describe('Liquid.js', function () {
     render('{%assign sum = 0%}{%for i in (1..10)%}\
 {%assign sum = sum | plus: forloop.index%}{%endfor%}{{sum}}', {forloop: {index: 10}})
       .should.equal('55');
+
+    // åœ¨loopå†…éƒ¨å®šä¹‰çš„å˜é‡å¯ç”¨
+    render('{% for i in (0..9) %}{% assign j = i %}{{j}}{% endfor %}-{{j}}')
+      .should.equal('0123456789-9');
      
   });
 });
