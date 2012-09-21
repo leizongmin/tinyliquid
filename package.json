@@ -26,6 +26,6 @@
     "tinyliquid":   "./bin/tinyliquid"
   },
   "scripts": {
-    "test":         "make test"
+    "test":         "mocha -t 5000"
   }
 }
