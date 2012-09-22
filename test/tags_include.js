@@ -19,7 +19,7 @@ describe('Tag: include', function () {
       //console.log(fn);
       var html = fn(data, filters);
       return html;
-    }
+    };
     
     render('{% include "abc" %}hello, all',
       {}, {}).should.equal('hello, all');

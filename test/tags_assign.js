@@ -85,4 +85,25 @@ describe('Tag: assign', function () {
       .should.equal('0123456789-9');
      
   });
+
+  it('#include file', function () {
+
+    var files = {
+      abc:  liquid.parse('{{ name }}').code
+    };
+
+    var render = function (text, data, filters, options) {
+      options = options || {};
+      options.original = true;
+      //console.log(liquid.parse(text));
+      var fn = liquid.compile(text, options);
+      //console.log(fn.toString());
+      //console.log(fn);
+      var html = fn(data, filters);
+      return html;
+    };
+
+    render('{% assign name = "老雷" %}{% include "abc" %}hello, all',
+      {}, {}, {files: files}).should.equal('老雷hello, all');
+  });
 });
