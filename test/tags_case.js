@@ -1,7 +1,7 @@
 var should = require('should');
 var liquid = require('../');
 
-describe('Liquid.js', function () {
+describe('Tag: case', function () {
   
   it('#case', function () {
   

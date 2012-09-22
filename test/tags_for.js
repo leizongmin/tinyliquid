@@ -1,7 +1,7 @@
 var should = require('should');
 var liquid = require('../');
 
-describe('Liquid.js', function () {
+describe('Tag: for', function () {
   
   it('#for', function () {
   
@@ -28,14 +28,14 @@ describe('Liquid.js', function () {
     render('{% for item in array offset:3 %}{{ item }}{% endfor %}',
       {array: [1,2,3,4,5,6]}).should.equal('456');
       
-    // ÌØÊâ¸ñÊ½Ğ´·¨
+    // ç‰¹æ®Šæ ¼å¼å†™æ³•
     render('{% for item in array limit: 2 offset: 2 %}{{ item }}{% endfor %}',
       {array: [1,2,3,4,5,6]}).should.equal('34');
       
     render('{%for item in array limit: 2 offset: 2%}{{item}}{%endfor%}',
       {array: [1,2,3,4,5,6]}).should.equal('34');
       
-    // ²ÎÊıÎª±äÁ¿
+    // å‚æ•°ä¸ºå˜é‡
     render('{% for item in array limit:limit offset:offset %}{{ item }}{% endfor %}',
       {array: [1,2,3,4,5,6], limit:2, offset:2}).should.equal('34');
     
@@ -45,7 +45,7 @@ describe('Liquid.js', function () {
     render('{% for item in array offset:offset %}{{ item }}{% endfor %}',
       {array: [1,2,3,4,5,6], offset:3}).should.equal('456');
       
-    // Ñ­»·±äÁ¿Îª¶ÔÏó
+    // å¾ªç¯å˜é‡ä¸ºå¯¹è±¡
     render('{% for item in object %}{{item}}{% endfor %}', {object: {a:123, b:456, c:'abc'}})
       .should.equal('123456abc');
       

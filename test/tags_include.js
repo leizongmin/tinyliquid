@@ -1,7 +1,7 @@
 var should = require('should');
 var liquid = require('../');
 
-describe('Liquid.js', function () {
+describe('Tag: include', function () {
   
   it('#include', function () {
   
@@ -25,10 +25,10 @@ describe('Liquid.js', function () {
       {}, {}).should.equal('hello, all');
     
     render('{% include "abc" %}hello, all',
-      {name: '老雷'}, {}, {files: files}).should.equal('老雷hello, all');
+      {name: '鑰侀浄'}, {}, {files: files}).should.equal('鑰侀浄hello, all');
     
     render('{% include "abc" with a %}hello, all',
-      {a: {name: '老雷'}}, {}, {files: files}).should.equal('老雷hello, all');
+      {a: {name: '鑰侀浄'}}, {}, {files: files}).should.equal('鑰侀浄hello, all');
     
   });
   

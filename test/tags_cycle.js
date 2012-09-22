@@ -1,7 +1,7 @@
 var should = require('should');
 var liquid = require('../');
 
-describe('Liquid.js', function () {
+describe('Tag: cycle', function () {
   
   it('#cycle', function () {
   
@@ -13,28 +13,28 @@ describe('Liquid.js', function () {
       return html;
     }
     /*
-    // Ê¹ÓÃ×Ö·û´®
+    // ä½¿ç”¨å­—ç¬¦ä¸²
     render("{% cycle 'one', 'two', 'three' %},\
 {% cycle 'one', 'two', 'three' %},\
 {% cycle 'one', 'two', 'three' %},\
 {% cycle 'one', 'two', 'three' %}")
     .should.equal('one,two,three,one');
     
-    // Ê¹ÓÃÊı×Ö
+    // ä½¿ç”¨æ•°å­—
     render("{% cycle 1, 2, 3 %},\
 {% cycle 1, 2, 3 %},\
 {% cycle 1, 2, 3 %},\
 {% cycle 1, 2, 3 %}")
     .should.equal('1,2,3,1');
     
-    // Ê¹ÓÃ±äÁ¿ £¨±ØĞëÊÇäÖÈ¾Ö®Ç°ÒÑÈ·¶¨µÄ±äÁ¿£©
+    // ä½¿ç”¨å˜é‡ ï¼ˆå¿…é¡»æ˜¯æ¸²æŸ“ä¹‹å‰å·²ç¡®å®šçš„å˜é‡ï¼‰
     render("{% cycle a, b, c %},\
 {% cycle a, b, c %},\
 {% cycle a, b, c %},\
 {% cycle a, b, c %}", {a: 'Fo', b: 2, c: 'WwZ'})
     .should.equal('Fo,2,WwZ,Fo');
       
-    // Ñ­»·
+    // å¾ªç¯
     render("{% cycle 'one', 'two', 'three' %},\
 {% for item in (1..3) %}\
 {%  cycle 'one', 'two', 'three' %},\
@@ -42,7 +42,7 @@ describe('Liquid.js', function () {
 {%  cycle 'one', 'two', 'three' %}")
     .should.equal('one,two,three,one,two');
     
-    // Ç¶Ì×Ñ­»·
+    // åµŒå¥—å¾ªç¯
     render("{% cycle 'one', 'two', 'three' %},\
 {% for item in (1..3) %}\
 {% for item in (1..3) %}\
@@ -52,7 +52,7 @@ describe('Liquid.js', function () {
 {%  cycle 'one', 'two', 'three' %}")
     .should.equal('one,two,three,one,two,three,one,two,three,one,two');
     */
-    // ·Ö×é
+    // åˆ†ç»„
     render("{% for item in (1..3) %}{% cycle 'group 1': 'one', 'two', 'three' %},{% endfor %}")
       .should.equal('one,two,three,');
     render("{% for item in (1..6) %}{% cycle 'group 1' : 'one', 'two', 'three' %},{% endfor %}")

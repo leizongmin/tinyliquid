@@ -1,7 +1,7 @@
 var should = require('should');
 var liquid = require('../');
 
-describe('Liquid.js', function () {
+describe('compileAll', function () {
   
   var compileAll = function (files, options) {
     options = options || {};
@@ -54,7 +54,7 @@ describe('Liquid.js', function () {
     should.not.exist(fns.item.includes.index);
   });
   
-  // Éî²ã´ÎÇ¶Ì×
+  // æ·±å±‚æ¬¡åµŒå¥—
   it('#compileAll()  deep', function () {
     //return;
     var files = {
@@ -98,7 +98,7 @@ describe('Liquid.js', function () {
     fns.six({title: 'hello'}).should.equal('hello');
   });
   
-  // ±Õ»·Ç¶Ì×
+  // é—­çŽ¯åµŒå¥—
   it('#compileAll()  loop', function () {
     
     var files = {
@@ -117,7 +117,7 @@ describe('Liquid.js', function () {
     should.exist(isOk);
   });
   
-  // ±àÒë
+  // ç¼–è¯‘
   it('#compileAll() example', function () {
   
     var files = {

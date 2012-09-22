@@ -9,11 +9,11 @@ describe('advRender', function () {
       'abc':      '654321abc',
       'title':    function (env, callback) {
         setTimeout(function () {
-          return callback(null, '调查');
+          return callback(null, '璋冩煡');
         }, 50);
       },
       'man.name':    function (env, callback) {
-        var name = env.fullname ? '小雷' : '老雷';
+        var name = env.fullname ? '灏忛浄' : '鑰侀浄';
         setTimeout(function () {
           return callback(null, name);
         }, 100);
@@ -29,14 +29,14 @@ describe('advRender', function () {
       }
     };
     
-    var fn = liquid.compile('{{abc}}-{{ title }}: 姓名:{{ man.name }}, 年龄:{{ man.age }}');
+    var fn = liquid.compile('{{abc}}-{{ title }}: 濮撳悕:{{ man.name }}, 骞撮緞:{{ man.age }}');
     liquid.advRender(fn, models, {env: {times: 5}}, function (err, text) { 
       should.not.exist(err);
-      text.should.equal('654321abc-调查: 姓名:老雷, 年龄:115');
+      text.should.equal('654321abc-璋冩煡: 濮撳悕:鑰侀浄, 骞撮緞:115');
       
       liquid.advRender(fn, models, {env: {fullname: true}}, function (err, text) {
         should.not.exist(err);
-        text.should.equal('654321abc-调查: 姓名:小雷, 年龄:23');
+        text.should.equal('654321abc-璋冩煡: 濮撳悕:灏忛浄, 骞撮緞:23');
       
         var fn = liquid.compile('{{ title }}: {{ error }}');
         liquid.advRender(fn, models, {}, function (err, text) { 

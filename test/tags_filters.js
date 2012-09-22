@@ -1,7 +1,7 @@
 var should = require('should');
 var liquid = require('../');
 
-describe('Liquid.js', function () {
+describe('filters', function () {
 
   it('#output and filters', function () { 
     var text = 'hello, {{ name }} -> {{ name | uppercase }}.';
