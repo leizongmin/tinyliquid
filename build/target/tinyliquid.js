@@ -230,9 +230,12 @@ var $_buf;
  * @return {string}
  */
 exports.localsWrap = function (n, locals, saveFunc) {
-  if (!locals)
-    locals = 'locals';
-  locals += '.';
+  if (/^(forloop|tablerowloop)/i.test(n)) {
+    locals = '';
+  } else {
+    if (!locals) locals = 'locals';
+    locals += '.';
+  }
   n = n.trim();
   // 是否为常量
   if (CONST_VAL.indexOf(n) > -1)
@@ -2001,7 +2004,7 @@ exports.tags = function (text, start, context) {
           else {
             setLineNumber();
             script += '}\n'
-                    + '})($_merge(locals));';
+                    + '})(locals);';
             outLoop();
           }
           break;
@@ -2015,7 +2018,7 @@ exports.tags = function (text, start, context) {
                     + '}\n'
                     + '$_buf += \'</tr>\\n\';\n'
                     + '}\n'
-                    + '})($_merge(locals));';
+                    + '})(locals);';
             outLoop();
           }
           break;
@@ -2689,7 +2692,7 @@ catch (err) {
 }
 
 // 版本
-exports.version = '0.0.9';
+exports.version = '0.1.0';
  
 // 解析代码
 exports.parse = wrap('parse', template.parse);
