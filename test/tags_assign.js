@@ -83,6 +83,13 @@ describe('Tag: assign', function () {
     // 在loop内部定义的变量可用
     render('{% for i in (0..9) %}{% assign j = i %}{{j}}{% endfor %}-{{j}}')
       .should.equal('0123456789-9');
+
+    // 嵌套多个forloop
+    render('{% assign sum = 0 %}{% for i in (0..9) %}{% for j in (0..9) %}{% assign sum = sum | plus: j %}{% endfor %}{% endfor %}{{sum}}')
+      .should.equal('450');
+
+    render('{% for i in (0..9) %}{% assign sum = 0 %}{% for j in (0..9) %}{% assign sum = sum | plus: j %}{% endfor %}{{sum}}{% endfor %}')
+      .should.equal('45454545454545454545');
      
   });
 
