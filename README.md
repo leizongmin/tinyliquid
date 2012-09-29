@@ -157,7 +157,11 @@ TinyLiquid
     Hello world, I think I'm gonna be happy today.
     
     
-详细语法说明可参考这里：http://wiki.shopify.com/Liquid
+详细语法说明可参考这里：
+
+http://wiki.shopify.com/Liquid （英文）
+
+https://wiki.shopqi.com/liquid （中文）
 
 
 
