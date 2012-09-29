@@ -116,36 +116,6 @@ exports.toArray = function (data) {
 };
 
 /**
- * 表格分割
- *
- * @param {object|array} data
- * @param {int} col 列数
- * @param {int} offset 偏移量
- * @param {int} limit 返回数量
- * @return {array}
- */
-exports.tableSplit = function (data, col, offset, limit) {
-  if (isNaN(col))
-    return data;
-  if (isNaN(offset))
-    offset = 0;
-  if (isNaN(limit))
-    data = data.slice(offset);
-  else
-    data = data.slice(offset, offset + limit);
-  var len = data.length;
-  var ret = [];
-  var rowi = 0;
-  var di = 0;
-  while (di < len) {
-    var row = ret[rowi++] = [];
-    for (var i = 0; i < col && di < len; i++)
-      row.push(data[di++]);
-  }
-  return ret;
-};
-
-/**
  * 取指定范围的数字数组
  *
  * @param {int} s
@@ -2409,17 +2379,15 @@ exports.compile = function (text, options) {
   var tpl = exports.parse(text, options);
   
   var script = '(function (locals, filters) { \n'
-             //+ '\'use strict\';\n'
-             + 'locals = locals || {};\n'
-             + 'filters = filters || {};\n'
-             + 'var global = {locals: locals, filters: filters};\n'
              + 'var $_html = ' + utils.outputHtml.toString() + ';\n'
              + 'var $_err = ' + utils.errorMessage.toString() + ';\n'
              + 'var $_rethrow = ' + utils.rethrowError.toString() + ';\n'
              + 'var $_merge = ' + utils.merge.toString() + ';\n'
              + 'var $_range = ' + utils.range.toString() + ';\n'
              + 'var $_array = ' + utils.toArray.toString() + ';\n'
-             //+ 'var $_table = ' + utils.tableSplit.toString() + ';\n'
+             + 'locals = $_merge(locals);\n'
+             + 'filters = filters || {};\n'
+             + 'var global = {locals: locals, filters: filters};\n'
              + 'try { \n'
              + tpl.code + '\n'
              + '} catch (err) {\n'
@@ -2735,5 +2703,4 @@ function wrap (name, fn) {
 })({});
 
 // 如果是在Node.js环境，则输出module.exports
-if (typeof module !== 'undefined' && module.exports)
-  module.exports = TinyLiquid;
+if (typeof module !== 'undefined' && module.exports) module.exports = TinyLiquid;
