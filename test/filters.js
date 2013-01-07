@@ -112,7 +112,7 @@ describe('filters', function () {
     var num = function (n) {
       return (n < 10 ? '0' : '') + n;
     };
-    filters.date('now').should.equal(now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + num(now.getDate())
+    filters.date('now').should.equal(now.getFullYear() + '-' + num(now.getMonth() + 1) + '-' + num(now.getDate())
                           + ' ' + num(now.getHours()) + ':' + num(now.getMinutes()) + ':' + num(now.getSeconds()));
     var now = new Date('1992-12-31 15:30:40');
     filters.date(now.getTime() + '').should.equal('1992-12-31 15:30:40');
