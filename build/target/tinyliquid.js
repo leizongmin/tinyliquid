@@ -77,8 +77,7 @@ exports.stripQuotes = function (input) {
     s++;
     e--;
   }
-  if (input[ei] === '\'' || input[ei] === '"')
-    e--;
+  if (input[ei] === '\'' || input[ei] === '"') e--;
   return input.substr(s, e);
 };
  
@@ -93,8 +92,9 @@ exports.merge = function () {
   var ret = {};
   for (var i in arguments) {
     var obj = arguments[i];
-    for (var j in obj)
+    for (var j in obj) {
       ret[j] = obj[j];
+    }
   }
   return ret;
 };
@@ -106,12 +106,13 @@ exports.merge = function () {
  * @return {array}
  */
 exports.toArray = function (data) {
-  if (Array.isArray(data))
-    return data;
+  if (Array.isArray(data)) return data;
   var ret = [];
-  for (var i in data)
-    if (i !== 'size')
+  for (var i in data) {
+    if (i !== 'size') {
       ret.push(data[i]);
+    }
+  }
   return ret;
 };
 
@@ -126,10 +127,10 @@ exports.range = function (s, e) {
   s = parseInt(s);
   e = parseInt(e);
   var r = [];
-  if (isNaN(s) || isNaN(e))
-    return r;
-  for (; s <= e; s++)
+  if (isNaN(s) || isNaN(e)) return r;
+  for (; s <= e; s++) {
     r.push(s);
+  }
   return r;
 };
 
@@ -140,11 +141,10 @@ exports.range = function (s, e) {
  * @return {string}
  */
 exports.escape = function (html) {
-  return String(html)
-    .replace(/&(?!\w+;)/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(html) .replace(/&(?!\w+;)/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;');
 };
 
 /**
@@ -168,10 +168,11 @@ var $_html = exports.outputHtml;
  * @param {string} msg
  */
 exports.errorMessage = function (msg) {
-  var html = '<pre style="font-family:Courier; font-weight:bold; font-size:14px; color:red; padding:4px 20px 4px 20px; border:1px solid #CCC; background-color:#FFF5F0; line-height:1.6em;\
-white-space:pre-wrap; white-space:-moz-pre-wrap; white-space:-pre-wrap; white-space:-o-pre-wrap; word-wrap:break-word; z-index:9999">'
-           + msg + '</pre>';
-  //console.log(html);
+  var html = '<pre style="font-family:Courier; font-weight:bold; \
+font-size:14px; color:red; padding:4px 20px 4px 20px; border:1px solid #CCC; \
+background-color:#FFF5F0; line-height:1.6em; white-space:pre-wrap; \
+white-space:-moz-pre-wrap; white-space:-pre-wrap; white-space:-o-pre-wrap; \
+word-wrap:break-word; z-index:9999">' + msg + '</pre>';
   return html;
 };
 var $_err = exports.errorMessage;
@@ -183,9 +184,9 @@ var $_err = exports.errorMessage;
  * @param {string} filename
  */
 exports.rethrowError = function (err, filename) {
-  var msg = 'An error occurred while rendering\n'
-          + 'Line: ' + $_line_num + (filename ? '  File: ' + filename : '') + '\n'
-          + '    ' + err;
+  var msg = 'An error occurred while rendering\n' +
+           'Line: ' + $_line_num + (filename ? '  File: ' + filename : '') +
+           '\n    ' + err;
   $_buf+=($_err(msg));
 };
 
@@ -208,37 +209,31 @@ exports.localsWrap = function (n, locals, saveFunc) {
   }
   n = n.trim();
   // 是否为常量
-  if (CONST_VAL.indexOf(n) > -1)
-    return n;
+  if (CONST_VAL.indexOf(n) > -1)  return n;
   // 是否为字符串
-  if (/^['"].*['"]$/.test(n))
-    return n;
+  if (/^['"].*['"]$/.test(n))     return n;
   // 是否为数值
-  if (/^\d[\d\.]*\d?$/.test(n))
-    return n;
+  if (/^\d[\d\.]*\d?$/.test(n))   return n;
   // 是否为标识符
   if (/^[a-zA-Z_][a-zA-Z0-9_\.]*$/.test(n) && n.substr(-1) !== '.') {
-    if (typeof saveFunc === 'function')
-      saveFunc(n);
+    if (typeof saveFunc === 'function') saveFunc(n);
     return locals + n;
   }
   
   var i = n.indexOf('[');
   if (i !== -1 && typeof saveFunc === 'function') {
     var s = n.substr(0, i);
-    if (s.substr(-1) === '.')
-      s = s.substr(0, s.length - 1);
+    if (s.substr(-1) === '.') s = s.substr(0, s.length - 1);
     saveFunc(s);
   }
   
   //转换为字符串索引
-  n = n.replace(/\.?((([\w\d\_]*[^\w\d\_\.\[\]]+[\w\d\_]*)+)|([\d]+[\w].*))\.?/img, function (a) {
-    if (/^["']|["']$/img.test(a))
-      return a;
-    if (a[0] === '.')
-      a = a.substr(1);
-    if (a.substr(-1) === '.')
-      a = a.substr(0, a.length - 1);
+  n = n.replace(
+        /\.?((([\w\d\_]*[^\w\d\_\.\[\]]+[\w\d\_]*)+)|([\d]+[\w].*))\.?/img,
+        function (a) {
+    if (/^["']|["']$/img.test(a)) return a;
+    if (a[0] === '.')             a = a.substr(1);
+    if (a.substr(-1) === '.')     a = a.substr(0, a.length - 1);
     a = a.replace(/"/img, '\\"');
     return '["' + a + '"]';
   });
@@ -251,8 +246,7 @@ exports.localsWrap = function (n, locals, saveFunc) {
     if (typeof saveFunc === 'function') {
       n.split('[').forEach(function (item) {
         var i = item.indexOf(']');
-        if (i === -1)
-          return;
+        if (i === -1) return;
         var n = item.substr(0, i);
         if (!/^['"].*['"]$/.test(n) && !/^\d[\d\.]*\d?$/.test(n) &&
             /^[a-zA-Z_][a-zA-Z0-9_\.]*$/.test(n))
@@ -260,19 +254,19 @@ exports.localsWrap = function (n, locals, saveFunc) {
       });
     }
     n = n.replace(/\.?\[/img, '[' + locals)
-         .replace(RegExp((locals + '[\'"\\d]').replace(/\./img, '\\.'), 'img'), function (a) {
+         .replace(RegExp((locals + '[\'"\\d]').replace(/\./img, '\\.'), 'img'),
+                          function (a) {
            return a.substr(locals.length);
          });
   }
   
-  if (n.substr(-1) === '.')
-    n = n.substr(0, n.length - 1);
-  // console.log('--------', n);
-  if (n[0] === '[')
+  if (n.substr(-1) === '.') n = n.substr(0, n.length - 1);
+  if (n[0] === '[') {
     var ret = locals.substr(0, locals.length - 1) + n;
-  else
+  } else {
     var ret = locals + n;
-    
+  }
+
   // 修正一些很奇怪的问题
   ret = ret.replace(/\.\["/img, '["')
            .replace(/"\]\.\]/img, '"]]');
@@ -291,15 +285,12 @@ var CONST_VAL = ['nil', 'null', 'empty', 'blank', 'true', 'false'];
  */
 exports.filtered = function (js, options, context) {
   options = options || {}
-  if (!options.locals)
-    options.locals = 'locals';
-  if (!options.filters)
-    options.filters = 'filters';
+  if (!options.locals) options.locals = 'locals';
+  if (!options.filters) options.filters = 'filters';
   options.locals += '.';
   options.filters += '.';
   
-  if (!context)
-    context = {};
+  if (!context) context = {};
   
   var localsWrap = exports.localsWrap;
   
@@ -317,15 +308,17 @@ exports.filtered = function (js, options, context) {
     }
     if (args) {
       var a = exports.splitBy(args, ',');
-      for (var i in a)
+      for (var i in a) {
         a[i] = localsWrap(a[i], null, context.saveLocalsName);
+      }
       args = ', ' + a.join(', ');
     }
     return options.filters + name.trim() + '(' + js + args + ')';
   });
   
-  if (!hasFilters)
+  if (!hasFilters) {
     ret = localsWrap(ret, null, context.saveLocalsName);
+  }
   
   return ret;
 };
@@ -338,8 +331,7 @@ exports.filtered = function (js, options, context) {
  * @return {string}
  */
 exports.condition = function (cond, context) {
-  if (!context)
-    context = {};
+  if (!context) context = {};
   var localsWrap = function (a) {
     return exports.localsWrap(a, null, context.saveLocalsName);
   };
@@ -373,7 +365,8 @@ exports.condition = function (cond, context) {
   }
   
   // 生成单个条件的js代码
-  var op = ['>', '<', '==', '!=', '>=', '<>', '<=', 'contains', 'hasValue', 'hasKey'];
+  var op = ['>', '<', '==', '!=', '>=', '<>', '<=',
+            'contains', 'hasValue', 'hasKey'];
   var vempty = ['nil', 'null', 'empty', 'blank'];
   var one = function (ca) {
     if (ca.length === 1) {
@@ -382,27 +375,27 @@ exports.condition = function (cond, context) {
     if (ca.length === 3) {
       var op1 = localsWrap(ca[0]);
       var op2 = localsWrap(ca[2]);
-      ca[1] = ca[1].toLowerCase();
-      // console.log(ca[1]);
-      // contains 语句
+      ca[1] = ca[1].toLowerCase();     
       if (ca[1] === 'contains') {
-        return '(Array.isArray(' + op1 + ') ? (' + op1 + '.indexOf(' + op2 + ') !== -1) : '
-             + '(String(' + op1
-             + ').toLowerCase().indexOf(' + op2
-             + ') !== -1))';
-      }
-      // hasValue 语句
-      else if (ca[1] === 'hasvalue') {
-        return '(Array.isArray(' + op1 + ') ? (' + op1 + '.indexOf(' + op2 + ') !== -1 ? true : false) : '
-             + '(function () {  for (var i in ' + op1 + ') if (' + op1 + '[i] == ' + op2 + ') return true;'
-             + '  return false; })())';
-      }
-      // hasKey 语句
-      else if (ca[1] === 'haskey') {
-        return '(' + op1 + ' && typeof ' + op1 + '[' + op2 + '] !== \'undefined\')';
-      }
-      // nil, empty
-      else if (vempty.indexOf(ca[2]) > -1) {
+        // contains 语句
+        return '(Array.isArray(' + op1 + ') ? (' + op1 +
+               '.indexOf(' + op2 + ') !== -1) : ' +
+               '(String(' + op1 +
+               ').toLowerCase().indexOf(' + op2 +
+               ') !== -1))';
+      } else if (ca[1] === 'hasvalue') {
+        // hasValue 语句
+        return '(Array.isArray(' + op1 + ') ? (' + op1 +
+               '.indexOf(' + op2 + ') !== -1 ? true : false) : ' +
+               '(function () {  for (var i in ' + op1 + ') if (' + op1 +
+               '[i] == ' + op2 + ') return true;' +
+               '  return false; })())';
+      } else if (ca[1] === 'haskey') {
+        // hasKey 语句
+        return '(' + op1 + ' && typeof ' + op1 + '[' + op2 +
+               '] !== \'undefined\')';
+      } else if (vempty.indexOf(ca[2]) > -1) {
+        // nil, empty
         switch (ca[1]) {
           case '!=':
           case '<>':
@@ -412,18 +405,16 @@ exports.condition = function (cond, context) {
           default:
             return null;
         }
-      }
-      // 其他
-      else if (op.indexOf(ca[1]) > -1) {
+      } else if (op.indexOf(ca[1]) > -1) {
+        // 其他
         if (ca[1] === '<>')
           ca[1] = '!=';
         return '(' + op1 + ca[1] + op2 + ')';
-      }
-      else {
+      } else {
+        // 出错
         return null;
       }
-    }
-    else {
+    } else {
       return null;
     }
   };
@@ -433,23 +424,23 @@ exports.condition = function (cond, context) {
     var c = conds[i];
     if (Array.isArray(c)) {
       var s = one(c);
-      if (s === null)
+      if (s === null) {
         return null;
-      else
+      } else {
         ret.push(s);
-    }
-    else if (c === 'and') {
+      }
+    } else if (c === 'and') {
       ret.push('&&');
-    }
-    else if (c === 'or') {
+    } else if (c === 'or') {
       ret.push('||');
     }
   }
   
-  if (ret.length > 1)
+  if (ret.length > 1) {
     return '(' + ret.join(' ') + ')';
-  else
+  } else {
     return ret.join(' ');
+  }
 };
 
 /**
@@ -464,39 +455,34 @@ exports.split = function (text) {
   var ret = [];
   var add = function (end) {
     var w = text.slice(lastIndex, end).trim();
-    if (w.length > 0)
-      ret.push(w);
+    if (w.length > 0) ret.push(w);
     lastIndex = end;
   };
   
   for (var i = 0, len = text.length; i < len; i++) {
     var c = text[i];
-    // console.log(i, c);
-    // 字符串开始或结束
     if ((c === '"' || c === '\'') && text[i - 1] !== '\\') {
-      // 结束
+      // 字符串开始或结束
       if (isString === c) {
+        // 结束
         i++;
         add(i);
         isString = false;
-      }
-      // 开始
-      else if (!isString) {
+      } else if (!isString) {
+        // 开始
         add(i);
         isString = c;
       }
-    }
-    // 非字符串
-    else if (!isString) {
+    } else if (!isString) {
+      // 非字符串
       var isOpChar = function (c) {
         return (c === '<' || c === '>' || c === '=' || c === '!');
       };
-      // 空格
       if (c === ' ') {
+        // 空格
         add(i);
-      }
-      // 中间的比较运算符 如 a<b
-      else if (isOpChar(c)) {
+      } else if (isOpChar(c)) {
+        // 中间的比较运算符 如 a<b
         add(i);
         do {
           i++;
@@ -561,24 +547,29 @@ exports.forloops = function (loops, context) {
   var loopIndex = context.loop;
   
   var localsWrap = exports.localsWrap;
-  var n = '$_loop_' + loopIndex;        // 索引
-  var ni = '$_loop_i_' + loopIndex;     // 数字索引
-  var array = localsWrap(blocks[2], null, context.saveLocalsName);    // 数组的名称
-  var item = localsWrap(blocks[0], null, context.saveLocalsName);     // 当前元素的名称
+  // 索引
+  var n = '$_loop_' + loopIndex;
+  // 数字索引
+  var ni = '$_loop_i_' + loopIndex;
+  // 数组的名称
+  var array = localsWrap(blocks[2], null, context.saveLocalsName);
+  // 当前元素的名称
+  var item = localsWrap(blocks[0], null, context.saveLocalsName);
   
   // loop item临时名称
   context.loopName[context.loopName.length - 1].itemName = item;
   
-  var header = '(function (locals) {\n'
-             + 'var ' + ni + ' = 0;\n'
-             + 'locals.forloop = {};\n';
+  var header = '(function (locals) {\n' +
+               'var ' + ni + ' = 0;\n' +
+               'locals.forloop = {};\n';
   
   // for i in (1..item.quantity)
   var r = /^\((.+)\.\.(.+)\)$/.exec(blocks[2]);
   if (r !== null) {
     array = localsWrap('_range_' + loopIndex, null, context.saveLocalsName);
-    header += array + ' = $_range(' + localsWrap(r[1], null, context.saveLocalsName) + ', '
-           + localsWrap(r[2], null, context.saveLocalsName) + ');\n';
+    header += array + ' = $_range(' +
+              localsWrap(r[1], null, context.saveLocalsName) + ', ' +
+              localsWrap(r[2], null, context.saveLocalsName) + ');\n';
   }
   
   // 将对象转换为数组
@@ -591,12 +582,10 @@ exports.forloops = function (loops, context) {
   var options = {};
   var getOptions = function (block) {
     var b = block.split(':');
-    if (b.length !== 2)
-      return false;
+    if (b.length !== 2) return false;
     var name = b[0].trim();
     var value = localsWrap(b[1], null, context.saveLocalsName);
-    if (OPTIONS.indexOf(name) === -1)
-      return false;
+    if (OPTIONS.indexOf(name) === -1) return false;
     options[name] = value;
     return true;
   };
@@ -610,30 +599,32 @@ exports.forloops = function (loops, context) {
   }
   // for item in arrays limit:N offset:M
   for (var i = 3; i < blocks.length; i++) {
-    if (getOptions(blocks[i]) === false)
-      return null;
+    if (getOptions(blocks[i]) === false) return null;
   }
-  if (options.limit && options.offset)
-    header += array + ' = ' + array + '.slice(' + options.offset + ', ' + options.offset + ' + ' + options.limit + ');\n';
-  else if (options.limit)
+  if (options.limit && options.offset) {
+    header += array + ' = ' + array + '.slice(' + options.offset + ', ' +
+              options.offset + ' + ' + options.limit + ');\n';
+  } else if (options.limit) {
     header += array + ' = ' + array + '.slice(0, ' + options.limit + ');\n';
-  else if (options.offset)
+  } else if (options.offset) {
     header += array + ' = ' + array + '.slice(' + options.offset + ');\n';
-  
+  }
+
   // 生成基本代码
-  var script = header
-         + 'locals.forloop.length = ' + array + '.length;\n'
-         + 'var forloop = locals.forloop;\n'
-         + 'for (var ' + n + ' = 0; ' + n + ' < forloop.length; ' + n + '++) {\n'
-         + item + ' = ' + array + '[' + n + '];\n'
-         + 'forloop.name = \'' + blocks[0] + '\';\n'
-         + 'forloop.index0 = ' + ni + ';\n'
-         + 'forloop.index = ++' + ni + ';\n'
-         + 'forloop.rindex0 = forloop.length - forloop.index;\n'
-         + 'forloop.rindex = forloop.length - forloop.index0;\n'
-         + 'forloop.first = ' + ni + ' === 1 ? true : false;\n'
-         + 'forloop.last = ' + ni + ' === forloop.length ? true : false;\n'
-         + '/* for loops body */';
+  var script = header +
+           'locals.forloop.length = ' + array + '.length;\n' +
+           'var forloop = locals.forloop;\n' +
+           'for (var ' + n + ' = 0; ' + n + ' < forloop.length; ' +
+           n + '++) {\n' +
+           item + ' = ' + array + '[' + n + '];\n' +
+           'forloop.name = \'' + blocks[0] + '\';\n' +
+           'forloop.index0 = ' + ni + ';\n' +
+           'forloop.index = ++' + ni + ';\n' +
+           'forloop.rindex0 = forloop.length - forloop.index;\n' +
+           'forloop.rindex = forloop.length - forloop.index0;\n' +
+           'forloop.first = ' + ni + ' === 1 ? true : false;\n' +
+           'forloop.last = ' + ni + ' === forloop.length ? true : false;\n' +
+           '/* for loops body */';
   
   return script;
 };
@@ -650,8 +641,7 @@ exports.tablerow = function (loops, context) {
   
   var loopIndex = context.loop;
   
-  if (blocks.length < 2)
-    return null;
+  if (blocks.length < 2) return null;
   
   // 如果为tablerow array，自动转化为默认的 tablerow item in array
   if (blocks.length === 2) {
@@ -662,24 +652,29 @@ exports.tablerow = function (loops, context) {
   }
   
   var localsWrap = exports.localsWrap;
-  var n = '$_loop_' + loopIndex;        // 索引
-  var ni = '$_loop_i_' + loopIndex;     // 数字索引
-  var array = localsWrap(blocks[2], null, context.saveLocalsName);    // 数组的名称
-  var item = localsWrap(blocks[0], null, context.saveLocalsName);     // 当前元素的名称
+  // 索引
+  var n = '$_loop_' + loopIndex;
+  // 数字索引
+  var ni = '$_loop_i_' + loopIndex;
+  // 数组的名称
+  var array = localsWrap(blocks[2], null, context.saveLocalsName);
+  // 当前元素的名称
+  var item = localsWrap(blocks[0], null, context.saveLocalsName);
   
   // loop item临时名称
   context.loopName[context.loopName.length - 1].itemName = item;
   
-  var header = '(function (locals) {\n'
-             + 'var ' + ni + ' = 0;\n'
-             + 'locals.tablerowloop = {};\n';
+  var header = '(function (locals) {\n' +
+               'var ' + ni + ' = 0;\n' +
+               'locals.tablerowloop = {};\n';
   
   // tablerow i in (1..item.quantity)
   var r = /^\((.+)\.\.(.+)\)$/.exec(blocks[2]);
   if (r !== null) {
     array = localsWrap('_range_' + loopIndex, null, context.saveLocalsName);
-    header += array + ' = $_range(' + localsWrap(r[1], null, context.saveLocalsName) + ', '
-           + localsWrap(r[2], null, context.saveLocalsName) + ');\n';
+    header += array + ' = $_range(' +
+              localsWrap(r[1], null, context.saveLocalsName) +
+              ', ' + localsWrap(r[2], null, context.saveLocalsName) + ');\n';
   }
   
   // 将对象转换为数组
@@ -692,12 +687,10 @@ exports.tablerow = function (loops, context) {
   var options = {};
   var getOptions = function (block) {
     var b = block.split(':');
-    if (b.length !== 2)
-      return false;
+    if (b.length !== 2) return false;
     var name = b[0].trim();
     var value = localsWrap(b[1], null, context.saveLocalsName);
-    if (OPTIONS.indexOf(name) === -1)
-      return false;
+    if (OPTIONS.indexOf(name) === -1) return false;
     options[name] = value;
     return true;
   };
@@ -711,39 +704,43 @@ exports.tablerow = function (loops, context) {
   }
   // tablerow item in arrays cols:3 limit:N offset:M
   for (var i = 3; i < blocks.length; i++) {
-    if (getOptions(blocks[i]) === false)
-      return null;
+    if (getOptions(blocks[i]) === false) return null;
   }
-  if (options.limit && options.offset)
-    header += array + ' = ' + array + '.slice(' + options.offset + ', ' + options.offset + ' + ' + options.limit + ');\n';
-  else if (options.limit)
+  if (options.limit && options.offset) {
+    header += array + ' = ' + array + '.slice(' + options.offset + ', ' +
+              options.offset + ' + ' + options.limit + ');\n';
+  } else if (options.limit) {
     header += array + ' = ' + array + '.slice(0, ' + options.limit + ');\n';
-  else if (options.offset)
+  } else if (options.offset) {
     header += array + ' = ' + array + '.slice(' + options.offset + ');\n';
-  
+  }
+
   // 生成基本代码
-  var script = header
-         + 'locals.tablerowloop.length = ' + array + '.length;\n'
-         + 'var tablerowloop = locals.tablerowloop;\n'
-         + 'var ' + n + '_row = 0;\n'
-         + 'for (var ' + n + ' = 0; ' + n + ' < tablerowloop.length; ) {\n'
-         + n + '_row++;\n'
-         + '$_buf += \'<tr class=\"row\' + (' + n + '_row) + \'\">\\n\';'
-         + 'for (tablerowloop.col0 = 0; tablerowloop.col0 < ' + options.cols + ' && ' + n + ' < tablerowloop.length; tablerowloop.col0++, ' + n + '++) {\n'
-         + item + ' = ' + array + '[' + n + '];\n'
-         + 'tablerowloop.name = \'' + blocks[0] + '\';\n'
-         + 'tablerowloop.col = tablerowloop.col0 + 1;\n'
-         + 'tablerowloop.col_first = tablerowloop.col === 1 ? true : false;\n'
-         + 'tablerowloop.col_last = tablerowloop.col === ' + options.cols + ' ? true : false;\n'
-         + 'tablerowloop.index0 = ' + ni + ';\n'
-         + 'tablerowloop.index = ++' + ni + ';\n'
-         + 'tablerowloop.rindex0 = tablerowloop.length - tablerowloop.index;\n'
-         + 'tablerowloop.rindex = tablerowloop.length - tablerowloop.index0;\n'
-         + 'tablerowloop.first = ' + ni + ' === 1 ? true : false;\n'
-         + 'tablerowloop.last = ' + ni + ' === tablerowloop.length ? true : false;\n'
-         + 'if (tablerowloop.last === true) tablerowloop.col_last = true;\n'
-         + '$_buf += \'<td class=\"col\' + tablerowloop.col + \'\">\';'
-         + '/* tablerow loops body */';
+  var script = header +
+        'locals.tablerowloop.length = ' + array + '.length;\n' +
+        'var tablerowloop = locals.tablerowloop;\n' +
+        'var ' + n + '_row = 0;\n' +
+        'for (var ' + n + ' = 0; ' + n + ' < tablerowloop.length; ) {\n' +
+        n + '_row++;\n' +
+        '$_buf += \'<tr class=\"row\' + (' + n + '_row) + \'\">\\n\';' +
+        'for (tablerowloop.col0 = 0; tablerowloop.col0 < ' + options.cols +
+        ' && ' + n + ' < tablerowloop.length; tablerowloop.col0++, ' +
+        n + '++) {\n' +
+        item + ' = ' + array + '[' + n + '];\n' +
+        'tablerowloop.name = \'' + blocks[0] + '\';\n' +
+        'tablerowloop.col = tablerowloop.col0 + 1;\n' +
+        'tablerowloop.col_first = tablerowloop.col === 1 ? true : false;\n' +
+        'tablerowloop.col_last = tablerowloop.col === ' + options.cols +
+        ' ? true : false;\n' +
+        'tablerowloop.index0 = ' + ni + ';\n' +
+        'tablerowloop.index = ++' + ni + ';\n' +
+        'tablerowloop.rindex0 = tablerowloop.length - tablerowloop.index;\n' +
+        'tablerowloop.rindex = tablerowloop.length - tablerowloop.index0;\n' +
+        'tablerowloop.first = ' + ni + ' === 1 ? true : false;\n' +
+        'tablerowloop.last = ' + ni + ' === tablerowloop.length ? true : false;\n' +
+        'if (tablerowloop.last === true) tablerowloop.col_last = true;\n' +
+        '$_buf += \'<td class=\"col\' + tablerowloop.col + \'\">\';' +
+        '/* tablerow loops body */';
   
   return script;
 };
@@ -756,26 +753,26 @@ exports.tablerow = function (loops, context) {
  * @return {string}
  */
 exports.assign = function (expression, context) {
-  // console.log(expression, context);
-  // 如果为 [], array() 则创建一个数组
-  if (expression === '[]' || expression === 'array()')
+  if (expression === '[]' || expression === 'array()') {
+    // 如果为 [], array() 则创建一个数组
     var ret = '[]';
-  // 如果为 {}, object(), {"a":"xxx"} 则创建相应的对象
-  else if (expression === 'object()')
+  } else if (expression === 'object()') {
+    // 如果为 {}, object(), {"a":"xxx"} 则创建相应的对象
     var ret = '{}';
-  else if (/^\{.*\}$/img.test(expression))
+  } else if (/^\{.*\}$/img.test(expression)) {
     var ret = 'JSON.parse(\'' + expression + '\')';
-  else
+  } else {
     var ret = exports.filtered(expression, null, context);
-  // console.log(expression, ret);
+  }
+  
   // 替换用assign定义的名称为global
   // console.log(expression, context.assignNames);
   for (var i in context.assignNames) {
     // 忽略loop中的名称名称（即优先使用loop内定义的名称）
     if (context.loopName.length > 0) {
       if (i === context.loopName[context.loopName.length - 1].itemName ||
-          i.substr(0, 8) === 'forloop.' || i.substr(0, 13) === 'tablerowloop.')
-        continue;
+          i.substr(0, 8) === 'forloop.' ||
+          i.substr(0, 13) === 'tablerowloop.') continue;
     }
     
     ret = ret.replace(RegExp(i, 'img'), 'global.' + i);
@@ -801,16 +798,14 @@ exports.cycle = function (strlist, context) {
   if (_list.length > 1) {
     hasKey = _list[0];
     list[0] = _list[1];
-  }
-  else if (list[0].substr(-1) === ':') {
+  } else if (list[0].substr(-1) === ':') {
     hasKey = list[0].substr(0, list[0].length - 1);
     list.splice(0, 1);
-  }
-  else if (list[1] === ':') {
+  } else if (list[1] === ':') {
     hasKey = list[0];
     list.splice(0, 2);
   }
-  // console.log(hasKey, list);
+  
   for (var i in list) {
     list[i] = localsWrap(list[i], null, context.saveLocalsName);
   }
@@ -819,8 +814,8 @@ exports.cycle = function (strlist, context) {
   context.addCycle(cycleKey, list);
   
   var cycleName = '$_cycle_' + cycleKey;
-  var script = '$_buf+=(' + cycleName + '.items[' + cycleName + '.i])\n'
-             + '$_cycle_next(' + cycleName + ');\n';
+  var script = '$_buf+=(' + cycleName + '.items[' + cycleName + '.i])\n' +
+               '$_cycle_next(' + cycleName + ');\n';
   return script;
 };
 
@@ -833,8 +828,9 @@ exports.cycle = function (strlist, context) {
  * @param {object} env
  */
 var AsyncDataList = function (models, names, env) {
-  if (!(this instanceof AsyncDataList))
+  if (!(this instanceof AsyncDataList)) {
     return new AsyncDataList(models, names, env);
+  }
   this.models = models || {};
   this.names = names || {};
   this.env = env || {};
@@ -852,8 +848,7 @@ AsyncDataList.prototype.getItem = function (name, callback) {
   var self = this;
   var data = self.data;
   var models = self.models;
-  try {
-    
+  try {  
     var model = models[name];
     if (typeof model === 'undefined') {
       // 智能分析，比如需要 a.b.c 如果该项没注册，会自动递归查找其父项 a.b 和 a
@@ -861,8 +856,7 @@ AsyncDataList.prototype.getItem = function (name, callback) {
       while (ns.pop() && ns.length > 0) {
         name = ns.join('.');
         model = models[name];
-        if (typeof model !== 'undefined')
-          break;
+        if (typeof model !== 'undefined') break;
       }
     }
     
@@ -870,20 +864,17 @@ AsyncDataList.prototype.getItem = function (name, callback) {
     var modelType = typeof model;
     if (modelType === 'function') {
       return model(self.env, function (err, d) {
-        if (err)
-          return callback(err);
+        if (err) return callback(err);
         self.saveItem(name, d);
         return callback(null);
       });
-    }
-    else if (modelType !== 'undefined') {
+    } else if (modelType !== 'undefined') {
       self.saveItem(name, model);
       return callback(null);
     }
     
     return callback(null);
-  }
-  catch (err) {
+  } catch (err) {
     callback(err);
     return false;
   }
@@ -901,14 +892,14 @@ AsyncDataList.prototype.saveItem = function (name, value) {
   var oldns = [];
   var key = ns.pop();
   var getFather = function (node, ns, oldns) {
-    if (ns.length < 1)
-      return node;
+    if (ns.length < 1) return node;
     var key = ns.shift();
-    if (!node[key])
-      node[key] = {};
+    if (!node[key]) node[key] = {};
     oldns.push(key);
-    if (typeof node[key] !== 'object')
-      throw Error('Cannot set childs because "' + oldns.join('.') + '" is not an object');
+    if (typeof node[key] !== 'object') {
+      throw Error('Cannot set childs because "' + oldns.join('.') +
+                  '" is not an object');
+    }
     return getFather(node[key], ns, oldns);
   };
   var node = getFather(data, ns, oldns);
@@ -926,20 +917,16 @@ AsyncDataList.prototype.start = function (callback) {
   var models = this.models;
   var names = this.names;
   var data = this.data;
-  var self = this;
-  
+  var self = this; 
   try {
     var next = function (err) {
-      if (err)
-        return callback(err);
-      if (names.length < 1)
-        return callback(null, data);
+      if (err) return callback(err);
+      if (names.length < 1) return callback(null, data);
       var name = names.shift();
       self.getItem(name, next);
     };
     next();
-  }
-  catch (err) {
+  } catch (err) {
     return callback(err);
   }
 };
@@ -976,8 +963,7 @@ AsyncDataList.prototype.startParallel = function (callback) {
     for (var i in names) {
       getItem(names[i], names);
     }
-  }
-  catch (err) {
+  } catch (err) {
     return callback(err);
   }
 };
@@ -1008,7 +994,8 @@ AsyncDataList.prototype.startParallel = function (callback) {
  * @return {string}
  */
 exports.img_tag = function (url, alt) {
-  return '<img src="' + exports.escape(url) + '" alt="' + exports.escape(alt || '') + '">';
+  return '<img src="' + exports.escape(url) + '" alt="' +
+         exports.escape(alt || '') + '">';
 };
 
 /**
@@ -1029,7 +1016,9 @@ exports.script_tag = function (url) {
  * @return {string}
  */
 exports.stylesheet_tag = function (url, media) {
-  return '<link href="' + exports.escape(url) + '" rel="stylesheet" type="text/css" media="' + exports.escape(media || 'all') + '" />';
+  return '<link href="' + exports.escape(url) +
+         '" rel="stylesheet" type="text/css" media="' +
+         exports.escape(media || 'all') + '" />';
 };
 
 /**
@@ -1041,7 +1030,8 @@ exports.stylesheet_tag = function (url, media) {
  * @return {string}
  */
 exports.link_to = function (link, url, title) {
-  return '<a href="' + exports.escape(url || '') + '" title="' + exports.escape(title || '') + '">' + exports.escape(link) + '</a>';
+  return '<a href="' + exports.escape(url || '') + '" title="' +
+         exports.escape(title || '') + '">' + exports.escape(link) + '</a>';
 };
 
 /*-----------------------------Math Filters-----------------------------------*/
@@ -1106,8 +1096,7 @@ exports.divided_by = function (input, operand) {
  */
 exports.round = function (input, point) {
   point = parseInt(point, 10) || 0;
-  if (point < 1)
-    return Math.round(input);
+  if (point < 1) return Math.round(input);
   var n = Math.pow(10, point);
   return Math.round(input * n) / n;
 };
@@ -1132,8 +1121,7 @@ exports.integer = function (input) {
 exports.random = function (m, n) {
   m = parseInt(m); 
   n = parseInt(n);
-  if (!isFinite(m))
-    return Math.random();
+  if (!isFinite(m)) return Math.random();
   if (!isFinite(n)) {
     n = m;
     m = 0;
@@ -1150,8 +1138,7 @@ exports.random = function (m, n) {
  * @return {string}
  */
 exports.append = function (input, characters) {
-  if (!characters)
-    return String(input);
+  if (!characters) return String(input);
   return String(input) + String(characters);
 };
 
@@ -1163,8 +1150,7 @@ exports.append = function (input, characters) {
  * @return {string}
  */
 exports.prepend = function (input, characters) {
-  if (!characters)
-    return String(input);
+  if (!characters) return String(input);
   return String(characters) + String(input);
 };
 
@@ -1211,44 +1197,49 @@ exports.timestamp = function (input) {
  * @return {string}
  */
 exports.date = function (input, format) {
-  if (String(input).toLowerCase() == 'now')
+  if (String(input).toLowerCase() == 'now') {
     var time = new Date();
-  else {
+  } else {
     var timestamp = parseInt(input, 10);
-    if (timestamp == input)
+    if (timestamp == input) {
       var time = new Date(timestamp);
-    else
+    } else {
       var time = new Date(input);
+    }
   }
-  if (!time || !isFinite(time.valueOf()))
-    return 'Invalid Date';
-  if (!format)
-    format = '%Y-%m-%j %H:%M:%S';
-  var dates = time.toDateString().split(/\s/);      // ["Wed", "Apr", "11", "2012"]
-  var dateS = time.toLocaleDateString().split(/\s/);// ["Wednesday,", "April", "11,", "2012"]
-  var times = time.toTimeString().split(/[\s:\+]/); // ["10", "37", "44", "GMT", "0800", "(中国标准时间)"]
+  if (!time || !isFinite(time.valueOf())) return 'Invalid Date';
+  if (!format) format = '%Y-%m-%j %H:%M:%S';
+  // 返回结果格式 ["Wed", "Apr", "11", "2012"]
+  var dates = time.toDateString().split(/\s/);
+  // 返回结果格式 ["Wednesday,", "April", "11,", "2012"]
+  var dateS = time.toLocaleDateString().split(/\s/);
+  // 返回结果格式 ["10", "37", "44", "GMT", "0800", "(中国标准时间)"]
+  var times = time.toTimeString().split(/[\s:\+]/);
+  var n2 = function (n) {
+    return n > 10 ? n : '0' + n;
+  };
   var replace = {
-    a:      dates[0], // 星期
+    a:      dates[0],                   // 星期
     A:      dateS[0],
-    b:      dates[1], // 月份
+    b:      dates[1],                   // 月份
     B:      dateS[1],
     c:      time.toLocaleString(),
     d:      dates[2],
-    H:      times[0],       // 24小时制
-    I:      times[0] % 12,  // 12小时制
-    j:      dates[2], // 日
-    m:      time.getMonth() + 1,  // 月份
-    M:      times[1], // 分钟
+    H:      times[0],                   // 24小时制
+    I:      times[0] % 12,              // 12小时制
+    j:      dates[2],                   // 日
+    m:      n2(time.getMonth() + 1),    // 月份
+    M:      times[1],                   // 分钟
     p:      Number(times[0]) < 12 ? 'AM' : 'PM',  // 上午/下午
-    S:      times[2], // 秒
-    U:      weekNo(time),         // 当年的第几周，星期日开始
-    W:      weekNo(time, true),   // 星期一开始
-    w:      time.getDay(),  // 星期几(0-6)
+    S:      times[2],                   // 秒
+    U:      weekNo(time),               // 当年的第几周，星期日开始
+    W:      weekNo(time, true),         // 星期一开始
+    w:      time.getDay(),              // 星期几(0-6)
     x:      time.toDateString(),
     X:      time.toTimeString(),
-    y:      dates[3].substr(-2),  // 年份
+    y:      dates[3].substr(-2),        // 年份
     Y:      dates[3],
-    Z:      times[4]    // 时区
+    Z:      times[4]                    // 时区
   };
   var ret = String(format);
   for (var i in replace) {
@@ -1262,25 +1253,22 @@ function weekNo (now, mondayFirst) {
   var years = now.getFullYear();
   var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   if (years % 100 === 0) {
-    if (years % 400 === 0)
-      days[1] = 29;
-  }
-  else if (years % 4 === 0)
+    if (years % 400 === 0) days[1] = 29;
+  } else if (years % 4 === 0) {
     days[1] = 29;
-  
+  }
   if (now.getMonth() === 0) {
     totalDays = totalDays + now.getDate();
-  }
-  else {
+  } else {
     var curMonth = now.getMonth();
-    for (var count = 1; count <= curMonth; count++)
+    for (var count = 1; count <= curMonth; count++) {
       totalDays = totalDays + days[count - 1];
+    }
     totalDays = totalDays + now.getDate();
   }
   // 默认是以星期日开始的
   var week = Math.round(totalDays / 7);
-  if (mondayFirst && new Date(String(years)).getDay() === 0)
-    week += 1;
+  if (mondayFirst && new Date(String(years)).getDay() === 0) week += 1;
   return week;
 }
 
@@ -1311,18 +1299,16 @@ exports.upcase = function (input) {
  * @return {string}
  */
 exports.escape = function (input) {
-  return String(input)
-    .replace(/&(?!\w+;)/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(input).replace(/&(?!\w+;)/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;');
 };
 
 function getFirstKey (obj) {
   if (Array.isArray(obj)) {
     return 0;
-  }
-  else {
+  } else {
     var keys = Object.keys(obj);
     return keys[0] || '';
   }
@@ -1331,8 +1317,7 @@ function getFirstKey (obj) {
 function getLastKey (obj) {
   if (Array.isArray(obj)) {
     return obj.length - 1;
-  }
-  else {
+  } else {
     var keys = Object.keys(obj);
     return keys.pop() || '';
   }
@@ -1347,8 +1332,7 @@ function getLastKey (obj) {
 exports.keys = function (input) {
   try {
     return Object.keys(input);
-  }
-  catch (err) {
+  } catch (err) {
     return [];
   }
 };
@@ -1380,10 +1364,9 @@ exports.last = function (array) {
  * @return {string}
  */
 exports.handleize = function (input) {
-  return String(input)
-              .replace(/[^0-9a-zA-Z ]/g, '')
-              .replace(/[ ]+/g, '-')
-              .toLowerCase();
+  return String(input).replace(/[^0-9a-zA-Z ]/g, '')
+                      .replace(/[ ]+/g, '-')
+                      .toLowerCase();
 };
 
 /**
@@ -1394,12 +1377,12 @@ exports.handleize = function (input) {
  * @return {string}
  */
 exports.join = function (input, segmenter) {
-  if (!segmenter)
-    segmenter = ' ';
-  if (Array.isArray(input))
+  if (!segmenter) segmenter = ' ';
+  if (Array.isArray(input)) {
     return input.join(segmenter);
-  else
+  } else {
     return '';
+  }
 };
 
 /**
@@ -1424,8 +1407,9 @@ exports.replace_first = function (input, substring, replacement) {
  */
 exports.replace = function (input, substring, replacement) {
   input = String(input);
-  while (input.indexOf(substring) > -1)
+  while (input.indexOf(substring) > -1) {
     input = input.replace(substring, replacement);
+  }
   return input;
 };
 
@@ -1480,8 +1464,7 @@ exports.pluralize = function (input, singular, plural) {
  * @return {string}
  */
 exports.size = function (input) {
-  if (!input)
-    return 0;
+  if (!input) return 0;
   var len = input.length;
   return len > 0 ? len : 0;
 };
@@ -1494,8 +1477,7 @@ exports.size = function (input) {
  * @return {string}
  */
 exports.split = function (input, delimiter) {
-  if (!delimiter)
-    delimiter = '';
+  if (!delimiter) delimiter = '';
   return String(input).split(delimiter);
 };
 
@@ -1528,8 +1510,7 @@ exports.strip_newlines = function (input) {
  */
 exports.truncate = function (input, characters) {
   characters = parseInt(characters, 10); 
-  if (!isFinite(characters) || characters < 0)
-    characters = 100;
+  if (!isFinite(characters) || characters < 0) characters = 100;
   return String(input).substr(0, characters);
 };
 
@@ -1542,8 +1523,7 @@ exports.truncate = function (input, characters) {
  */
 exports.truncatewords = function (input, words) {
   words = parseInt(words, 10);  
-  if (!isFinite(words) || words < 0)
-    words = 15;
+  if (!isFinite(words) || words < 0) words = 15;
   return String(input).trim().split(/ +/).slice(0, words).join(' ');
 };
 
@@ -1556,8 +1536,7 @@ exports.truncatewords = function (input, words) {
 exports.json = function (input) {
   try {
     var ret = JSON.stringify(input);
-  }
-  catch (err) {
+  } catch (err) {
     return '{}';
   }
   return typeof ret !== 'string' ? '{}' : ret;
@@ -1586,8 +1565,7 @@ exports.substr = function (input, start, length) {
  * @return {object}
  */
 exports.get = function(obj, prop){
-  if (!obj)
-    obj = {};
+  if (!obj) obj = {};
   return obj[prop];
 };
 
@@ -1598,9 +1576,8 @@ exports.get = function(obj, prop){
  * @return {string|array}
  */
 exports.reverse = function (arr) {
-  return Array.isArray(arr)
-    ? arr.reverse()
-    : String(arr).split('').reverse().join('');
+  return Array.isArray(arr) ? arr.reverse()
+                            : String(arr).split('').reverse().join('');
 };
 
 /**
@@ -1624,8 +1601,7 @@ exports.indexOf = function (arr, searchvalue, fromindex) {
  * @return {array}
  */
 exports.map = function (arr, prop) {
-  if (!Array.isArray(arr))
-    return [];
+  if (!Array.isArray(arr)) return [];
   return arr.map(function(obj){
     return obj && obj[prop];
   });
@@ -1639,8 +1615,7 @@ exports.map = function (arr, prop) {
  * @return {array}
  */
 exports.sort = function (arr, order) {
-  if (!Array.isArray(arr))
-    return [];
+  if (!Array.isArray(arr)) return [];
   order = String(order).trim().toLowerCase();
   var ret1 = order === 'desc' ? -1 : 1;
   var ret2 = 0 - ret1;
@@ -1660,8 +1635,7 @@ exports.sort = function (arr, order) {
  * @return {array}
  */
 exports.sort_by = function (obj, prop, order) {
-  if (!Array.isArray(obj))
-    return [];
+  if (!Array.isArray(obj)) return [];
   order = String(order).trim().toLowerCase();
   var ret1 = order === 'desc' ? -1 : 1;
   var ret2 = 0 - ret1;
@@ -1683,21 +1657,23 @@ exports.sort_by = function (obj, prop, order) {
  * @listurn {array}
  */
 exports.pagination = function (count, size, page) {
-  if (count % size === 0)
+  if (count % size === 0) {
     var maxPage = parseInt(count / size, 10);
-  else
+  } else {
     var maxPage = parseInt(count / size, 10) + 1;
-    
-  if (isNaN(page) || page < 1)
+  }
+  if (isNaN(page) || page < 1) {
     page = 1;
+  }
   page = parseInt(page);
     
   var list = [page - 2, page - 1, page, page + 1, page + 2];
   for (var i = 0; i < list.length;) {
-    if (list[i] < 1 || list[i] > maxPage)
+    if (list[i] < 1 || list[i] > maxPage) {
       list.splice(i, 1);
-    else
+    } else {
       i++;
+    }
   }
   if (list[0] !== 1) {
     list.unshift('...');
@@ -1714,10 +1690,8 @@ exports.pagination = function (count, size, page) {
     previous:   page - 1,
     list:       list
   };
-  if (ret.next > maxPage)
-    ret.next = maxPage;
-  if (ret.previous < 1)
-    ret.previous = 1;
+  if (ret.next > maxPage) ret.next = maxPage;
+  if (ret.previous < 1)   ret.previous = 1;
   
   return ret;
 };
@@ -1752,18 +1726,15 @@ var template = modules.template;
 
 
 exports.output = function (text, start, context) {
-  if (context.isRaw || context.isComment)
-    return null;
+  if (context.isRaw || context.isComment) return null;
   
   // 查找结束标记
   var end = text.indexOf('}}', start);
-  if (end === -1)
-    return null;
+  if (end === -1) return null;
   
   // 检查结束标记是否为同一行的
   var lineend = text.indexOf('\n', start);
-  if (lineend > -1 && lineend < end)
-    return null;
+  if (lineend > -1 && lineend < end) return null;
   
   context.ignoreOutput = false;
   
@@ -1771,8 +1742,8 @@ exports.output = function (text, start, context) {
   end += 2;
   
   // 支持函数调用
-  var script = '$_line_num = ' + context.line_num + ';\n'
-             + '$_buf+=(' + utils.filtered(line, null, context) + ');';
+  var script = '$_line_num = ' + context.line_num + ';\n' +
+               '$_buf+=(' + utils.filtered(line, null, context) + ');';
   
   return {start: start, end: end, script: script};
 };
@@ -1781,17 +1752,14 @@ exports.output = function (text, start, context) {
 exports.tags = function (text, start, context) {
   // 查找结束标记
   var end = text.indexOf('%}', start);
-  if (end === -1)
-    return null;
+  if (end === -1) return null;
   
   // 检查结束标记是否为同一行的
   var lineend = text.indexOf('\n', start);
-  if (lineend > -1 && lineend < end)
-    return null;
+  if (lineend > -1 && lineend < end) return null;
   
   var line = text.slice(start + 2, end).trim();
   end += 2;
-  // console.log('Line: ' + line);
   
   // 解析语句
   var space_start = line.indexOf(' ');
@@ -1799,10 +1767,11 @@ exports.tags = function (text, start, context) {
   
   // 设置行号，以便检查运行时错误
   var setLineNumber = function () {
-    if (script.substr(-1) === '\n')
+    if (script.substr(-1) === '\n') {
       script += '$_line_num = ' + context.line_num + ';\n';
-    else
+    } else {
       script += '\n$_line_num = ' + context.line_num + ';\n';
+    }
   };
   
   // 当前在raw标记内，则只有遇到 enddraw 标记时才能终止
@@ -1812,8 +1781,7 @@ exports.tags = function (text, start, context) {
       setLineNumber();
       script += '/* endraw */';
       return {start: start, end: end, script: script};
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -1825,8 +1793,7 @@ exports.tags = function (text, start, context) {
       context.ignoreOutput = true;
       setLineNumber();
       return {start: start, end: end, script: script};
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -1856,7 +1823,7 @@ exports.tags = function (text, start, context) {
       start:      start,
       end:        end,
       line:       line
-    }
+    };
   };
   
   // 意外的标记
@@ -1866,7 +1833,7 @@ exports.tags = function (text, start, context) {
       start:      start,
       end:        end,
       line:       line
-    }
+    };
   };
   
   // 无法识别的标记
@@ -1876,9 +1843,10 @@ exports.tags = function (text, start, context) {
       start:      start,
       end:        end,
       line:       line
-    }
+    };
   };
   
+  // 用于给自定义标签调用的函数
   var methods = {
     enterLoop:    enterLoop,
     outLoop:      outLoop,
@@ -1890,11 +1858,12 @@ exports.tags = function (text, start, context) {
   };
   
   // 当前嵌套名称
-  if (context.loopName.length > 0)
+  if (context.loopName.length > 0) {
     var loopName = context.loopName[context.loopName.length - 1].name;
-  else
+  } else {
     var loopName = '';
-  
+  }
+
   context.ignoreOutput = false;
   
   // 简单标记(一般为标记结尾)
@@ -1903,12 +1872,12 @@ exports.tags = function (text, start, context) {
     if (typeof context.customTags[line] === 'function') {
       setLineNumber();
       var s = context.customTags[line]([], line, context, methods);
-      if (s === null)
+      if (s === null) {
         syntaxError();
-      else if (typeof s === 'string')
+      } else if (typeof s === 'string') {
         script += s + '\n';
-    }
-    else {
+      }
+    } else {
       switch (line) {
         // raw 标记
         case 'raw':
@@ -1918,9 +1887,9 @@ exports.tags = function (text, start, context) {
           break;
         // endif
         case 'endif':
-          if (loopName !== 'if')
+          if (loopName !== 'if') {
             loopNotMatch();
-          else {
+          } else {
             setLineNumber();
             script += '}';
             outLoop();
@@ -1928,9 +1897,9 @@ exports.tags = function (text, start, context) {
           break;
         // endunless
         case 'endunless':
-          if (loopName !== 'unless')
+          if (loopName !== 'unless') {
             loopNotMatch();
-          else {
+          } else {
             setLineNumber();
             script += '}';
             outLoop();
@@ -1942,26 +1911,24 @@ exports.tags = function (text, start, context) {
             setLineNumber();
             script += '} else {';
             setLineNumber();
-          }
-          else if (loopName === 'case') {
+          } else if (loopName === 'case') {
             setLineNumber();
             script += 'break;\n' +
                       'default:';
             setLineNumber();
-          }
-          else if (loopName === 'for') {
+          } else if (loopName === 'for') {
             setLineNumber();
-            script += '}\n'
-                    + 'if (forloop.length < 1) {';
-          }
-          else
+            script += '}\n' +
+                      'if (forloop.length < 1) {';
+          } else {
             loopNotMatch();
+          }
           break;
         // endcase
         case 'endcase':
-          if (loopName !== 'case')
+          if (loopName !== 'case') {
             loopNotMatch();
-          else {
+          } else {
             setLineNumber();
             script += '}';
             outLoop();
@@ -1969,40 +1936,40 @@ exports.tags = function (text, start, context) {
           break;
         // endfor
         case 'endfor':
-          if (loopName !== 'for')
+          if (loopName !== 'for') {
             loopNotMatch();
-          else {
+          } else {
             setLineNumber();
-            script += '}\n'
-                    + '})(locals);';
+            script += '}\n' +
+                      '})(locals);';
             outLoop();
           }
           break;
         // endtablerow
         case 'endtablerow':
-          if (loopName !== 'tablerow')
+          if (loopName !== 'tablerow') {
             loopNotMatch();
-          else {
+          } else {
             setLineNumber();
-            script += '$_buf += \'</td>\';\n'
-                    + '}\n'
-                    + '$_buf += \'</tr>\\n\';\n'
-                    + '}\n'
-                    + '})(locals);';
+            script += '$_buf += \'</td>\';\n' +
+                      '}\n' +
+                      '$_buf += \'</tr>\\n\';\n' +
+                      '}\n' +
+                      '})(locals);';
             outLoop();
           }
           break;
         // endcapture
         case 'endcapture':
-          if (loopName !== 'capture')
+          if (loopName !== 'capture') {
             loopNotMatch();
-          else {
+          } else {
             setLineNumber();
-            script += '} catch (err) {\n'
-                    + '  $_rethrow(err);\n'
-                    + '}\n'
-                    + 'return $_buf;\n'
-                    + '})();';
+            script += '} catch (err) {\n' +
+                      '  $_rethrow(err);\n' +
+                      '}\n' +
+                      'return $_buf;\n' +
+                      '})();';
             outLoop();
           }
           break;
@@ -2024,13 +1991,14 @@ exports.tags = function (text, start, context) {
     // 是否为自定义标记
     if (typeof context.customTags[line_left] === 'function') {
       setLineNumber();
-      var s = context.customTags[line_left](line_right.split(/\s+/), line_right, context, methods);
-      if (s === null)
+      var s = context.customTags[line_left](line_right.split(/\s+/),
+                                            line_right, context, methods);
+      if (s === null) {
         syntaxError();
-      else if (typeof s === 'string')
+      } else if (typeof s === 'string') {
         script += s + '\n';
-    }
-    else {
+      }
+    } else {
       switch (line_left) {
         // if / unless 判断
         case 'if':
@@ -2046,30 +2014,36 @@ exports.tags = function (text, start, context) {
         // elsif / elseif
         case 'elsif':
         case 'elseif':
-          if (loopName !== 'if')
+          if (loopName !== 'if') {
             loopNotMatch();
-          else {
+          } else {
             setLineNumber();
-            script += '} else if ' + utils.condition(line_right, context) + ' {';
+            script += '} else if ' +
+                      utils.condition(line_right, context) + ' {';
           }
           break;
         // case 判断
         case 'case':
           enterLoop(line_left);
           setLineNumber();
-          script += 'switch (' + utils.localsWrap(line_right, null, context.saveLocalsName) + ') {';
+          script += 'switch (' +
+                    utils.localsWrap(line_right, null, context.saveLocalsName) +
+                    ') {';
           break;
         case 'when':
           if (context.hasWhen) {
             script += 'break;\n';
             context.ignoreOutput = false;
-          }
-          else
+          } else {
             context.ignoreOutput = true;
-          if (loopName !== 'case')
+          }
+          if (loopName !== 'case') {
             loopNotMatch();
-          else {
-            script += 'case ' + utils.localsWrap(line_right, null, context.saveLocalsName) + ':';
+          } else {
+            script += 'case ' +
+                      utils.localsWrap(line_right, null,
+                                       context.saveLocalsName) +
+                      ':';
             setLineNumber();
             context.hasWhen = true;
           }
@@ -2078,9 +2052,9 @@ exports.tags = function (text, start, context) {
         case 'for':
           enterLoop(line_left);
           var s = utils.forloops(line_right, context);
-          if (s === null)
+          if (s === null) {
             syntaxError();
-          else {
+          } else {
             setLineNumber();
             script += s;
           }
@@ -2089,9 +2063,9 @@ exports.tags = function (text, start, context) {
         case 'tablerow':
           enterLoop(line_left);
           var s = utils.tablerow(line_right, context);
-          if (s === null)
+          if (s === null) {
             syntaxError();
-          else {
+          } else {
             setLineNumber();
             script += s;
           }
@@ -2101,13 +2075,17 @@ exports.tags = function (text, start, context) {
           var eq_op = line_right.indexOf('=');
           if (eq_op === -1) {
             syntaxError();
-          }
-          else {
-            var assign_name = utils.localsWrap(line_right.substr(0, eq_op).trim(), null, context.saveLocalsName);
+          } else {
+            var assign_name = utils.localsWrap(
+                                line_right.substr(0, eq_op).trim(),
+                                null,
+                                context.saveLocalsName);
             context.assignNames[assign_name] = true;
-            var assign_expr = utils.assign(line_right.substr(eq_op + 1).trim(), context);
+            var assign_expr = utils.assign(line_right.substr(eq_op + 1).trim(),
+                                                             context);
             setLineNumber();
-            script += 'global.' + assign_name + ' = ' + assign_name + ' = ' + assign_expr + ';';
+            script += 'global.' + assign_name + ' = ' + assign_name +
+                      ' = ' + assign_expr + ';';
           }
           break;
         // capture 定义变量块
@@ -2115,10 +2093,10 @@ exports.tags = function (text, start, context) {
           enterLoop(line_left);
           var n = utils.localsWrap(line_right, null, context.saveLocalsName);
           setLineNumber();
-          script += 'global.' + n + ' = ' + n + ' = (function () {\n'
-                  + 'var $_buf = \'\';\n'
-                  + 'try {\n'
-                  + '/* captures */\n';
+          script += 'global.' + n + ' = ' + n + ' = (function () {\n' +
+                    'var $_buf = \'\';\n' +
+                    'try {\n' +
+                    '/* captures */\n';
           break;
         // include 标记
         case 'include':
@@ -2128,13 +2106,11 @@ exports.tags = function (text, start, context) {
           if (inc_blocks.length === 1) {
             inc_tag.name = utils.stripQuotes(inc_blocks[0]);
             inc_ok = true;
-          }
-          else if (inc_blocks.length === 3) {
+          } else if (inc_blocks.length === 3) {
             inc_tag.name = utils.stripQuotes(inc_blocks[0]);
             inc_tag.with = utils.stripQuotes(inc_blocks[2]);
             inc_ok = true;
-          }
-          else {
+          } else {
             syntaxError();
           }
           if (inc_ok) {
@@ -2143,25 +2119,28 @@ exports.tags = function (text, start, context) {
             // 如果提供了该资源文件，则插入代码
             if (context.files[inc_tag.name]) {
               setLineNumber();
-              script += '/* === include "' + inc_tag.name + '"' + (inc_tag.with ? ' with "' + inc_tag.with + '"' : '') + ' === */\n'
-                      + 'try {\n'
-                      + '$_buf+=((function (locals) {\n'
-                      + context.files[inc_tag.name] + '\n'
-                      + 'return $_buf;\n'
-                      + '})(' + (inc_tag.with ? utils.localsWrap(inc_tag.with) : 'locals') + '));\n'
-                      + '} catch (err) {\n'
-                      + '  $_rethrow(err);\n'
-                      + '}\n'
-                      + '/* === end include "' + inc_tag.name + '" === */';
+              script += '/* === include "' + inc_tag.name + '"' +
+                        (inc_tag.with ? ' with "' + inc_tag.with + '"' : '') +
+                        ' === */\n' +
+                        'try {\n' +
+                        '$_buf+=((function (locals) {\n' +
+                        context.files[inc_tag.name] + '\n' +
+                        'return $_buf;\n' +
+                        '})(' + (inc_tag.with ? utils.localsWrap(inc_tag.with)
+                                              : 'locals') + '));\n' +
+                        '} catch (err) {\n' +
+                        '  $_rethrow(err);\n' +
+                        '}\n' +
+                        '/* === end include "' + inc_tag.name + '" === */';
             }
           }
           break;
         // cycle 循环字符串
         case 'cycle':
           var s = utils.cycle(line_right, context);
-          if (s === null)
+          if (s === null) {
             syntaxError();
-          else {
+          } else {
             setLineNumber();
             script += s;
           }
@@ -2173,7 +2152,7 @@ exports.tags = function (text, start, context) {
     }
   }
   
-  return {start: start, end: end, script: script}
+  return {start: start, end: end, script: script};
 };
     return exports;
   })(m, m.exports);
@@ -2202,7 +2181,8 @@ var filters = modules.filters;
  * 编译代码(仅解析模板)
  *
  * @param {string} text
- * @param {object} options  files:子模版文件代码,用parse编译
+ * @param {object} options
+ *   - {Object} files 子模版文件代码,用parse编译
  * @return {object}
  */
 exports.parse = function (text, options) {
@@ -2220,32 +2200,34 @@ exports.parse = function (text, options) {
   
   // 初始化编译环境
   context.customTags = options.tags;  // 自定义的标记解析
-  context.loop = 0;           // { 嵌套层数
-  context.loopName = [];      // 当前嵌套标记名称
-  context.isRaw = false;      // 是否为raw标记
-  context.isComment = false;  // 是否为comment标记
-  context.ignoreOutput = false; // 忽略该部分的HTML代码
-  context.assignNames = {};   // 使用assign标记定义的变量名称
-  context.varNames = {};      // 变量的名称及引用的次数
+  context.loop = 0;                   // { 嵌套层数
+  context.loopName = [];              // 当前嵌套标记名称
+  context.isRaw = false;              // 是否为raw标记
+  context.isComment = false;          // 是否为comment标记
+  context.ignoreOutput = false;       // 忽略该部分的HTML代码
+  context.assignNames = {};           // 使用assign标记定义的变量名称
+  context.varNames = {};              // 变量的名称及引用的次数
   context.saveLocalsName = function (name) {  // 使用变量名称
     // 忽略tablerowloop和forloop
-    if (name.substr(0, 13) === 'tablerowloop.' || name.substr(0, 8) === 'forloop.')
-      return;
-    if (!context.varNames[name])
+    if (name.substr(0, 13) === 'tablerowloop.' ||
+        name.substr(0, 8) === 'forloop.') return;
+    if (!context.varNames[name]) {
       context.varNames[name] = 1;
-    else
+    } else {
       context.varNames[name]++;
+    }
   };
-  context.includes = {};                  // 包含的子模版
-  context.files = options.files || {};    // 提供的资源文件
-  context.addIncludes = function (name) { // 包含子模版
-    if (!context.includes[name])
+  context.includes = {};                      // 包含的子模版
+  context.files = options.files || {};        // 提供的资源文件
+  context.addIncludes = function (name) {     // 包含子模版
+    if (!context.includes[name]) {
       context.includes[name] = 1;
-    else
+    } else {
       context.includes[name]++;
+    }
   };
-  context.cycles = {};        // cycle标记中的变量列表
-  context.addCycle = function (key, list) {  // 添加cycle
+  context.cycles = {};                        // cycle标记中的变量列表
+  context.addCycle = function (key, list) {   // 添加cycle
     context.cycles[key] = list;
   };
   
@@ -2263,9 +2245,9 @@ exports.parse = function (text, options) {
     // 生成出错信息描述
     var html_top = utils.outputHtml(text.slice(0, context.error.start));
     var html_bottom = utils.outputHtml(text.slice(context.error.end));
-    var html_error = 'Line:' + line_number + '\n'
-                   + '    ' + context.error.line + '\n\n'
-                   + context.error.message + '\n';
+    var html_error = 'Line:' + line_number + '\n' +
+                     '    ' + context.error.line + '\n\n' +
+                     context.error.message + '\n';
     // 嵌套栈
     var loop;
     while (loop = context.loopName.pop()) {
@@ -2284,8 +2266,7 @@ exports.parse = function (text, options) {
   
   for (var i = 0, len; len = text.length, i < len; i++) {
     var block = text.substr(i, 2);
-    if (text[i] === '\n')
-      line_number++;
+    if (text[i] === '\n') line_number++;
     context.line_num = line_number;
     
     //console.log('Block: ' + block);
@@ -2341,24 +2322,22 @@ exports.parse = function (text, options) {
   for (var i in context.cycles) {
     var c = context.cycles[i];
     var n = '$_cycle_' + i;
-    var s = 'var ' + n + ' = {i: 0, length: ' + c.length + ', items: [' + c.join(',') + ']}\n';
+    var s = 'var ' + n + ' = {i: 0, length: ' +
+            c.length + ', items: [' + c.join(',') + ']}\n';
     define_cycle += s;
   }
-  define_cycle += 'var $_cycle_next = function (n) {\n'
-                + 'n.i++;\n'
-                + 'if (n.i >= n.length) n.i = 0;\n'
-                + '}\n';
+  define_cycle += 'var $_cycle_next = function (n) {\n' +
+                  'n.i++;\n' +
+                  'if (n.i >= n.length) n.i = 0;\n' +
+                  '}\n';
   
   // 包装
-  var wrap_top =    '/* == Template Begin == */\n'
-               +    'var $_buf = \'\';\n'
-               +    'var $_line_num = 0;\n'
-               +    define_cycle;
+  var wrap_top = '/* == Template Begin == */\n' +
+                'var $_buf = \'\';\n' +
+                'var $_line_num = 0;\n' +
+                define_cycle;
   var wrap_bottom = '\n/* == Template End == */\n';
   var code = wrap_top + scripts.join('\n') + wrap_bottom;
-  
-  // console.log('names', context.varNames);
-  // console.log('includes', context.includes);
   
   return {code: code, names: context.varNames, includes: context.includes};
 };
@@ -2367,9 +2346,12 @@ exports.parse = function (text, options) {
  * 编译代码(可运行的函数代码)
  *
  * @param {string} text 模板内容
- * @param {object} options 选项  files:子模版文件代码, original:是否返回原始代码
- *                               tags:自定义标记解析,  filename:当前模板文件名(用于显示出错信息)
- *                               noeval:不执行eval(用于调试)，直接返回 {code, names, includes}
+ * @param {object} options 选项
+ *   - {Object} files     子模版文件代码
+ *   - {Boolean} original 是否返回原始代码
+ *   - {Object} tags      自定义标记解析,
+ *   - {String} filename  当前模板文件名(用于显示出错信息)
+ *   - {Boolean} noeval   不执行eval(用于调试)，直接返回 {code, names, includes}
  * @return {function}
  */
 exports.compile = function (text, options) {
@@ -2378,24 +2360,24 @@ exports.compile = function (text, options) {
   // 编译代码
   var tpl = exports.parse(text, options);
   
-  var script = '(function (locals, filters) { \n'
-             + 'var $_html = ' + utils.outputHtml.toString() + ';\n'
-             + 'var $_err = ' + utils.errorMessage.toString() + ';\n'
-             + 'var $_rethrow = ' + utils.rethrowError.toString() + ';\n'
-             + 'var $_merge = ' + utils.merge.toString() + ';\n'
-             + 'var $_range = ' + utils.range.toString() + ';\n'
-             + 'var $_array = ' + utils.toArray.toString() + ';\n'
-             + 'locals = $_merge(locals);\n'
-             + 'filters = filters || {};\n'
-             + 'var global = {locals: locals, filters: filters};\n'
-             + 'try { \n'
-             + tpl.code + '\n'
-             + '} catch (err) {\n'
-             + '  $_rethrow(err, "' + (options.filename || '').replace(/"/img, '\\"') + '");\n'
-             + '}\n'
-             + 'return $_buf;\n'
-             + '})';
-  //console.log(script);
+  var script = '(function (locals, filters) { \n' +
+               'var $_html = ' + utils.outputHtml.toString() + ';\n' +
+               'var $_err = ' + utils.errorMessage.toString() + ';\n' +
+               'var $_rethrow = ' + utils.rethrowError.toString() + ';\n' +
+               'var $_merge = ' + utils.merge.toString() + ';\n' +
+               'var $_range = ' + utils.range.toString() + ';\n' +
+               'var $_array = ' + utils.toArray.toString() + ';\n' +
+               'locals = $_merge(locals);\n' +
+               'filters = filters || {};\n' +
+               'var global = {locals: locals, filters: filters};\n' +
+               'try { \n' +
+               tpl.code + '\n' +
+               '} catch (err) {\n' +
+               '  $_rethrow(err, "' +
+               (options.filename || '').replace(/"/img, '\\"') + '");\n' +
+               '}\n' +
+               'return $_buf;\n' +
+               '})';
   
   // 用于调试
   if (options.noeval) {
@@ -2414,8 +2396,7 @@ exports.compile = function (text, options) {
     fn.includes = tpl.includes;   // 子模版
     
     // 如果设置了original=true选项，则直接返回原始代码，否则自动封装filters
-    if (options.original)
-      return fn;
+    if (options.original) return fn;
       
     // 封装filters
     var fnWrap = function (d, f) {
@@ -2424,8 +2405,7 @@ exports.compile = function (text, options) {
     fnWrap.names = fn.names;
     fnWrap.includes = fn.includes;
     return fnWrap;
-  }
-  catch (err) {
+  } catch (err) {
     throw Error('Compile error: ' + err);
   }
 };
@@ -2468,7 +2448,8 @@ var AsyncDataList = utils.AsyncDataList;
  * 编译所有模板
  *
  * @param {object} files 模板文件内容，如: {abc: '...', efc: '...'}
- * @param {object} options 选项  original:是否返回原始代码
+ * @param {object} options 选项
+ *   - {Boolean} original 是否返回原始代码
  * @return {object}
  */
 exports.compileAll = function (files, options) {
@@ -2490,38 +2471,40 @@ exports.compileAll = function (files, options) {
     var _f = {};      // 已分析过的模板名称
     
     var addName = function (n, c) {
-      // console.log('add', f, field, n, c);
-      if (!ns[n])
+      if (!ns[n]) {
         ns[n] = c;
-      else
+      } else {
         ns[n] += c;
+      }
     };
     
     // 初始化ns
     var t = pCodes[f];
-    for (var i in t[field])
+    for (var i in t[field]) {
       addName(i, t[field][i]);
-    
+    }
+
     // 合并子模版中的名称
     var m = function (f) {
-      // console.log('m', f, _f);
-      if (f in _f)
+      if (f in _f) {
         return false;
-      else
+      } else {
         _f[f] = true;
-      
+      }
+
       var t = pCodes[f];
-      if (!t)
-        throw Error('Cannot find include file "' + f + '".');
+      if (!t) throw Error('Cannot find include file "' + f + '".');
       
       // 合并名称
-      for (var i in t[field])
+      for (var i in t[field]) {
         addName(i, t[field][i]);
-        
+      }
+
       // 合并子模版
-      for (var i in t.includes)
+      for (var i in t.includes) {
         m(i);
-        
+      }
+
       return true;
     };
     m(f);
@@ -2534,8 +2517,9 @@ exports.compileAll = function (files, options) {
     pCodes[i].names = mergeRequire(i, 'names');
     pCodes[i].includes = mergeRequire(i, 'includes');
     // 如果出现闭环，则抛出异常
-    if (i in pCodes[i].includes)
+    if (i in pCodes[i].includes) {
       throw Error('Cannot include file "' + i + '" in file "' + i + '".');
+    }
   }
   
   // 根据依赖关系安排模板文件的编译顺序
@@ -2588,9 +2572,10 @@ exports.compileAll = function (files, options) {
  *
  * @param {function} render   通过compile()编译出的模板渲染函数
  * @param {object} models     获取数据的函数 {'name': function (env, callback) {}}
- * @param {object} options    选项： parallel: true 并行方式获取，默认为false
- *                                   filters: 自定义函数
- *                                   env: 环境变量，即models函数中的第一个参数
+ * @param {object} options    
+ *   - {Boolean} parallel     true并行方式获取，默认为false
+ *   - {Object} filters       自定义函数
+ *   - {Object} env           环境变量，即models函数中的第一个参数
  * @param {function} callback 回调 function (err, text)
  */
 exports.advRender = function (render, models, options, callback) {
@@ -2599,26 +2584,27 @@ exports.advRender = function (render, models, options, callback) {
   var dataList = AsyncDataList(models, names, options.env);
   
   var cb = function (err, d) {
-    if (err)
-      return callback(err);
+    if (err) return callback(err);
     try {
       var data = {};
-      for (var i in models)
+      for (var i in models) {
         data[i] = models[i];
-      for (var i in d)
+      }
+      for (var i in d) {
         data[i] = d[i];
+      }
       var text = render(data, options.filters);
       return callback(null, text);
-    }
-    catch (err) {
+    } catch (err) {
       return callback(err);
     }
   };
   
-  if (options.parallel)
+  if (options.parallel) {
     dataList.startParallel(cb);
-  else
+  } else {
     dataList.start(cb);
+  }
 };
 
 
@@ -2644,23 +2630,34 @@ var filters = modules.filters;
 
 // 兼容Liquid中数组和字符串的size,first,last属性
 try {
-  Object.defineProperty(Array.prototype, 'size', {get: function () { return this.length; }});
-  Object.defineProperty(Array.prototype, 'first', {get: function () { var a = this; return a[0]; }});
-  Object.defineProperty(Array.prototype, 'last', {get: function () { var a = this; return a[a.length - 1]; }});
-}
-catch (err) {
+  Object.defineProperty(Array.prototype, 'size', {
+    get: function () {
+      return this.length;
+  }});
+  Object.defineProperty(Array.prototype, 'first', {
+    get: function () {
+      var a = this; return a[0];
+  }});
+  Object.defineProperty(Array.prototype, 'last', {
+    get: function () {
+      var a = this; return a[a.length - 1];
+  }});
+} catch (err) {
   // console.error(err.stack);
 }
+
 // 兼容Liquid中字符串的size属性
 try {
-  Object.defineProperty(String.prototype, 'size', {get: function () { return this.length; }});
-}
-catch (err) {
+  Object.defineProperty(String.prototype, 'size', {
+    get: function () {
+      return this.length;
+  }});
+} catch (err) {
   // console.error(err.stack);
 }
 
 // 版本
-exports.version = '0.1.0';
+exports.version = '0.1.2';
  
 // 解析代码
 exports.parse = wrap('parse', template.parse);
@@ -2684,7 +2681,8 @@ exports.filters = filters;
 
 // 用于测试函数被调用次数及来源
 function wrap (name, fn) {
-  if (typeof process !== 'undefined' && process.env && /true/.test(process.env.TINYLIQUID_TEST)) {
+  if (typeof process !== 'undefined' && process.env &&
+      /true/.test(process.env.TINYLIQUID_TEST)) {
     var i = 0;
     return function () {
       i++;
@@ -2692,8 +2690,7 @@ function wrap (name, fn) {
       console.log('call tinyliquid.' + name + '() ' + i + ' times \n' + source);
       return fn.apply(null, arguments);
     };
-  }
-  else {
+  } else {
     return fn;
   }
 };
