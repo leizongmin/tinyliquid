@@ -268,6 +268,50 @@ https://wiki.shopqi.com/liquid （中文）
     });
     
 
+### 自定义函数 (filters)
+
+    var tinyliquid = require('tinyliquid');
+    var render = tinyliquid.compile('{{ "hello, world!" | my_filter }}');
+
+    // 编译出来的函数中，第二个参数可用来指定自定义的filters集合
+    var filters = {};
+    // 先复制原来的filters，否则传入自定义的filters后，将不能使用旧的
+    for (var i in tinyliquid.filters) {
+      filters[i] = tinyliquid.filters[i];
+    }
+    filters.my_filter = function (str) {
+      return String(str).replace('world', 'abc');
+    };
+    console.log(render({}, filters));  // 输出 hello, abc!
+
+### 自定义标签 (tag)
+
+    var tinyliquid = require('tinyliquid');
+
+    // 自定义标签
+    var tags = {};
+    // words    当前标签中用空格隔开的单词数组，除第一个之外
+    // line     当前标签的文本，即 {% %} 里面的内容
+    // context  环境变量
+    // methods  为编译时提供相应的方法，其中包含：
+    //   loopNotMatch   返回标签不匹配出错信息
+    //   syntaxError    返回语法错误出错信息
+    //   unknownTag     返回不可识别的标签出错信息
+    //   localsWrap     取得渲染模板时的内部表示变量名称
+    //   printString    返回输出字符串的js代码
+    //   printLocals    返回输出变量的js代码
+    // 自定义标签函数应该返回该标签所生成的js代码，
+    // 若返回null将输出一个syntaxError()出错信息
+    tags.my_tag = function (words, line, context, methods) {
+      // 在本例中返回以下js代码：
+      //    $_buf += 'hello, ';\n
+      //    $_buf += locals.name;\n
+      return methods.printString('hello, ') + methods.printLocals(words[0]);
+    };
+
+    var render = tinyliquid.compile('{% my_tag name %}', {tags: tags});
+    console.log(render({name: 'world'}));   // 输出： hello, world
+
 ### 使用建议
 
   TinyLiquid没有内置的缓存机制，因此在使用时，如果需要多次调用某个模板来进行渲染，需要

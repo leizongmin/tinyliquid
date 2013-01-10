@@ -257,6 +257,50 @@ Usage
     });
     
 
+### Custom Filter
+
+    var tinyliquid = require('tinyliquid');
+    var render = tinyliquid.compile('{{ "hello, world!" | my_filter }}');
+
+    // compile out function, the second parameter can be used to specify custom filters set
+    var filters = {};
+    // copy of the original filters
+    for (var i in tinyliquid.filters) {
+      filters[i] = tinyliquid.filters[i];
+    }
+    filters.my_filter = function (str) {
+      return String(str).replace('world', 'abc');
+    };
+    console.log(render({}, filters));  // output: hello, abc!
+
+### Custom Tag
+
+    var tinyliquid = require('tinyliquid');
+
+    // Custom tags
+    var tags = {};
+    // words    the current tag with spaces separate words array, does not contain the first
+    // line     the current tag text, namely {% %} contents
+    // context  the compiler context
+    // methods
+    //   loopNotMatch   return a "Loop not match" error message
+    //   syntaxError    return a "Syntax error" error message
+    //   unknownTag     return a "Unknow tag" error message
+    //   localsWrap     get the internal representation render template variable names
+    //   printString    return output string javascript code
+    //   printLocals    return output locals javascript code
+    // The custom tag function should return the tag produced js code
+    // If returns null will output a syntaxError () error message
+    tags.my_tag = function (words, line, context, methods) {
+      // In this case to return to the following javascript code:
+      //    $_buf += 'hello, ';\n
+      //    $_buf += locals.name;\n
+      return methods.printString('hello, ') + methods.printLocals(words[0]);
+    };
+
+    var render = tinyliquid.compile('{% my_tag name %}', {tags: tags});
+    console.log(render({name: 'world'}));   // output: hello, world
+
 ### Use the recommended
 
   TinyLiquid has no built-in caching mechanism, so when in use, if to call render multiple times, you
