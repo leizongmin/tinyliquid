@@ -6,7 +6,7 @@ describe('Custom tag', function () {
   it('#custom tag', function () {
   
     var render = function (text, data, options) {
-      //console.log(liquid.parse(text, options).code);
+      // console.log(liquid.parse(text, options).code);
       var fn = liquid.compile(text, options);
       var html = fn(data, options.filters);
       return html;
@@ -31,6 +31,17 @@ describe('Custom tag', function () {
         return script;
     }}})
       .should.equal('54321-110|undefined-undefined');
+
+    // 生成输出代码
+    render('{% print a %}, world', {a: 'hello'}, {
+      tags: {
+        print: function (words, line, context, methods) {
+          return methods.printLocals(words[0]) +
+                 methods.printString('"12\'3\'45"');
+    }}})
+      .should.equal('hello"12\'3\'45", world');
+
+
       
   });
 });
