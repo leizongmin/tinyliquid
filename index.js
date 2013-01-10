@@ -41,7 +41,7 @@ try {
 }
 
 // 版本
-exports.version = '0.1.2';
+exports.version = '0.1.3';
  
 // 解析代码
 exports.parse = wrap('parse', template.parse);

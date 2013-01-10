@@ -187,7 +187,7 @@ exports.rethrowError = function (err, filename) {
   var msg = 'An error occurred while rendering\n' +
            'Line: ' + $_line_num + (filename ? '  File: ' + filename : '') +
            '\n    ' + err;
-  $_buf+=($_err(msg));
+  $_buf += $_err(msg);
 };
 
 var $_buf;
@@ -1854,7 +1854,13 @@ exports.tags = function (text, start, context) {
     syntaxError:  syntaxError,
     unknownTag:   unknownTag,
     filtered:     utils.filtered,
-    localsWrap:   utils.localsWrap
+    localsWrap:   utils.localsWrap,
+    printString:  function (str) {
+      return '$_buf += "' + utils.outputHtml(str) + '";\n';
+    },
+    printLocals:  function (name) {
+      return '$_buf += ' + utils.localsWrap(name) + ';\n';
+    }
   };
   
   // 当前嵌套名称
@@ -2657,7 +2663,7 @@ try {
 }
 
 // 版本
-exports.version = '0.1.2';
+exports.version = '0.1.3';
  
 // 解析代码
 exports.parse = wrap('parse', template.parse);
