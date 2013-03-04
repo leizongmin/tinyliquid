@@ -1,6 +1,9 @@
 Tinyliquid
 ==============
 
+[![Build Status](https://secure.travis-ci.org/leizongmin/tinyliquid.png?branch=master)](http://travis-ci.org/leizongmin/tinyliquid)
+
+
 新版本正在开发中，API与v0.1.x版本的不同。
 
 
