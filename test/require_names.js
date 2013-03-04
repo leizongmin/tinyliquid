@@ -4,7 +4,7 @@ var liquid = require('../');
 describe('parse: names', function () {
   
   it('#parse() require names', function () {
-    /*
+    
     liquid.parse('{{ a }} {{ b }} - {{ b }} {{ c }}')
       .names.should.eql({a: 1, b: 2, c: 1});
       
@@ -25,7 +25,7 @@ describe('parse: names', function () {
       
     liquid.parse('{% if abc %}123{% endif %}')
       .names.should.eql({abc: 1});
-      */
+      
     liquid.parse('{% if abc.[efg] %}123{% endif %}')
       .names.should.eql({abc: 1, efg: 1});
       
