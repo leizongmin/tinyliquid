@@ -18,7 +18,7 @@ TinyLiquid
 Download & Installation
 ===============
 
-The latest version **v0.0.9** to get TinyLiquid module in the following ways:
+The latest version **v0.1.4** to get TinyLiquid module in the following ways:
 
 *  NPM installation: **npm install tinyliquid**
 

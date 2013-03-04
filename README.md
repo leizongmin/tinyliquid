@@ -23,7 +23,7 @@ TinyLiquid
 下载 & 安装
 ===============
 
-目前最新版为**v0.0.9**，可通过以下方式来获取TinyLiquid模块：
+目前最新版为**v0.1.4**，可通过以下方式来获取TinyLiquid模块：
 
 *  通过NPM安装：**npm install tinyliquid**
 
