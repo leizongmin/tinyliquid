@@ -75,13 +75,18 @@ exports.taskList = function () {
   var task = flow.series();
   var ret = {
     add: function (fn) {
-      task.do(function () {
-        fn(this.done.bind(this));
+      task.do(function (me) {
+        fn(function () {
+          me.done();
+        });
       });
       return ret;
     },
     end: function (fn) {
-      task.end(fn);
+      task.end(function (isTimeout) {
+        if (isTimeout) return fn(new Error('Task timeout.'));
+        fn();
+      });
       return ret;
     }
   };

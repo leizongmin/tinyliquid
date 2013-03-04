@@ -19,7 +19,7 @@
     "bright-flow":  "~0.0.3"
   },
   "devDependencies": {
-    "mocha":        "~1.2",
+    "mocha":        "~1.8.1",
     "uglify-js":    "~1.3.3"
   },
   "scripts": {
