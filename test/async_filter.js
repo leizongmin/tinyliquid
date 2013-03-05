@@ -30,22 +30,5 @@ describe('Async: filter', function () {
       })
       .end(done);
   });
-  return;
-  it('#timeout', function (done) {
-    context.options.timeout = 100;
-    context.setAsyncFilter('c', function (v, callback) {
-      callback(new Error('....'))
-    })
-    common.taskList()
-      .add(function (done) {
-        common.render(context, 'c={{789|c}}', function (err, buf) {
-          console.log(typeof err);
-          assert.ok(err instanceof Error);
-          context.clearBuffer();
-          done();
-        });
-      })
-      .end(done);
-  });
 
 });

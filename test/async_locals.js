@@ -21,6 +21,21 @@ describe('Async: locals', function () {
   context.setAsyncLocals(/^d.*/, function (name, callback) {
     callback(null, name);
   });
+  context.setAsyncLocals('aa', function (name, callback) {
+    return callback(null, {
+      a:  123,
+      b: {
+        c: 456
+      }
+    });
+  });
+  context.setLocals('aa.c', {
+    d: {
+      e: {
+        f: 789
+      }
+    }
+  });
 
   it('#normal', function (done) {
     common.taskList()
@@ -31,6 +46,14 @@ describe('Async: locals', function () {
           context.clearBuffer();
           done();
         });
+      })
+      .add(function (done) {
+        common.render(context, 'aa.a={{aa.a}},aa.b.c={{aa.b.c}},aa.c.d.e.f={{aa.c.d.e.f}}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'aa.a=123,aa.b.c=456,aa.c.d.e.f=789');
+          context.clearBuffer();
+          done();
+        })
       })
       .end(done);
   });

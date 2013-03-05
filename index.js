@@ -18,24 +18,29 @@ exports.parse = function () {
 
 
 // 执行中间代码
+var domain = require('domain');
 var vm = require('./lib/vm');
 exports.run = function () {
-  if (arguments.length < 1) throw new Error('Not enough arguments.');
-  var originCallback = arguments[arguments.length - 1];
+  var args = arguments;
+  var d = domain.create();
+  if (args.length < 1) throw new Error('Not enough arguments.');
+
+  // 保证回调函数只执行一次
+  var originCallback = args[args.length - 1];
   var hasCallback = false;
   var callback = function (err) {
-    // 保证回调函数只执行一次
     if (hasCallback) return;
     hasCallback = true;
+    d.dispose();
     originCallback.apply(null, arguments);
   };
-  arguments[arguments.length - 1] = callback;
+  args[args.length - 1] = callback;
+  
   // 如果抛出异常，以回调方式返回
-  try {
-    vm.run.apply(null, arguments);
-  } catch (err) {
-    callback(err);
-  }
+  d.on('error', callback);
+  d.run(function () {
+    vm.run.apply(null, args);
+  });
 };
 
 
@@ -45,3 +50,7 @@ exports.Context = require('./lib/context');
 
 // 工具函数
 exports.utils = require('./lib/utils');
+
+
+// 默认的filters
+exports.filters = require('./lib/filters');
