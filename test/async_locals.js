@@ -36,7 +36,7 @@ describe('Async: locals', function () {
       }
     }
   });
-
+  
   it('#normal', function (done) {
     common.taskList()
       .add(function (done) {
