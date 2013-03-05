@@ -40,7 +40,7 @@ exports.run = function () {
 
 
 // 执行中间件代码时的环境对象
-exports.Context = vm.Context;
+exports.Context = require('./lib/context');
 
 
 // 工具函数
