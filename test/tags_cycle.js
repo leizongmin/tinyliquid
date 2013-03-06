@@ -12,7 +12,7 @@ describe('Tag: cycle', function () {
       var html = fn(data, filters);
       return html;
     }
-    /*
+    
     // 使用字符串
     render("{% cycle 'one', 'two', 'three' %},\
 {% cycle 'one', 'two', 'three' %},\
@@ -28,12 +28,14 @@ describe('Tag: cycle', function () {
     .should.equal('1,2,3,1');
     
     // 使用变量 （必须是渲染之前已确定的变量）
-    render("{% cycle a, b, c %},\
-{% cycle a, b, c %},\
-{% cycle a, b, c %},\
-{% cycle a, b, c %}", {a: 'Fo', b: 2, c: 'WwZ'})
-    .should.equal('Fo,2,WwZ,Fo');
-      
+    render("{% cycle a, b, c, d, e %},\
+{% cycle a, b, c, d, e %},\
+{% cycle a, b, c, d, e %},\
+{% cycle a, b, c, d, e %},\
+{% cycle a, b, c, d, e %},\
+{% cycle a, b, c, d, e %}-END", {a: 'Fo', b: 2, c: null, d: 'aaa', e: undefined})
+    .should.equal('Fo,2,,aaa,,Fo-END');
+     
     // 循环
     render("{% cycle 'one', 'two', 'three' %},\
 {% for item in (1..3) %}\
@@ -51,7 +53,7 @@ describe('Tag: cycle', function () {
 {% endfor %}\
 {%  cycle 'one', 'two', 'three' %}")
     .should.equal('one,two,three,one,two,three,one,two,three,one,two');
-    */
+    
     // 分组
     render("{% for item in (1..3) %}{% cycle 'group 1': 'one', 'two', 'three' %},{% endfor %}")
       .should.equal('one,two,three,');

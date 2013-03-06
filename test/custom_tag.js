@@ -30,7 +30,7 @@ describe('Custom tag', function () {
         }
         return script;
     }}})
-      .should.equal('54321-110|undefined-undefined');
+      .should.equal('54321-110|-');
 
     // 生成输出代码
     render('{% print a %}, world', {a: 'hello'}, {
