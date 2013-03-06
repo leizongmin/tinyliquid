@@ -11,7 +11,7 @@ var flow = require('bright-flow');
 var debug1 = function () {};
 var debug2 = function () {};
 if (/1/.test(process.env.DEBUG)) debug1 = console.log;
-if (/2/.test(process.env.DEBUG)) debug3 = console.log;
+if (/2/.test(process.env.DEBUG)) debug2 = console.log;
 
 
 /**
