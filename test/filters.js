@@ -124,6 +124,9 @@ describe('filters', function () {
   
   it('#downcase', function () {
     filters.downcase('aDbbFFDd').should.equal('adbbffdd');
+    filters.downcase().should.equal('');
+    filters.downcase(null).should.equal('');
+    filters.downcase(false).should.equal('false');
   });
   
   it('#upcase', function () {
