@@ -814,7 +814,8 @@ exports.cycle = function (strlist, context) {
   context.addCycle(cycleKey, list);
   
   var cycleName = '$_cycle_' + cycleKey;
-  var script = '$_buf+=(' + cycleName + '.items[' + cycleName + '.i])\n' +
+  var script = '$_tmpbuf=(' + cycleName + '.items[' + cycleName + '.i]);\n' +
+               '$_buf+=($_tmpbuf===null||typeof($_tmpbuf)==="undefined"?"":$_tmpbuf);\n' +
                '$_cycle_next(' + cycleName + ');\n';
   return script;
 };
@@ -983,7 +984,17 @@ AsyncDataList.prototype.startParallel = function (callback) {
  *
  * @author 老雷<leizongmin@gmail.com>
  */
- 
+
+
+/**
+ * 转换为字符串，如果是undefined或者null则返回空字符串
+ *
+ * @param {Object} text
+ * @return {String}
+ */
+var toString = function (text) {
+  return (text === null || typeof(text) === 'undefined') ? '' : String(text);
+};
 
 /*---------------------------- HTML Filters ----------------------------------*/
 /**
@@ -1138,8 +1149,8 @@ exports.random = function (m, n) {
  * @return {string}
  */
 exports.append = function (input, characters) {
-  if (!characters) return String(input);
-  return String(input) + String(characters);
+  if (!characters) return toString(input);
+  return toString(input) + toString(characters);
 };
 
 /**
@@ -1150,8 +1161,8 @@ exports.append = function (input, characters) {
  * @return {string}
  */
 exports.prepend = function (input, characters) {
-  if (!characters) return String(input);
-  return String(characters) + String(input);
+  if (!characters) return toString(input);
+  return toString(characters) + toString(input);
 };
 
 /**
@@ -1161,7 +1172,7 @@ exports.prepend = function (input, characters) {
  * @return {string}
  */
 exports.camelize = function (input) {
-  input = String(input);
+  input = toString(input);
   return input.replace(/[^a-zA-Z0-9]+(\w)/g, function(_, ch) {
     return ch.toUpperCase();
   });
@@ -1174,7 +1185,7 @@ exports.camelize = function (input) {
  * @return {string}
  */
 exports.capitalize = function (input) {
-  input = String(input);
+  input = toString(input);
   return input[0].toUpperCase() + input.substr(1);
 };
 
@@ -1197,7 +1208,7 @@ exports.timestamp = function (input) {
  * @return {string}
  */
 exports.date = function (input, format) {
-  if (String(input).toLowerCase() == 'now') {
+  if (toString(input).toLowerCase() == 'now') {
     var time = new Date();
   } else {
     var timestamp = parseInt(input, 10);
@@ -1241,7 +1252,7 @@ exports.date = function (input, format) {
     Y:      dates[3],
     Z:      times[4]                    // 时区
   };
-  var ret = String(format);
+  var ret = toString(format);
   for (var i in replace) {
     ret = ret.replace(new RegExp('%' + i, 'g'), replace[i]);
   }
@@ -1268,7 +1279,7 @@ function weekNo (now, mondayFirst) {
   }
   // 默认是以星期日开始的
   var week = Math.round(totalDays / 7);
-  if (mondayFirst && new Date(String(years)).getDay() === 0) week += 1;
+  if (mondayFirst && new Date(toString(years)).getDay() === 0) week += 1;
   return week;
 }
 
@@ -1279,7 +1290,7 @@ function weekNo (now, mondayFirst) {
  * @return {string}
  */
 exports.downcase = function (input) {
-  return String(input).toLowerCase();
+  return toString(input).toLowerCase();
 };
 
 /**
@@ -1289,7 +1300,7 @@ exports.downcase = function (input) {
  * @return {string}
  */
 exports.upcase = function (input) {
-  return String(input).toUpperCase();
+  return toString(input).toUpperCase();
 };
 
 /**
@@ -1299,7 +1310,7 @@ exports.upcase = function (input) {
  * @return {string}
  */
 exports.escape = function (input) {
-  return String(input).replace(/&(?!\w+;)/g, '&amp;')
+  return toString(input).replace(/&(?!\w+;)/g, '&amp;')
                       .replace(/</g, '&lt;')
                       .replace(/>/g, '&gt;')
                       .replace(/"/g, '&quot;');
@@ -1364,7 +1375,7 @@ exports.last = function (array) {
  * @return {string}
  */
 exports.handleize = function (input) {
-  return String(input).replace(/[^0-9a-zA-Z ]/g, '')
+  return toString(input).replace(/[^0-9a-zA-Z ]/g, '')
                       .replace(/[ ]+/g, '-')
                       .toLowerCase();
 };
@@ -1394,7 +1405,7 @@ exports.join = function (input, segmenter) {
  * @return {string}
  */
 exports.replace_first = function (input, substring, replacement) {
-  return String(input).replace(substring, replacement);
+  return toString(input).replace(substring, replacement);
 };
 
 /**
@@ -1406,7 +1417,7 @@ exports.replace_first = function (input, substring, replacement) {
  * @return {string}
  */
 exports.replace = function (input, substring, replacement) {
-  input = String(input);
+  input = toString(input);
   while (input.indexOf(substring) > -1) {
     input = input.replace(substring, replacement);
   }
@@ -1442,7 +1453,7 @@ exports.remove_first = function (input, substring) {
  * @return {string}
  */
 exports.newline_to_br = function (input) {
-  return String(input).replace(/\n/img, '<br>');
+  return toString(input).replace(/\n/img, '<br>');
 };
 
 /**
@@ -1478,7 +1489,7 @@ exports.size = function (input) {
  */
 exports.split = function (input, delimiter) {
   if (!delimiter) delimiter = '';
-  return String(input).split(delimiter);
+  return toString(input).split(delimiter);
 };
 
 /**
@@ -1488,7 +1499,7 @@ exports.split = function (input, delimiter) {
  * @return {string}
  */
 exports.strip_html = function (text) {
-  return String(text).replace(/<[^>]*>/img, '');
+  return toString(text).replace(/<[^>]*>/img, '');
 };
 
 /**
@@ -1498,7 +1509,7 @@ exports.strip_html = function (text) {
  * @return {string}
  */
 exports.strip_newlines = function (input) {
-  return String(input).replace(/[\r\n]+/g, '');
+  return toString(input).replace(/[\r\n]+/g, '');
 };
 
 /**
@@ -1511,7 +1522,7 @@ exports.strip_newlines = function (input) {
 exports.truncate = function (input, characters) {
   characters = parseInt(characters, 10); 
   if (!isFinite(characters) || characters < 0) characters = 100;
-  return String(input).substr(0, characters);
+  return toString(input).substr(0, characters);
 };
 
 /**
@@ -1524,7 +1535,7 @@ exports.truncate = function (input, characters) {
 exports.truncatewords = function (input, words) {
   words = parseInt(words, 10);  
   if (!isFinite(words) || words < 0) words = 15;
-  return String(input).trim().split(/ +/).slice(0, words).join(' ');
+  return toString(input).trim().split(/ +/).slice(0, words).join(' ');
 };
 
 /**
@@ -1551,7 +1562,7 @@ exports.json = function (input) {
  * @return {string}
  */
 exports.substr = function (input, start, length) {
-  return String(input).substr(start, length);
+  return toString(input).substr(start, length);
 }
 
 /**
@@ -1577,7 +1588,7 @@ exports.get = function(obj, prop){
  */
 exports.reverse = function (arr) {
   return Array.isArray(arr) ? arr.reverse()
-                            : String(arr).split('').reverse().join('');
+                            : toString(arr).split('').reverse().join('');
 };
 
 /**
@@ -1589,7 +1600,7 @@ exports.reverse = function (arr) {
  * @return {int}
  */
 exports.indexOf = function (arr, searchvalue, fromindex) {
-  if (!Array.isArray(arr)) arr = String(arr);
+  if (!Array.isArray(arr)) arr = toString(arr);
   return arr.indexOf(searchvalue, fromindex);
 };
 
@@ -1616,7 +1627,7 @@ exports.map = function (arr, prop) {
  */
 exports.sort = function (arr, order) {
   if (!Array.isArray(arr)) return [];
-  order = String(order).trim().toLowerCase();
+  order = toString(order).trim().toLowerCase();
   var ret1 = order === 'desc' ? -1 : 1;
   var ret2 = 0 - ret1;
   return arr.sort(function (a, b) {
@@ -1636,7 +1647,7 @@ exports.sort = function (arr, order) {
  */
 exports.sort_by = function (obj, prop, order) {
   if (!Array.isArray(obj)) return [];
-  order = String(order).trim().toLowerCase();
+  order = toString(order).trim().toLowerCase();
   var ret1 = order === 'desc' ? -1 : 1;
   var ret2 = 0 - ret1;
   return Object.create(obj).sort(function (a, b) {
@@ -1743,7 +1754,8 @@ exports.output = function (text, start, context) {
   
   // 支持函数调用
   var script = '$_line_num = ' + context.line_num + ';\n' +
-               '$_buf+=(' + utils.filtered(line, null, context) + ');';
+               '$_tmpbuf = ' + utils.filtered(line, null, context) + ';\n' +
+               '$_buf+=($_tmpbuf===null||typeof($_tmpbuf)==="undefined"?"":$_tmpbuf);';
   
   return {start: start, end: end, script: script};
 };
@@ -2367,6 +2379,7 @@ exports.compile = function (text, options) {
   var tpl = exports.parse(text, options);
   
   var script = '(function (locals, filters) { \n' +
+               'var $_tmpbuf;\n' +
                'var $_html = ' + utils.outputHtml.toString() + ';\n' +
                'var $_err = ' + utils.errorMessage.toString() + ';\n' +
                'var $_rethrow = ' + utils.rethrowError.toString() + ';\n' +
@@ -2663,7 +2676,7 @@ try {
 }
 
 // 版本
-exports.version = '0.1.3';
+exports.version = '0.1.4';
  
 // 解析代码
 exports.parse = wrap('parse', template.parse);
