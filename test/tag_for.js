@@ -246,4 +246,18 @@ describe('Tag: for', function () {
       .end(done);
   });
 
+  it('#item', function (done) {
+    context.setLocals('array5', [{v:123}, {v:456}, {v:789}]);
+    common.taskList()
+      .add(function (done) {
+        common.render(context, '{%for item in array5%}{{item.v}}{%endfor%}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, '123456789');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .end(done);
+  });
+
 });

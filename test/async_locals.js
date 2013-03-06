@@ -26,15 +26,15 @@ describe('Async: locals', function () {
       a:  123,
       b: {
         c: 456
+      },
+      c: {
+        d: {
+          e: {
+            f: 789
+          }
+        }
       }
     });
-  });
-  context.setLocals('aa.c', {
-    d: {
-      e: {
-        f: 789
-      }
-    }
   });
   
   it('#normal', function (done) {
