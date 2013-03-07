@@ -12,7 +12,15 @@ exports.version = require('./package.json').version;
 // 解析模板，返回中间件代码
 var parser = require('./lib/parser');
 exports.parser = parser;
-exports.parse = function () {
+
+/**
+ * 解析模板
+ *
+ * @param {String} tpl
+ * @param {Object} options
+ * @return {Array}
+ */
+exports.parse = function (tpl, options) {
   return parser.apply(null, arguments);
 };
 
@@ -20,27 +28,42 @@ exports.parse = function () {
 // 执行中间代码
 var domain = require('domain');
 var vm = require('./lib/vm');
-exports.run = function () {
-  var args = arguments;
+
+/**
+ * 执行中间件代码
+ *
+ * @param {Array} astList
+ * @param {Object} context
+ * @param {Function} callback
+ */
+exports.run = function (astList, context, callback) {
   var d = domain.create();
-  if (args.length < 1) throw new Error('Not enough arguments.');
+  if (arguments.length < 3) throw new Error('Not enough arguments.');
+
+  // 如果astList不是数组，表示为解析，则先解析
+  if (!Array.isArray(astList)) astList = parser(astList);
 
   // 保证回调函数只执行一次
-  var originCallback = args[args.length - 1];
+  var originCallback = callback;
   var hasCallback = false;
   var callback = function (err) {
     if (hasCallback) return;
     hasCallback = true;
+    clearTimeout(tid);
     d.dispose();
     originCallback.apply(null, arguments);
   };
-  args[args.length - 1] = callback;
   
   // 如果抛出异常，以回调方式返回
   d.on('error', callback);
   d.run(function () {
-    vm.run.apply(null, args);
+    vm.run.apply(null, [astList, context, callback]);
   });
+
+  // 设置超时时间
+  var tid = setTimeout(function () {
+    callback(new Error('Timeout.'));
+  }, context.options.timeout);
 };
 
 

@@ -16,7 +16,6 @@
     "node":         ">= 0.4.0"
   },
   "dependencies":	{
-    "bright-flow":  "~0.0.3"
   },
   "devDependencies": {
     "mocha":        "~1.8.1",
