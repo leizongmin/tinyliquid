@@ -1,3 +1,3 @@
 @echo off
-node benchmark/test
+node dev/benchmark/test
 mocha
