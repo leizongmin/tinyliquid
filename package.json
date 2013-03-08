@@ -1,7 +1,7 @@
 {
   "name":           "tinyliquid",
   "main":           "./index.js",
-  "version":        "0.2.0",
+  "version":        "0.2.0-pre",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Lei Zongmin <leizongmin@gmail.com>",
@@ -18,8 +18,7 @@
   "dependencies":	{
   },
   "devDependencies": {
-    "mocha":        "~1.8.1",
-    "uglify-js":    "~1.3.3"
+    "mocha":        "~1.8.1"
   },
   "scripts": {
     "test":         "mocha -t 5000"
