@@ -20,7 +20,28 @@ describe('Tag: assgin', function () {
       .add(function (done) {
         common.render('{% assign freestyle = nil %}{{ freestyle }}', function (err, buf) {
           assert.equal(err, null);
-          assert.equal(buf, 'null');
+          assert.equal(buf, '');
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render('{% assign freestyle = undefined %}{{ freestyle }}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, '');
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render('{% assign freestyle = empty %}{{ freestyle }}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, '');
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render('{% assign freestyle = null %}{{ freestyle }}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, '');
           done();
         });
       })
