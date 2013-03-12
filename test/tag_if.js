@@ -239,6 +239,22 @@ describe('Tag: if', function () {
         });
       })
       .add(function (done) {
+        common.render(context, '{% if 1 != 2 %}YES{% else %}NO{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'YES');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if 1 != 1 %}YES{% else %}NO{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'NO');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
         common.render(context, '{% if "abcd" contains "c" %}YES{% else %}NO{% endif %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'YES');
