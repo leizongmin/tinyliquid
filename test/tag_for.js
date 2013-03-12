@@ -190,6 +190,14 @@ describe('Tag: for', function () {
           done();
         });
       })
+      .add(function (done) {
+        common.render(context, '{% for i in array %}{{forloop.length}}{%endfor%}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, '666666');
+          context.clearBuffer();
+          done();
+        });
+      })
       .end(done);
   });
   
