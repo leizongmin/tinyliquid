@@ -15,7 +15,7 @@ describe('Tag: unless', function () {
   it('#unless', function (done) {
     common.taskList()
       .add(function (done) {
-        common.render(context, '{% unless true %}YES{% else %}NO{% endif %}', function (err, buf) {
+        common.render(context, '{% unless true %}YES{% else %}NO{% endunless %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'NO');
           context.clearBuffer();
@@ -23,7 +23,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless true %}YES{% endif %}-END', function (err, buf) {
+        common.render(context, '{% unless true %}YES{% endunless %}-END', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, '-END');
           context.clearBuffer();
@@ -31,7 +31,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless false %}YES{% endif %}-END', function (err, buf) {
+        common.render(context, '{% unless false %}YES{% endunless %}-END', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'YES-END');
           context.clearBuffer();
@@ -39,7 +39,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless false %}YES{% else %}NO{% endif %}', function (err, buf) {
+        common.render(context, '{% unless false %}YES{% else %}NO{% endunless %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'YES');
           context.clearBuffer();
@@ -47,7 +47,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless not true %}YES{% else %}NO{% endif %}', function (err, buf) {
+        common.render(context, '{% unless not true %}YES{% else %}NO{% endunless %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'YES');
           context.clearBuffer();
@@ -55,7 +55,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless not false %}YES{% else %}NO{% endif %}', function (err, buf) {
+        common.render(context, '{% unless not false %}YES{% else %}NO{% endunless %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'NO');
           context.clearBuffer();
@@ -63,7 +63,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless true and true %}YES{% else %}NO{% endif %}', function (err, buf) {
+        common.render(context, '{% unless true and true %}YES{% else %}NO{% endunless %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'NO');
           context.clearBuffer();
@@ -71,7 +71,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless true && true %}YES{% else %}NO{% endif %}', function (err, buf) {
+        common.render(context, '{% unless true && true %}YES{% else %}NO{% endunless %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'NO');
           context.clearBuffer();
@@ -79,7 +79,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless true and false %}YES{% else %}NO{% endif %}', function (err, buf) {
+        common.render(context, '{% unless true and false %}YES{% else %}NO{% endunless %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'YES');
           context.clearBuffer();
@@ -87,7 +87,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless false and false %}YES{% else %}NO{% endif %}', function (err, buf) {
+        common.render(context, '{% unless false and false %}YES{% else %}NO{% endunless %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'YES');
           context.clearBuffer();
@@ -95,7 +95,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless true or true %}YES{% else %}NO{% endif %}', function (err, buf) {
+        common.render(context, '{% unless true or true %}YES{% else %}NO{% endunless %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'NO');
           context.clearBuffer();
@@ -103,7 +103,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless true || true %}YES{% else %}NO{% endif %}', function (err, buf) {
+        common.render(context, '{% unless true || true %}YES{% else %}NO{% endunless %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'NO');
           context.clearBuffer();
@@ -111,7 +111,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless true or false %}YES{% else %}NO{% endif %}', function (err, buf) {
+        common.render(context, '{% unless true or false %}YES{% else %}NO{% endunless %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'NO');
           context.clearBuffer();
@@ -119,7 +119,7 @@ describe('Tag: unless', function () {
         });
       })
       .add(function (done) {
-        common.render(context, '{% unless false or false %}YES{% else %}NO{% endif %}', function (err, buf) {
+        common.render(context, '{% unless false or false %}YES{% else %}NO{% endunless %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'YES');
           context.clearBuffer();
