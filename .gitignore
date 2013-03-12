@@ -1,4 +1,6 @@
 node_modules
-examples/
-benchmark/
-dev/
+examples
+benchmark
+dev
+lib-cov
+coverage.html

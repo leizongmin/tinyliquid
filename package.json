@@ -18,7 +18,8 @@
   "dependencies":	{
   },
   "devDependencies": {
-    "mocha":        "~1.8.1"
+    "mocha":        "~1.8.1",
+    "jscover":      "~0.2.4"
   },
   "scripts": {
     "test":         "mocha -t 5000"
