@@ -1,20 +1,20 @@
 /**
- * 对外接口
+ * TinyLiquid
  *
- * @author 老雷<leizongmin@gmail.com>
+ * @author Lei Zongmin<leizongmin@gmail.com>
  */
 
  
-// 版本
+// version
 exports.version = require('./package.json').version;
 
 
-// 解析模板，返回中间件代码
+// AST parser
 var parser = require('./lib/parser');
 exports.parser = parser;
 
 /**
- * 解析模板
+ * parse template
  *
  * @param {String} tpl
  * @param {Object} options
@@ -25,12 +25,12 @@ exports.parse = function (tpl, options) {
 };
 
 
-// 执行中间代码
+// VM
 var domain = require('domain');
 var vm = require('./lib/vm');
 
 /**
- * 执行中间件代码
+ * run AST code
  *
  * @param {Array} astList
  * @param {Object} context
@@ -40,10 +40,10 @@ exports.run = function (astList, context, callback) {
   var d = domain.create();
   if (arguments.length < 3) throw new Error('Not enough arguments.');
 
-  // 如果astList不是数组，表示为解析，则先解析
+  // if astList is not an AST array, then parse it firstly
   if (!Array.isArray(astList)) astList = parser(astList);
 
-  // 保证回调函数只执行一次
+  // ensure that the callback function is called only once
   var originCallback = callback;
   var hasCallback = false;
   var callback = function (err) {
@@ -54,26 +54,53 @@ exports.run = function (astList, context, callback) {
     originCallback.apply(null, arguments);
   };
   
-  // 如果抛出异常，以回调方式返回
+  // if it throws an error, catch it
   d.on('error', callback);
   d.run(function () {
     vm.run.apply(null, [astList, context, callback]);
   });
 
-  // 设置超时时间
-  var tid = setTimeout(function () {
-    callback(new Error('Timeout.'));
-  }, context.options.timeout);
+  // timeout
+  if (context.options && context.options.timeout > 0) {
+    var tid = setTimeout(function () {
+      callback(new Error('Timeout.'));
+    }, context.options.timeout);
+  }
 };
 
 
-// 执行中间件代码时的环境对象
-exports.Context = require('./lib/context');
+/**
+ * compile to a function
+ *
+ * @param {String} tpl
+ * @param {Object} options
+ * @return {Function}
+ */
+exports.comiple = function (tpl, options) {
+  var ast = exports.parse(tpl, options);
+  return function (context, callback) {
+    exports.run(ast, context, callback);
+  };
+};
 
 
-// 工具函数
+// Context
+var Context = exports.Context = require('./lib/context');
+
+/**
+ * create a new context
+ *
+ * @param {Object} options
+ * @return {Object}
+ */
+exports.newContext = function (options) {
+  return new Context(options);
+};
+
+
+// utils
 exports.utils = require('./lib/utils');
 
 
-// 默认的filters
+// default filters
 exports.filters = require('./lib/filters');
