@@ -5,7 +5,7 @@
  */
 
  
-// version
+// TinyLiquid Version
 exports.version = require('./package.json').version;
 
 
@@ -14,7 +14,7 @@ var parser = require('./lib/parser');
 exports.parser = parser;
 
 /**
- * parse template
+ * Parse template
  *
  * @param {String} tpl
  * @param {Object} options
@@ -30,7 +30,7 @@ var domain = require('domain');
 var vm = require('./lib/vm');
 
 /**
- * run AST code
+ * Run AST code
  *
  * @param {Array} astList
  * @param {Object} context
@@ -70,7 +70,7 @@ exports.run = function (astList, context, callback) {
 
 
 /**
- * compile to a function
+ * Compile to a function
  *
  * @param {String} tpl
  * @param {Object} options
@@ -88,7 +88,7 @@ exports.comiple = function (tpl, options) {
 var Context = exports.Context = require('./lib/context');
 
 /**
- * create a new context
+ * Create a new context
  *
  * @param {Object} options
  * @return {Object}
@@ -98,9 +98,9 @@ exports.newContext = function (options) {
 };
 
 
-// utils
+// Utils
 exports.utils = require('./lib/utils');
 
 
-// default filters
+// Default filters
 exports.filters = require('./lib/filters');
