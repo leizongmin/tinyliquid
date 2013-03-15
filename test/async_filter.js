@@ -31,4 +31,28 @@ describe('Async: filter', function () {
       .end(done);
   });
 
+  it('#timeout & error', function (done) {
+    context.options.timeout = 100;
+    context.setAsyncFilter('timeout', function (a, callback) {
+      // do nothing
+    });
+    context.setAsyncFilter('error', function (a, callback) {
+      throw new Error('Just for test.');
+    });
+    common.taskList()
+      .add(function (done) {
+        common.render(context, '{{123|timeout}}', function (err, buf) {
+          assert.equal(err instanceof Error, true);
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{{123|error}}', function (err, buf) {
+          assert.equal(err instanceof Error, true);
+          done();
+        });
+      })
+      .end(done);
+  });
+
 });
