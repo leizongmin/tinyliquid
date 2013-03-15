@@ -4,14 +4,28 @@
  * @author Lei Zongmin<leizongmin@gmail.com>
  */
 
- 
-// TinyLiquid Version
-exports.version = require('./package.json').version;
+// testing coverage?
+var TINYLIQUID_COV = /true/.test(process.env.TINYLIQUID_COV);
+var libPath = function (name) {
+  return (TINYLIQUID_COV ? './lib-cov' : './lib') + '/' + name;
+};
+
+var domain = require('domain');
+var packageInfo = require('./package.json');
+var parser = require(libPath('parser'));
+var vm = require(libPath('vm'));
+var Context = require(libPath('context'));
+var filters = require(libPath('filters'));
+var utils = require(libPath('utils'));
+
+
+// TinyLiquid version
+exports.version = packageInfo.version;
 
 
 // AST parser
-var parser = require('./lib/parser');
 exports.parser = parser;
+
 
 /**
  * Parse template
@@ -25,10 +39,6 @@ exports.parse = function (tpl, options) {
 };
 
 
-// VM
-var domain = require('domain');
-var vm = require('./lib/vm');
-
 /**
  * Run AST code
  *
@@ -41,7 +51,7 @@ exports.run = function (astList, context, callback) {
   if (arguments.length < 3) throw new Error('Not enough arguments.');
 
   // if astList is not an AST array, then parse it firstly
-  if (!Array.isArray(astList)) astList = parser(astList);
+  if (!Array.isArray(astList)) astList = exports.parse(astList);
 
   // ensure that the callback function is called only once
   var originCallback = callback;
@@ -85,7 +95,7 @@ exports.comiple = function (tpl, options) {
 
 
 // Context
-var Context = exports.Context = require('./lib/context');
+exports.Context = Context;
 
 /**
  * Create a new context
@@ -99,8 +109,8 @@ exports.newContext = function (options) {
 
 
 // Utils
-exports.utils = require('./lib/utils');
+exports.utils = utils;
 
 
 // Default filters
-exports.filters = require('./lib/filters');
+exports.filters = filters;

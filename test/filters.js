@@ -3,7 +3,7 @@
  */
 
 var assert = require('assert');
-var filters = require('../lib/filters');
+var filters = require('../').filters;
 
 describe('filters', function () {
   
