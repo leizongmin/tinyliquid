@@ -57,5 +57,30 @@ describe('Async: locals', function () {
       })
       .end(done);
   });
+  
+  it('#timeout & error', function (done) {
+    context.options.timeout = 100;
+    context.setAsyncLocals('timeout', function (name, callback) {
+      // do nothing
+      // callback(null, name)
+    });
+    context.setAsyncLocals('error', function (name, callback) {
+      throw new Error('Just for test.');
+    });
+    common.taskList()
+      .add(function (done) {
+        common.render(context, 'timeout={{timeout}}', function (err, buf) {
+          assert.equal(err instanceof Error, true);
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, 'error={{error}}', function (err, buf) {
+          assert.equal(err instanceof Error, true);
+          done();
+        });
+      })
+      .end(done);
+  });
 
 });

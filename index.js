@@ -10,7 +10,6 @@ var libPath = function (name) {
   return (TINYLIQUID_COV ? './lib-cov' : './lib') + '/' + name;
 };
 
-var domain = require('domain');
 var packageInfo = require('./package.json');
 var parser = require(libPath('parser'));
 var vm = require(libPath('vm'));
@@ -47,7 +46,6 @@ exports.parse = function (tpl, options) {
  * @param {Function} callback
  */
 exports.run = function (astList, context, callback) {
-  var d = domain.create();
   if (arguments.length < 3) throw new Error('Not enough arguments.');
 
   // if astList is not an AST array, then parse it firstly
@@ -60,21 +58,21 @@ exports.run = function (astList, context, callback) {
     if (hasCallback) return;
     hasCallback = true;
     clearTimeout(tid);
-    d.dispose();
     originCallback.apply(null, arguments);
   };
   
-  // if it throws an error, catch it
-  d.on('error', callback);
-  d.run(function () {
-    vm.run.apply(null, [astList, context, callback]);
-  });
-
   // timeout
   if (context.options && context.options.timeout > 0) {
     var tid = setTimeout(function () {
       callback(new Error('Timeout.'));
     }, context.options.timeout);
+  }
+
+  // if it throws an error, catch it
+  try {
+    vm.run(astList, context, callback);
+  } catch (err) {
+    return callback(err);
   }
 };
 
