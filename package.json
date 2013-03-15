@@ -9,8 +9,15 @@
     {"name": "Lei Zongmin", "email": "leizongmin@gmail.com"}
   ],
   "repository": {
-    "type": "git",
-    "url": "git://github.com/leizongmin/tinyliquid.git"
+    "type":         "git",
+    "url":          "git://github.com/leizongmin/tinyliquid.git"
+  },
+  "licenses":     [{
+    "type":         "MIT",
+    "url":          "https://raw.github.com/leizongmin/tinyliquid/master/MIT-License"
+  }],
+  "bugs":{
+    "url":          "https://github.com/leizongmin/tinyliquid/issues"
   },
   "engines": {
     "node":         ">= 0.8.0"
@@ -20,7 +27,8 @@
   },
   "devDependencies": {
     "mocha":        "~1.8.1",
-    "jscover":      "~0.2.4"
+    "jscover":      "~0.2.4",
+    "bright-flow":  "0.0.3"
   },
   "scripts": {
     "test":         "mocha -t 5000"
