@@ -22,9 +22,7 @@
   "engines": {
     "node":         ">= 0.6.0"
   },
-  "dependencies":	{
-    "debug":        "~0.7.2"
-  },
+  "dependencies":	{},
   "devDependencies": {
     "mocha":        "~1.8.1",
     "jscover":      "~0.2.4",
