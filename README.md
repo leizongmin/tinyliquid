@@ -4,6 +4,7 @@ TinyLiquid [![Build Status](https://secure.travis-ci.org/leizongmin/tinyliquid.p
 A Liquid template syntax template engine. 
 
 __Notes__: The new version 0.2 is almost a full rewrite. Version 0.1 will continue to be maintained for fixing show-stopper bugs, but no new features should be expected.
+The version 0.1 documents: https://github.com/leizongmin/tinyliquid/blob/v0.1/README_en.md
 
 
 Features
