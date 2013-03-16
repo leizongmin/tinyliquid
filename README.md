@@ -3,7 +3,19 @@ TinyLiquid [![Build Status](https://secure.travis-ci.org/leizongmin/tinyliquid.p
 
 A Liquid template syntax template engine. 
 
-Notes: The new version 0.2 is almost a full rewrite. Version 0.1 will continue to be maintained for fixing show-stopper bugs, but no new features should be expected.
+__Notes__: The new version 0.2 is almost a full rewrite. Version 0.1 will continue to be maintained for fixing show-stopper bugs, but no new features should be expected.
+
+
+Features
+========
+
+* Support asynchronous-locals and asynchronous-filter
+
+* Easy to add your custom tags and custom filters
+
+* Almost fully support the liquid syntax
+
+* Support the Express 3.x framework
 
 
 Install
