@@ -1,7 +1,3 @@
-/**
- * 测试异步 locals
- */
-
 var assert = require('assert');
 var common = require('./common');
 

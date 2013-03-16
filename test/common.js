@@ -1,10 +1,3 @@
-/**
- * 单元测试公共部分
- *
- * @author 老雷<leizongmin@gmail.com>
- */
-
-
 var liquid = require('../');
 var flow = require('bright-flow');
 
@@ -15,7 +8,7 @@ if (/2/.test(process.env.DEBUG)) debug2 = console.log;
 
 
 /**
- * 创建一个新的运行环境
+ * Create a new Context
  *
  * @param {Object} options
  * @return {Object}
@@ -25,7 +18,7 @@ exports.newContext = function (options) {
 };
 
 /**
- * 编译模板
+ * Parse the template
  *
  * @param {String} tpl
  * @param {Object} options
@@ -36,7 +29,7 @@ exports.parse = function (tpl, options) {
 };
 
 /**
- * 渲染指定模板
+ * Render
  *
  * @param {Object} context
  * @param {String} tpl
@@ -67,7 +60,7 @@ exports.render = function (context, tpl, options, callback) {
 };
 
 /**
- * 任务列表
+ * Create async task list
  *
  * @return {Object}
  */

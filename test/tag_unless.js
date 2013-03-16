@@ -1,7 +1,3 @@
-/**
- * 测试 unless 标签
- */
-
 var assert = require('assert');
 var common = require('./common');
 

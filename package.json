@@ -20,7 +20,7 @@
     "url":          "https://github.com/leizongmin/tinyliquid/issues"
   },
   "engines": {
-    "node":         ">= 0.8.0"
+    "node":         ">= 0.6.0"
   },
   "dependencies":	{
     "debug":        "~0.7.2"

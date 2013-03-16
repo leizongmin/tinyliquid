@@ -1,7 +1,3 @@
-/**
- * 测试 capture 标签
- */
-
 var assert = require('assert');
 var common = require('./common');
 

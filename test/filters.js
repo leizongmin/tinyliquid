@@ -1,7 +1,3 @@
-/**
- * 内置的 filter
- */
-
 var assert = require('assert');
 var filters = require('../').filters;
 
