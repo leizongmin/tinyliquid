@@ -1,23 +1,56 @@
-Tinyliquid
+TinyLiquid [![Build Status](https://secure.travis-ci.org/leizongmin/tinyliquid.png?branch=master)](http://travis-ci.org/leizongmin/tinyliquid) [![Dependencies Status](https://david-dm.org/leizongmin/tinyliquid.png)](http://david-dm.org/leizongmin/tinyliquid)
 ==============
 
-[![Build Status](https://secure.travis-ci.org/leizongmin/tinyliquid.png?branch=master)](http://travis-ci.org/leizongmin/tinyliquid)
+A Liquid template syntax template engine. 
+
+Notes: The new version 0.2 is almost a full rewrite. Version 0.1 will continue to be maintained for fixing show-stopper bugs, but no new features should be expected.
 
 
-新版本正在开发中，API与v0.1.x版本的不同。
+Install
+=======
+
+```bash
+npm install tinyliquid
+```
 
 
-旧版本 v0.1.x
-=============
+Quick Start
+===========
 
-安装： `npm install tinyliquid@0.1.4`
+```javascript
+var tinyliquid = require('tinyliquid');
 
-源码：https://github.com/leizongmin/tinyliquid/tree/v0.1.4
+var render = tinyliquid.compile('Hello, {{name}}!');
+var context = tinyliquid.newContext();
+context.setLocals('name', 'Lily');
+
+render(context, function (err, text) {
+  if (err) throw err;
+  console.log('Result: %s', text);
+});
+```
+
+Using in the Express 3.x: [the express-liquid module](https://github.com/leizongmin/express-liquid)
 
 
+Test
+====
 
-授权协议
-========
+```bash
+mocha test/
+```
+
+jscoverage:
+
+```bash
+sh bin/coverage.sh
+```
+
+jscoverage: 90%
+
+
+License
+=======
 
 ```
 Copyright (c) 2012-2013 Lei Zongmin(雷宗民) <leizongmin@gmail.com>
