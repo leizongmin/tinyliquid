@@ -7,6 +7,9 @@ if (/1/.test(process.env.DEBUG)) debug1 = console.log;
 if (/2/.test(process.env.DEBUG)) debug2 = console.log;
 
 
+// The TinyLiquid
+exports.me = liquid;
+
 /**
  * Create a new Context
  *

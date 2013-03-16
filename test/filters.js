@@ -1,5 +1,5 @@
 var assert = require('assert');
-var filters = require('../').filters;
+var filters = require('./common').me.filters;
 
 describe('filters', function () {
   

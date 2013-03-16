@@ -84,10 +84,12 @@ exports.run = function (astList, context, callback) {
  * @param {Object} options
  * @return {Function}
  */
-exports.comiple = function (tpl, options) {
+exports.compile = function (tpl, options) {
   var ast = exports.parse(tpl, options);
   return function (context, callback) {
-    exports.run(ast, context, callback);
+    exports.run(ast, context, function (err) {
+      callback(err, context.getBuffer());
+    });
   };
 };
 
