@@ -18,9 +18,11 @@ Features
 
 * Support the Express 3.x framework
 
+* High test coverage
 
-Install
-=======
+
+Installation
+============
 
 ```bash
 npm install tinyliquid
@@ -46,20 +48,28 @@ render(context, function (err, text) {
 Using in the Express 3.x: [the express-liquid module](https://github.com/leizongmin/express-liquid)
 
 
-Test
-====
+Running Tests
+=============
+
+To run the test suite first invoke the following command within the repo, installing the development dependencies:
 
 ```bash
-mocha test/
+$ npm install
 ```
 
-jscoverage:
+then run the tests:
 
 ```bash
-sh bin/coverage.sh
+$ mocha test/
 ```
 
-jscoverage: 90%
+Get the test coverage report:
+
+```bash
+$ sh bin/coverage.sh
+```
+
+then open the file "./coverage.html" in your browser.
 
 
 License
