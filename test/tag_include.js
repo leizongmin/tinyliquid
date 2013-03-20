@@ -16,12 +16,18 @@ describe('Tag: include', function () {
       case 'file3':
         var tpl = 'b={{b}}';
         break;
+      case 'file4':
+        var tpl = 'v={{v}}';
+        break;
+      case 'file5':
+        var tpl = 'v={{v}}{% if c %},{% for item in c %}{% include "file5" with item %}{% unless forloop.last %},{% endunless %}{% endfor %}{% endif %}';
+        break;
       default:
         var tpl = '';
     }
     return callback(null, common.parse(tpl));
   });
-
+  
   it('#include', function (done) {
     context.setLocals('a', 123);
     context.setLocals('b', 456);
@@ -49,6 +55,35 @@ describe('Tag: include', function () {
         common.render(context, 'b={{b}},{% include "file3" with c %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'b=456,b=789');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .end(done);
+  });
+  
+  it('#forloop & nested', function (done) {
+    var arr = [{v:123}, {v:456}, {v:789}];
+    var arr2 = [{v: 123, c: [{v: 789}, {v: 988, c: [{v: 877}]}]}, {v: 456}];
+    context.setLocals('arr', arr);
+    context.setLocals('arr2', arr2);
+    common.taskList()
+      .add(function (done) {
+        var tpl = '{% for item in arr %}{% include "file4" with item %}{% unless forloop.last %},{% endunless %}{% endfor %}';
+        common.render(context, tpl, function (err, buf) {
+          assert.equal(err, null);
+          //console.log(buf)
+          assert.equal(buf, 'v=123,v=456,v=789');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        var tpl = '{% for item in arr2 %}{% include "file5" with item %}{% unless forloop.last %},{% endunless %}{% endfor %}';
+        common.render(context, tpl, function (err, buf) {
+          assert.equal(err, null);
+          //console.log('done', buf)
+          assert.equal(buf, 'v=123,v=789,v=988,v=877,v=456');
           context.clearBuffer();
           done();
         });
