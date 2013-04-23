@@ -71,10 +71,8 @@ exports.taskList = function () {
   var task = flow.series();
   var ret = {
     add: function (fn) {
-      task.do(function (me) {
-        fn(function () {
-          me.done();
-        });
+      task.do(function (done) {
+        fn(done);
       });
       return ret;
     },
