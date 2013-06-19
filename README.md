@@ -18,7 +18,7 @@ Features
 
 * Support the Express 3.x framework
 
-* High test coverage
+* High test coverage (92% coverage)
 
 
 Installation
@@ -63,23 +63,17 @@ $ npm install
 then run the tests:
 
 ```bash
-$ mocha test/
+$ npm test
 ```
 
-Get the test coverage report:
-
-```bash
-$ sh bin/coverage.sh
-```
-
-then open the file "./coverage.html" in your browser.
+Get the test coverage report: open the file "./coverage.html" in your browser.
 
 
 License
 =======
 
 ```
-Copyright (c) 2012-2013 Lei Zongmin(雷宗民) <leizongmin@gmail.com>
+Copyright (c) 2012-2013 Zongmin Lei (雷宗民) <leizongmin@gmail.com>
 http://ucdok.com
 
 The MIT License
