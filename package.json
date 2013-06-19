@@ -4,9 +4,9 @@
   "version":        "0.2.0-pre2",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
-  "author":         "Lei Zongmin <leizongmin@gmail.com>",
+  "author":         "Zongmin Lei <leizongmin@gmail.com>",
   "contributors": [
-    {"name": "Lei Zongmin", "email": "leizongmin@gmail.com"}
+    {"name": "Zongmin Lei", "email": "leizongmin@gmail.com"}
   ],
   "repository": {
     "type":         "git",
