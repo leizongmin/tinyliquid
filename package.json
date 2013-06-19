@@ -30,7 +30,7 @@
   },
   "scripts": {
      "blanket": {
-      "pattern": "lib"
+      "pattern": "tinyliquid/lib"
     },
     "test":         "mocha --require blanket -R html-cov > coverage.html -t 5000"
   }
