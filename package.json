@@ -1,7 +1,7 @@
 {
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.0-pre2",
+  "version":        "0.2.0",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
