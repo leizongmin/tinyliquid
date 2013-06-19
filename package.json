@@ -1,6 +1,6 @@
 {
   "name":           "tinyliquid",
-  "main":           "./index.js",
+  "main":           "./lib/index.js",
   "version":        "0.2.0-pre2",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
@@ -25,10 +25,13 @@
   "dependencies":	{},
   "devDependencies": {
     "mocha":        "~1.8.1",
-    "jscover":      "~0.2.4",
-    "bright-flow":  "0.0.3"
+    "bright-flow":  "0.0.3",
+    "blanket":      "~1.1.5"
   },
   "scripts": {
-    "test":         "mocha -t 5000"
+     "blanket": {
+      "pattern": "lib"
+    },
+    "test":         "mocha --require blanket -R html-cov > coverage.html -t 5000"
   }
 }
