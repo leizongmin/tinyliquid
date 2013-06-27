@@ -53,6 +53,14 @@ The Liquid Templating language: http://liquidmarkup.org/
 See the TinyLiquid API documents for more details: https://github.com/leizongmin/tinyliquid/wiki/API
 
 
+The difference with Liquid language
+==============
+
+TinyLiquid not support the locals variables like this: `a[0]`, `a["b"]`, `a[0]["b"]` and so on.
+
+Only support to use `.` as the separator: `a.b`, `a.b.c`
+
+
 Running Tests
 =============
 
