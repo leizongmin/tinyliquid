@@ -4,7 +4,7 @@ TinyLiquid [![Build Status](https://secure.travis-ci.org/leizongmin/tinyliquid.p
 A Liquid syntax template engine. 
 
 __Notes__: The new version 0.2 is almost a full rewrite. Version 0.1 will continue to be maintained for fixing show-stopper bugs, but no new features should be expected.
-The new version is not compatible with the old version. The version 0.1 documents: https://github.com/leizongmin/tinyliquid/blob/v0.1/README_en.md
+**The new version is not compatible with the old version**. The version 0.1 documents: https://github.com/leizongmin/tinyliquid/blob/v0.1/README_en.md
 
 
 Features
@@ -25,32 +25,18 @@ Installation
 ============
 
 ```bash
-npm install tinyliquid
+$ npm install tinyliquid
 ```
 
 
 Quick Start
 ===========
 
-```javascript
-var tinyliquid = require('tinyliquid');
-
-var render = tinyliquid.compile('Hello, {{name}}!');
-var context = tinyliquid.newContext();
-context.setLocals('name', 'Lily');
-
-render(context, function (err, text) {
-  if (err) throw err;
-  console.log('Result: %s', text);
-  // will output: Hello, Lily!
-});
-```
-
-Using in the Express 3.x: [the express-liquid module](https://github.com/leizongmin/express-liquid)
+TinyLiquid Wiki: https://github.com/leizongmin/tinyliquid/wiki
 
 The Liquid Templating language: http://liquidmarkup.org/
 
-See the TinyLiquid API documents for more details: https://github.com/leizongmin/tinyliquid/wiki/API
+Using in the Express 3.x: [the express-liquid module](https://github.com/leizongmin/express-liquid)
 
 
 The difference with Liquid language
