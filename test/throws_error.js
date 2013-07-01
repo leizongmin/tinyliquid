@@ -17,7 +17,7 @@ describe('Throws error', function () {
       done();
     });
   });
-  
+
   it('#undefined filter', function (done) {
     var context = common.newContext();
     context.setLocals('a', 123);
@@ -108,6 +108,23 @@ describe('Throws error', function () {
     common.render(context, '{{100 | timeout}}', function (err, buf) {
       assert.notEqual(err, null);
       assert.equal(/timeout/img.test(err.toString()), true);
+      done();
+    });
+  });
+
+  it('#include file unexpected error - callback', function (done) {
+    var context = common.newContext();
+    var unexpectedErr = new Error('unexpected');
+    context.onInclude(function (name, callback) {
+      setTimeout(function () {
+        unexpectedErr.name = name;
+        return callback(unexpectedErr);
+      }, 20);
+    });
+    common.render(context, '{% include "abc" %}', function (err, buf) {
+      assert.notEqual(err, null);
+      assert.equal(err, unexpectedErr);
+      assert.equal(err.name, 'abc');
       done();
     });
   });
