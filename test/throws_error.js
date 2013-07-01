@@ -1,6 +1,5 @@
 var assert = require('assert');
 var common = require('./common');
-var me = require('../');
 
 describe('Throws error', function () {
   
@@ -29,13 +28,27 @@ describe('Throws error', function () {
       assert.equal(/not enough arguments/img.test(err.toString()), true);
     }
     try {
-      me.run();
+      common.me.run();
       throw new Error();
     } catch (err) {
       testErr(err);
     }
-    me.run(testErr);
-    me.run(1, testErr);
+    common.me.run(testErr);
+    common.me.run(1, testErr);
     done();
   });
+
+  it('#run() timeout', function (done) {
+    var context = common.newContext();
+    context.setTimeout(50);
+    context.setAsyncFilter('timeout', function (ms, callback) {
+      setTimeout(callback, ms);
+    });
+    common.render(context, '{{100 | timeout}}', function (err, buf) {
+      assert.notEqual(err, null);
+      assert.equal(/timeout/img.test(err.toString()), true);
+      done();
+    });
+  });
+
 });
