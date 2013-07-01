@@ -3,6 +3,21 @@ var common = require('./common');
 
 describe('Throws error', function () {
   
+  it('#locals unexpected error - callback', function (done) {
+    var context = common.newContext();
+    var unexpectedErr = new Error('unexpected');
+    context.setAsyncLocals('a', function (name, callback) {
+      setTimeout(function () {
+        return callback(unexpectedErr);
+      }, 20);
+    });
+    common.render(context, 'a={{a}}', function (err, buf) {
+      assert.notEqual(err, null);
+      assert.equal(err, unexpectedErr);
+      done();
+    });
+  });
+  
   it('#undefined filter', function (done) {
     var context = common.newContext();
     context.setLocals('a', 123);
@@ -13,6 +28,52 @@ describe('Throws error', function () {
     });
   });
 
+  it('#filter unexpected error - callback', function (done) {
+    var context = common.newContext();
+    context.setLocals('a', 123);
+    var unexpectedErr = new Error('unexpected');
+    context.setAsyncFilter('my_filter', function (a, callback) {
+      setTimeout(function () {
+        return callback(unexpectedErr);
+      }, 20);
+    });
+    common.render(context, '{{a | my_filter}}', function (err, buf) {
+      assert.notEqual(err, null);
+      assert.equal(err, unexpectedErr);
+      done();
+    });
+  });
+
+  it('#filter unexpected error - throw', function (done) {
+    var context = common.newContext();
+    context.setLocals('a', 123);
+    var unexpectedErr = new Error('unexpected');
+    context.setAsyncFilter('my_filter', function (a, callback) {
+      throw callback(unexpectedErr);
+    });
+    common.render(context, '{{a | my_filter}}', function (err, buf) {
+      assert.notEqual(err, null);
+      assert.equal(err, unexpectedErr);
+      done();
+    });
+  });
+  /*
+  it('#filter unexpected error - throw - cannot catch', function (done) {
+    var context = common.newContext();
+    context.setLocals('a', 123);
+    var unexpectedErr = new Error('unexpected');
+    context.setAsyncFilter('my_filter', function (a, callback) {
+      setTimeout(function () {
+        throw callback(unexpectedErr);
+      }, 20);
+    });
+    common.render(context, '{{a | my_filter}}', function (err, buf) {
+      assert.notEqual(err, null);
+      assert.equal(err, unexpectedErr);
+      done();
+    });
+  });
+  */
   it('#unknow tag', function (done) {
     var context = common.newContext();
     common.render(context, '{% unknow_tag %}', function (err, buf) {
