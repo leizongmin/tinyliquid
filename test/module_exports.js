@@ -26,5 +26,33 @@ describe('Module exports', function () {
       done();
     });
   });
+
+  it('#insertFilename - 1', function (done) {
+    var ast = me.parse('just for test');
+    ast = me.insertFilename(ast, 'test.liquid');
+    var c = me.newContext();
+    me.run(ast, c, function (err) {
+      assert.equal(err, null);
+      assert.equal(c.clearBuffer(), 'just for test');
+      done();
+    });
+  });
+
+  it('#insertFilename - 2', function (done) {
+    var ast = me.parse('this is file1. {% include "file2" %} {% include "file3" %}');
+    ast = me.insertFilename(ast, 'file1');
+    var c = me.newContext();
+    c.onInclude(function (name, callback) {
+      var ast= me.parse('this is ' + name + '.' + (name === 'file3' ? ' {% include "file4" %}' : ''));
+      ast = me.insertFilename(ast, name);
+      //console.log(this._filenameStack);
+      callback(null, ast);
+    });
+    me.run(ast, c, function (err) {
+      assert.equal(err, null);
+      assert.equal(c.clearBuffer(), 'this is file1. this is file2. this is file3. this is file4.');
+      done();
+    });
+  });
   
 });
