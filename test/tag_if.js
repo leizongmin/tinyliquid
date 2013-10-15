@@ -3,7 +3,7 @@ var common = require('./common');
 
 
 describe('Tag: if', function () {
-  
+
   var context = common.newContext();
   context.setLocals('array', [1,2,3,4,5]);
   context.setLocals('object', {a: 1, b: 2, c: 3, d: 4, e: 5});
@@ -361,6 +361,55 @@ describe('Tag: if', function () {
       })
       .add(function (done) {
         common.render(context, '{% if false %}YES{% elseif false %}YES2{% elseif false %}YES3{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, '');
+          context.clearBuffer();
+          done();
+        });
+      })
+      // elsif
+      .add(function (done) {
+        common.render(context, '{% if false %}YES{% elsif true %}YES2{% else %}NO{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'YES2');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if false %}YES{% elsif true %}YES2{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'YES2');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if false %}YES{% elsif false %}YES2{% elsif true %}YES3{% else %}NO{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'YES3');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if false %}YES{% elsif false %}YES2{% elsif true %}YES3{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'YES3');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if false %}YES{% elsif false %}YES2{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, '');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if false %}YES{% elsif false %}YES2{% elsif false %}YES3{% endif %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, '');
           context.clearBuffer();
