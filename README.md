@@ -37,7 +37,14 @@ TinyLiquid Wiki: https://github.com/leizongmin/tinyliquid/wiki
 
 The Liquid Templating language: http://liquidmarkup.org/
 
-Using in the Express 3.x: [the express-liquid module](https://github.com/leizongmin/express-liquid)
+Using on the Express 3.x: [the express-liquid module](https://github.com/leizongmin/express-liquid)
+
+Using on the browser side: 
+
+```HTML
+<script src="https://raw.github.com/leizongmin/tinyliquid/master/target/tinyliquid.js"></script>
+reference the file "test/test.html" from the source directory
+```
 
 
 The difference with Liquid language
