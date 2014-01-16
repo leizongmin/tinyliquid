@@ -1975,11 +1975,19 @@ var baseTags = {
 
   'include': function (context, name, body) {
     var blocks = arrayRemoveEmptyString(splitText(body, [' ']));
+    var filename = blocks[0].trim();
+    // if filename is a variable
+    if (filename.substr(0, 2) === '{{' && filename.substr(-2) === '}}') {
+      filename = localsAstNode(filename.slice(2, -2), context);
+    } else {
+      filename = stripQuoteWrap(filename);
+    }
+    // if include "with" syntax
     if (blocks.length >= 3 && blocks[1].toLowerCase() === 'with') {
       var ast = localsAstNode(stripQuoteWrap(blocks[2]), context);
-      context.astStack.push(context.astNode(OPCODE.INCLUDE, stripQuoteWrap(blocks[0]), ast));
+      context.astStack.push(context.astNode(OPCODE.INCLUDE, filename, ast));
     } else {
-      context.astStack.push(context.astNode(OPCODE.INCLUDE, stripQuoteWrap(blocks[0])));
+      context.astStack.push(context.astNode(OPCODE.INCLUDE, filename));
     }
   },
 
@@ -2336,7 +2344,7 @@ utils.isQuoteWrapString = function (text) {
 };
 
 /**
- * Remove the string outside the quotation marks 
+ * Remove the string outside the quotation marks
  *
  * @param {string} text
  * @return {string}
@@ -2376,7 +2384,7 @@ utils.textIndexOf = function (text, subject, start) {
       } else {
         if (text.substr(i, subjectLength) === subject) {
           return i;
-        } 
+        }
       }
     }
   }
@@ -2461,7 +2469,7 @@ utils.splitText = function (text, separators) {
       flush();
     }
   });
-  
+
   return list;
 };
 
@@ -2748,9 +2756,9 @@ utils.asyncEach = function (list, fn, callback, a1, a2, a3, b1, b2, b3) {
   var len = list.length;
   var next = function (err) {
     if (err) return callback(err, null, a2, a3);
-    
+
     j++;
-    if (j > 32) {
+    if (j > 10) {
       // avoid stack overflow
       j = 0;
       setImmediate(next);
@@ -3460,7 +3468,10 @@ execOpcode[OPCODE.COMMENT] = function (context, callback, ast) {
 
 
 execOpcode[OPCODE.INCLUDE] = function (context, callback, ast) {
-  context.include(ast[1], ast[2], callback);
+  run(ast[1], context, function (err, filename) {
+    if (err) return callback(err);
+    context.include(filename, ast[2], callback);
+  });
 };
 
 
@@ -3489,7 +3500,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.6",
+  "version":        "0.2.7",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
