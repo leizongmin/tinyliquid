@@ -1,0 +1,36 @@
+<!doctype>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Test</title>
+</head>
+<body>
+  <pre id="code" style="display:none;">
+  <div style="width: 300px; margin: auto; border: 1px solid #aaa;">
+    <ul>
+    {% for item in list %}
+      <li>{{item.name|escape}} = {{item.value|to_string}}</li>
+    {% endfor %}
+    </ul>
+    <div style="background-color: green; color: #fff; padding: 4px 12px; text-align: center;">All things done.</div>
+  </div>
+  </pre>
+  <div id="tpl"></div>
+</body>
+</html>
+<script src="../target/tinyliquid.js"></script>
+<script>
+var code = document.querySelector('#code').innerHTML;
+var c = TinyLiquid.newContext();
+var data = Object.keys(TinyLiquid).map(function (k) {
+  return {name: k, value: TinyLiquid[k]};
+});
+c.setLocals('list', data);
+c.setFilter('to_string', function (v) {
+  return typeof v === 'function' ? '[Function]' : v;
+});
+TinyLiquid.run(code, c, function (err) {
+  if (err) throw err;
+  document.querySelector('#tpl').innerHTML = c.getBuffer();
+});
+</script>
