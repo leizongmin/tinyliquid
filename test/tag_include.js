@@ -3,7 +3,7 @@ var common = require('./common');
 
 
 describe('Tag: include', function () {
-  
+
   var context = common.newContext();
   context.onInclude(function (name, callback) {
     switch (name) {
@@ -27,7 +27,7 @@ describe('Tag: include', function () {
     }
     return callback(null, common.parse(tpl));
   });
-  
+
   it('#include', function (done) {
     context.setLocals('a', 123);
     context.setLocals('b', 456);
@@ -61,7 +61,46 @@ describe('Tag: include', function () {
       })
       .end(done);
   });
-  
+
+it('#variables within include', function (done) {
+    context.setLocals('a', 123);
+    context.setLocals('b', 456);
+    context.setLocals('c', {
+      b: 789
+    });
+    context.setLocals('f1', 'file1');
+    context.setLocals('f2', 'file2');
+    context.setAsyncLocals('f3', function (name, callback) {
+      callback(null, "file3");
+    });
+    common.taskList()
+      .add(function (done) {
+        common.render(context, 'hello,{% include {{f1}} %}.', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'hello,abc-123.');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, 'hello,{% include {{f2}} %}.', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'hello,efg-abc-123-end.');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, 'b={{b}},{% include {{f3}} with c %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'b=456,b=789');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .end(done);
+  });
+
   it('#forloop & nested', function (done) {
     var arr = [{v:123}, {v:456}, {v:789}];
     var arr2 = [{v: 123, c: [{v: 789}, {v: 988, c: [{v: 877}]}]}, {v: 456}];
@@ -90,5 +129,5 @@ describe('Tag: include', function () {
       })
       .end(done);
   });
-  
+
 });
