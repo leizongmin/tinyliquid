@@ -22,6 +22,9 @@ describe('Tag: include', function () {
       case 'file5':
         var tpl = 'v={{v}}{% if c %},{% for item in c %}{% include "file5" with item %}{% unless forloop.last %},{% endunless %}{% endfor %}{% endif %}';
         break;
+      case 'file6':
+        var tpl = 'a={{a}},b={{b}},c={{c}}';
+        break;
       default:
         var tpl = '';
     }
@@ -136,6 +139,14 @@ it('#variables within include', function (done) {
         common.render(context, 'b={{b}},{% include {{  page.f3  }} with c %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'b=456,b=789');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, 'b={{b}},{% include {{  page.f | append: 6 }} a = 111 b = 220 | plus: 2 c=222|plus:100|plus:11%}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'b=456,a=111,b=222,c=333');
           context.clearBuffer();
           done();
         });
