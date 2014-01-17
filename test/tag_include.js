@@ -83,7 +83,8 @@ it('#variables within include', function (done) {
         });
       })
       .add(function (done) {
-        common.render(context, 'hello,{% include {{f2}} %}.', function (err, buf) {
+        // with whitespaces
+        common.render(context, 'hello,{% include {{  f2}} %}.', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'hello,efg-abc-123-end.');
           context.clearBuffer();
@@ -91,7 +92,48 @@ it('#variables within include', function (done) {
         });
       })
       .add(function (done) {
-        common.render(context, 'b={{b}},{% include {{f3}} with c %}', function (err, buf) {
+        common.render(context, 'b={{b}},{% include {{  f3  }} with c %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'b=456,b=789');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .end(done);
+  });
+
+  it('#variables & filters within include', function (done) {
+    context.setLocals('a', 123);
+    context.setLocals('b', 456);
+    context.setLocals('c', {
+      b: 789
+    });
+    context.setLocals('page', {
+      f1: 'file1',
+      f2: 'file2',
+      f3: 'file3',
+      f:  'file'
+    });
+    common.taskList()
+      .add(function (done) {
+        common.render(context, 'hello,{% include {{page.f|append:1}} %}.', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'hello,abc-123.');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        // with whitespaces
+        common.render(context, 'hello,{% include {{ "f" | append: "il" | append: "e2" }} %}.', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'hello,efg-abc-123-end.');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, 'b={{b}},{% include {{  page.f3  }} with c %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'b=456,b=789');
           context.clearBuffer();
