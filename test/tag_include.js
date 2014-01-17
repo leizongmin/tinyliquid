@@ -179,10 +179,10 @@ it('#variables within include', function (done) {
       })
       .end(done);
   });
-return;
+
   it('#forloop & nested', function (done) {
     var arr = [{v:123}, {v:456}, {v:789}];
-    var arr2 = [{v: 123, c: [{v: 789}, {v: 988, c: [{v: 877}]}]}, {v: 456}];
+    var arr2 = [{v: 123, c: [{v: 789, c: null}, {v: 988, c: [{v: 877, c: null}]}]}, {v: 456, c: null}];
     context.setLocals('arr', arr);
     context.setLocals('arr2', arr2);
     common.taskList()
@@ -190,7 +190,7 @@ return;
         var tpl = '{% for item in arr %}{% include "file4" with item %}{% unless forloop.last %},{% endunless %}{% endfor %}';
         common.render(context, tpl, function (err, buf) {
           assert.equal(err, null);
-          //console.log(buf)
+          // console.log(buf)
           assert.equal(buf, 'v=123,v=456,v=789');
           context.clearBuffer();
           done();
@@ -198,9 +198,9 @@ return;
       })
       .add(function (done) {
         var tpl = '{% for item in arr2 %}{% include "file5" with item %}{% unless forloop.last %},{% endunless %}{% endfor %}';
-        common.render(context, tpl, function (err, buf) {console.log(err);
+        common.render(context, tpl, function (err, buf) {
           assert.equal(err, null);
-          console.log('done', buf)
+          // console.log('done', buf)
           assert.equal(buf, 'v=123,v=789,v=988,v=877,v=456');
           context.clearBuffer();
           done();
