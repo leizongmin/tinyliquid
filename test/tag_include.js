@@ -154,6 +154,32 @@ it('#variables within include', function (done) {
       .end(done);
   });
 
+  it('#nested', function (done) {
+    context.setLocals('v', 789);
+    common.taskList()
+      .add(function (done) {
+        var tpl = '{% include file4 v=123 %},v={{v}}';
+        common.render(context, tpl, function (err, buf) {
+          assert.equal(err, null);
+          // console.log('#nested', buf)
+          assert.equal(buf, 'v=123,v=789');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        var tpl = '{% include {{ "file" | append:4}} v=123 %},v={{v}}';
+        common.render(context, tpl, function (err, buf) {
+          assert.equal(err, null);
+          // console.log('#nested', buf)
+          assert.equal(buf, 'v=123,v=789');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .end(done);
+  });
+return;
   it('#forloop & nested', function (done) {
     var arr = [{v:123}, {v:456}, {v:789}];
     var arr2 = [{v: 123, c: [{v: 789}, {v: 988, c: [{v: 877}]}]}, {v: 456}];
