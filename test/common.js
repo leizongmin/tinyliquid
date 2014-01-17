@@ -1,5 +1,5 @@
 var liquid = require('../');
-var flow = require('bright-flow');
+var async = require('async');
 
 var debug1 = function () {};
 var debug2 = function () {};
@@ -68,19 +68,14 @@ exports.render = function (context, tpl, options, callback) {
  * @return {Object}
  */
 exports.taskList = function () {
-  var task = flow.series();
+  var list = [];
   var ret = {
     add: function (fn) {
-      task.do(function (done) {
-        fn(done);
-      });
+      list.push(fn);
       return ret;
     },
     end: function (fn) {
-      task.end(function (isTimeout) {
-        if (isTimeout) return fn(new Error('Task timeout.'));
-        fn();
-      });
+      async.series(list, fn);
       return ret;
     }
   };
