@@ -172,9 +172,9 @@ it('#variables within include', function (done) {
       })
       .add(function (done) {
         var tpl = '{% for item in arr2 %}{% include "file5" with item %}{% unless forloop.last %},{% endunless %}{% endfor %}';
-        common.render(context, tpl, function (err, buf) {
+        common.render(context, tpl, function (err, buf) {console.log(err);
           assert.equal(err, null);
-          //console.log('done', buf)
+          console.log('done', buf)
           assert.equal(buf, 'v=123,v=789,v=988,v=877,v=456');
           context.clearBuffer();
           done();
