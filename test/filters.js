@@ -311,9 +311,12 @@ describe('filters', function () {
   });
 
   it('#default', function () {
-    assert.equal(filters.default('bbb', 'aaa'), 'bbb');
     assert.equal(filters.default(null, 'aaa'), 'aaa');
     assert.equal(filters.default(undefined, 'aaa'), 'aaa');
+    assert.equal(filters.default(false, 'aaa'), 'aaa');
+    assert.deepEqual(filters.default([], 'aaa'), 'aaa');
+    assert.deepEqual(filters.default('', 'aaa'), 'aaa');
+    assert.equal(filters.default('bbb', 'aaa'), 'bbb');
     assert.deepEqual(filters.default([1,2], 'aaa'), [1,2].toString());
   });
 
