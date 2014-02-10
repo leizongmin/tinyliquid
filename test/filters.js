@@ -309,5 +309,12 @@ describe('filters', function () {
     assert.deepEqual(filters.pagination(50, 20, 2), {current: 2, next: 3, previous: 1, list: [1, 2, 3]});
     assert.deepEqual(filters.pagination(50, 20, 3), {current: 3, next: 3, previous: 2, list: [1, 2, 3]});
   });
+
+  it('#default', function () {
+    assert.equal(filters.default('bbb', 'aaa'), 'bbb');
+    assert.equal(filters.default(null, 'aaa'), 'aaa');
+    assert.equal(filters.default(undefined, 'aaa'), 'aaa');
+    assert.deepEqual(filters.default([1,2], 'aaa'), [1,2].toString());
+  });
   
 });
