@@ -63,6 +63,7 @@ var utils = require('./utils');
 var parser = require('./parser');
 var filters = require('./filters');
 var vm = require('./vm');
+var OPCODE = require('./opcode');
 var debug = utils.debug('Context');
 var merge = utils.merge;
 
@@ -278,7 +279,7 @@ Context.prototype.getLocals = function (name) {
  */
 Context.prototype.fetchLocals = function (list, callback) {
   var me = this;
-  
+
   if (Array.isArray(list)) {
 
     var values = [];
@@ -291,7 +292,7 @@ Context.prototype.fetchLocals = function (list, callback) {
     }, callback, null, values);
 
   } else {
-    
+
     var name = list;
     var tpl = '{{' + name + '}}';
     if (me._astCache[tpl]) {
@@ -513,29 +514,45 @@ Context.prototype.tablerowloopEnd = function () {
  *
  * @param {String} name
  * @param {Array} localsAst
+ * @param {Array} headerAst
  * @param {Function} callback
  */
-Context.prototype.include = function (name, localsAst, callback) {
+Context.prototype.include = function (name, localsAst, headerAst, callback) {
+  if (typeof headerAst === 'function') {
+    callback = headerAst;
+    headerAst = null;
+  }
+
   var me = this;
   if (typeof(this._includeFileHandler) === 'function') {
     this._includeFileHandler(name, function (err, astList) {
       if (err) return callback(err);
+
+      // all include files run on new context
+      var c = new Context();
+      c.from(me);
+
+      function start () {
+        c.run(astList, function (err) {
+          //console.log(err, c.getBuffer(), headerAst);
+          me.print(c.clearBuffer());
+          callback(err);
+        });
+      }
+
+      if (headerAst && headerAst.length > 0) {
+        astList = [me._position.line, me._position.column,OPCODE.LIST, headerAst, astList];
+      }
       if (localsAst) {
         me.run(localsAst, function (err, locals) {
           if (err) locals = {};
-          var c = new Context();
-          c.from(me);
-          c._asyncLocals = {};
-          c._asyncLocals2 = {};
-          c._syncLocals = {};
-          c._locals = locals;
-          c.run(astList, function (err) {
-            me.print(c.clearBuffer());
-            callback(err);
-          });
+          for (var i in locals) {
+            c.setLocals(i, locals[i]);
+          }
+          start();
         });
       } else {
-        me.run(astList, callback);
+        start();
       }
     });
   } else {
@@ -693,7 +710,7 @@ Context.prototype.getFilename = function () {
   return this._filenameStack[this._filenameStack.length - 1];
 };
 
-},{"./filters":3,"./parser":7,"./utils":8,"./vm":9}],3:[function(require,module,exports){
+},{"./filters":3,"./opcode":6,"./parser":7,"./utils":8,"./vm":9}],3:[function(require,module,exports){
 'use strict';
 
 /**
@@ -729,7 +746,7 @@ exports.img_tag = function (url, alt) {
  * Generate <script> tag
  *
  * @param {string} url
- * @return {string} 
+ * @return {string}
  */
 exports.script_tag = function (url) {
   return '<script src="' + exports.escape(url) + '"></script>';
@@ -809,7 +826,7 @@ exports.times = function (input, operand) {
  */
 exports.divided_by = function (input, operand) {
   input = Number(input) || 0;
-  operand = Number(operand) || 0; 
+  operand = Number(operand) || 0;
   return  input / operand;
 };
 
@@ -845,7 +862,7 @@ exports.integer = function (input) {
  * @return {number}
  */
 exports.random = function (m, n) {
-  m = parseInt(m); 
+  m = parseInt(m);
   n = parseInt(n);
   if (!isFinite(m)) return Math.random();
   if (!isFinite(n)) {
@@ -1167,7 +1184,7 @@ exports.strip_newlines = function (input) {
  * @return {string}
  */
 exports.truncate = function (input, n) {
-  n = parseInt(n, 10); 
+  n = parseInt(n, 10);
   if (!isFinite(n) || n < 0) n = 100;
   return toString(input).substr(0, n);
 };
@@ -1180,7 +1197,7 @@ exports.truncate = function (input, n) {
  * @return {string}
  */
 exports.truncatewords = function (input, n) {
-  n = parseInt(n, 10);  
+  n = parseInt(n, 10);
   if (!isFinite(n) || n < 0) n = 15;
   return toString(input).trim().split(/ +/).slice(0, n).join(' ');
 };
@@ -1196,7 +1213,7 @@ exports.reverse = function (arr) {
 };
 
 /**
- * Extracts parts of a string, beginning at the character at the specified posistion 'start', 
+ * Extracts parts of a string, beginning at the character at the specified posistion 'start',
  * and returns the specified number of characters 'length'.
  *
  * @param {string} input
@@ -1220,6 +1237,21 @@ exports.indexOf = function (arr, searchvalue, fromindex) {
   if (!Array.isArray(arr)) arr = toString(arr);
   return arr.indexOf(searchvalue, fromindex);
 };
+
+/**
+ * If input is empty, default returns value, otherwise, the input.
+ * Can be used with strings, arrays, and hashes.
+ *
+ * @param  {string|array|object} input
+ * @param  {string|array|object} value
+ * @return {string|array|object}
+ */
+exports.default = function(input, value) {
+  return (input && input.length > 0)
+    ? toString(input)
+    : toString(value);
+};
+
 
 /*----------------------- Arrays and Objects Filters -------------------------*/
 
@@ -1378,7 +1410,7 @@ exports.sort_by = function (obj, prop, order) {
  * Get page count of the items when paginated
  *
  * @param {int} count
- * @param {int} size 
+ * @param {int} size
  * @param {int} page
  * @listurn {array}
  */
@@ -1392,7 +1424,7 @@ exports.pagination = function (count, size, page) {
     page = 1;
   }
   page = parseInt(page);
-    
+
   var list = [page - 2, page - 1, page, page + 1, page + 2];
   for (var i = 0; i < list.length;) {
     if (list[i] < 1 || list[i] > maxPage) {
@@ -1409,7 +1441,7 @@ exports.pagination = function (count, size, page) {
     list.push('...');
     list.push(maxPage);
   }
-  
+
   var ret = {
     current:    page,
     next:       page + 1,
@@ -1418,7 +1450,7 @@ exports.pagination = function (count, size, page) {
   };
   if (ret.next > maxPage) ret.next = maxPage;
   if (ret.previous < 1)   ret.previous = 1;
-  
+
   return ret;
 };
 
@@ -1916,7 +1948,7 @@ var baseTags = {
     context.astStack.newChild(context.astNode(OPCODE.TABLEROW, localsAstNode(arr[0], context), arr[1],
                                               attrs.offset, attrs.limit, attrs.cols))
                     .newChild(context.astNode(OPCODE.LIST));
-    context.tablerowItems.push(arr[1]);                    
+    context.tablerowItems.push(arr[1]);
   },
 
 
@@ -1975,20 +2007,77 @@ var baseTags = {
 
   'include': function (context, name, body) {
     var blocks = arrayRemoveEmptyString(splitText(body, [' ']));
-    var filename = blocks[0].trim();
-    // if filename is a variable
-    if (filename.substr(0, 2) === '{{' && filename.substr(-2) === '}}') {
-      filename = localsAstNode(filename.slice(2, -2), context);
+    var filename, withLocals, parameters;
+    // support the following pattern:
+    // {% include xxx %} or {% include "xxx" %}
+    // {% include {{xx}} %} and with filters: {% include {{xx | yy}} %}
+    // {% include xxx with yy %}
+    // {% include xxx a=1 b=2 %}
+
+    if (blocks.length === 0) {
+      // syntax error
+      context.astStack.push(context.astNode(OPCODE.PRINTSTRING, '{% include ' + body + ' %}'));
+      return;
+    } else if (blocks.length === 1 &&
+               !(blocks[0].substr(0, 2) === '{{' && blocks[0].substr(-2) === '}}')) {
+      // filename is a string
+      filename = stripQuoteWrap(blocks[0]);
     } else {
-      filename = stripQuoteWrap(filename);
+      if (blocks.length >= 3 && blocks[blocks.length - 2].toLowerCase() === 'with') {
+        // if include "with" syntax
+        withLocals = localsAstNode(stripQuoteWrap(blocks[blocks.length - 1]), context);
+        blocks = blocks.slice(0, -2);
+      }
+      // get the filename
+      var bf = blocks[0];
+      if (bf.substr(0, 2) === '{{') {
+        // filename is a variable
+        for (var i = 1; i < blocks.length; i++) {
+          var b = blocks[i];
+          bf += b;
+          if (b.substr(-2) === '}}') {
+            break;
+          }
+        }
+        filename = parseVariables(bf.slice(2, -2), context);
+        blocks = blocks.slice(i + 1);
+      } else {
+        // filename is a string
+        filename = stripQuoteWrap(bf);
+        blocks = blocks.slice(1);
+      }
+
+      // parse multi-part parameters
+      if (blocks.length > 0) {
+        blocks = arrayRemoveEmptyString(splitText(blocks.join(' '), [' ', '=']));
+        var parts = [];
+        var pi = 0;
+        function addPart (i) {
+          if (i < 0) return;
+          parts.push(blocks.slice(pi, i + 1).join(''));
+          pi = i + 1;
+        }
+        for (var i = 0; i < blocks.length; i++) {
+          var b = blocks[i];
+          if (b === '=') {
+            addPart(i - 2);
+          }
+        }
+        addPart(i);
+        parameters = context.astNode(OPCODE.LIST);
+        //console.log(blocks, parts);
+        parts.forEach(function (part) {
+          var i = part.indexOf('=');
+          if (i !== -1) {
+            var left = part.substr(0, i).trim();
+            var right = part.substr(i + 1).trim();
+            var ast = parseVariables(right, context);
+            parameters.push(context.astNode(OPCODE.ASSIGN, left, ast));
+          }
+        });
+      }
     }
-    // if include "with" syntax
-    if (blocks.length >= 3 && blocks[1].toLowerCase() === 'with') {
-      var ast = localsAstNode(stripQuoteWrap(blocks[2]), context);
-      context.astStack.push(context.astNode(OPCODE.INCLUDE, filename, ast));
-    } else {
-      context.astStack.push(context.astNode(OPCODE.INCLUDE, filename));
-    }
+    context.astStack.push(context.astNode(OPCODE.INCLUDE, filename, withLocals, parameters));
   },
 
 
@@ -2279,7 +2368,7 @@ var parseTag = function (context, text) {
     var body = text.slice(i + 1).trim();
   }
   name = name.toLowerCase();
-  
+
   if (typeof(context.tags[name]) === 'function') {
     context.tags[name](context, name, body);
   } else {
@@ -2852,6 +2941,7 @@ var run = exports.run = function (astList, context, callback) {
       var op = execOpcode[astList[2]];
       if (!op) op = execOpcode[OPCODE.UNKNOWN];
       context.setCurrentPosition(astList[0], astList[1]);
+      // debug('opcode: ' + astList[2] + ' at ' + astList[0] + ', ' + astList[1]);
       op(context, callback, astList.slice(2));
     } else {
       // AST list
@@ -3470,7 +3560,7 @@ execOpcode[OPCODE.COMMENT] = function (context, callback, ast) {
 execOpcode[OPCODE.INCLUDE] = function (context, callback, ast) {
   run(ast[1], context, function (err, filename) {
     if (err) return callback(err);
-    context.include(filename, ast[2], callback);
+    context.include(filename, ast[2], ast[3], callback);
   });
 };
 
@@ -3500,7 +3590,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.7",
+  "version":        "0.2.9",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
@@ -3524,7 +3614,7 @@ module.exports={
   "dependencies":	{},
   "devDependencies": {
     "mocha":        "~1.8.1",
-    "bright-flow":  "0.0.3",
+    "async":        "~0.2.9",
     "blanket":      "~1.1.5",
     "browserify":   "*",
     "uglify-js":    "*"
