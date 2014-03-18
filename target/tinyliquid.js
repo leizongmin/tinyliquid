@@ -159,6 +159,11 @@ Context.prototype.from = function (from) {
     me[i] = from[i];
   }
 
+  me._isInForloop = from._isInForloop;
+  me._forloops = from._forloops.slice();
+  me._isInTablerowloop = from._isInTablerowloop;
+  me._tablerowloops = from._tablerowloops;
+
   return this;
 };
 
@@ -2130,7 +2135,7 @@ var parseFilter = parser.parseFilter = function (text, firstArg, link, context) 
     var args = [];
   } else {
     var name = text.slice(0, i);
-    var args = text.slice(i + 1).split(',');
+    var args = splitText(text.slice(i + 1).trim(), [',']);
   }
   args = args.map(function (item) {
     return localsAstNode(item.trim(), context);
@@ -3590,7 +3595,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.9",
+  "version":        "0.2.10",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
