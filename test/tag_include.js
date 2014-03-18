@@ -25,6 +25,9 @@ describe('Tag: include', function () {
       case 'file6':
         var tpl = 'a={{a}},b={{b}},c={{c}}';
         break;
+      case 'file7':
+        var tpl = '{% for item in arr %}{{item}},{% endfor %}{{forloop.index}}|';
+        break;
       default:
         var tpl = '';
     }
@@ -183,8 +186,14 @@ it('#variables within include', function (done) {
   it('#forloop & nested', function (done) {
     var arr = [{v:123}, {v:456}, {v:789}];
     var arr2 = [{v: 123, c: [{v: 789, c: null}, {v: 988, c: [{v: 877, c: null}]}]}, {v: 456, c: null}];
+    var arr3 = [
+      [123, 456, 789, 101112],
+      [131415, 161718, 192021, 222324],
+      [252627, 282930, 313233, 343536]
+    ];
     context.setLocals('arr', arr);
     context.setLocals('arr2', arr2);
+    context.setLocals('arr3', arr3);
     common.taskList()
       .add(function (done) {
         var tpl = '{% for item in arr %}{% include "file4" with item %}{% unless forloop.last %},{% endunless %}{% endfor %}';
@@ -202,6 +211,17 @@ it('#variables within include', function (done) {
           assert.equal(err, null);
           // console.log('done', buf)
           assert.equal(buf, 'v=123,v=789,v=988,v=877,v=456');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        var tpl = '{% for item in arr3 %}{% include "file7" arr=item b=12 %}{% endfor %}';
+        var ret = '123,456,789,101112,1|131415,161718,192021,222324,2|252627,282930,313233,343536,3|';
+        common.render(context, tpl, function (err, buf) {
+          assert.equal(err, null);
+          // console.log('done', buf)
+          assert.equal(buf, ret);
           context.clearBuffer();
           done();
         });
