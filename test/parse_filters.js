@@ -31,7 +31,7 @@ describe('Parse filters', function () {
         var tpl = '{{"a"|append: " | b | "| append:"c"}}';
         common.render(context, tpl, function (err, buf) {
           assert.equal(err, null);
-          console.log(buf);
+          // console.log(buf);
           assert.equal(buf, 'a | b | c');
           context.clearBuffer();
           done();
