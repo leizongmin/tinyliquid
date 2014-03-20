@@ -134,6 +134,12 @@ describe('filters', function () {
     assert.equal(filters.escape('<a a="a">&'), '&lt;a a=&quot;a&quot;&gt;&amp;');
   });
 
+  it('#unescape', function () {
+    assert.equal(filters.unescape('&lt;a a=&quot;a&quot;&gt;&amp;'), '<a a="a">&');
+    var s = '<a href="b"><b>xxx</b></a><div>abc</div>';
+    assert.equal(filters.unescape(filters.escape(s)), s);
+  });
+
   it('#keys', function () {
     assert.deepEqual(filters.keys(null), []);
     assert.deepEqual(filters.keys(123), []);
