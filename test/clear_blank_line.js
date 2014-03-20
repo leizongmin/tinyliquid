@@ -11,7 +11,7 @@ describe('clear blank line', function () {
       .add(function (done) {
         context._isAutoEscape= false;
         common.render(context, '{% if true %}\nhello\n{% endif %}\nend', function (err, buf) {
-          console.log(buf);
+          // console.log(buf);
           assert.equal(err, null);
           assert.equal(buf, 'hello\nend');
           context.clearBuffer();
@@ -21,13 +21,33 @@ describe('clear blank line', function () {
       .add(function (done) {
         context._isAutoEscape= false;
         common.render(context, '{% if true %} a \nhello\n{% endif %}\nend', function (err, buf) {
-          console.log(buf);
+          // console.log(buf);
           assert.equal(err, null);
           assert.equal(buf, ' a \nhello\nend');
           context.clearBuffer();
           done();
         });
       })
+      .add(function (done) {
+        context._isAutoEscape= false;
+        common.render(context, 'start \n  {% if true %} \nhello\n  {% endif %} \nend', function (err, buf) {
+          // console.log(buf);
+          assert.equal(err, null);
+          assert.equal(buf, 'start \nhello\nend');
+          context.clearBuffer();
+          done();
+        });
+      })/*
+      .add(function (done) {
+        context._isAutoEscape= false;
+        common.render(context, '  {% if true %} \nhello\n  {% endif %} \nend', function (err, buf) {
+          console.log(1, buf);
+          assert.equal(err, null);
+          assert.equal(buf, 'hello\nend');
+          context.clearBuffer();
+          done();
+        });
+      })*/
       .end(done);
   });
 
