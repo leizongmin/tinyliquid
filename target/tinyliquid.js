@@ -739,9 +739,9 @@ var toString = function (text) {
 /**
  * Generate <img> tag
  *
- * @param {string} url
- * @param {string} alt
- * @return {string}
+ * @param {String} url
+ * @param {String} alt
+ * @return {String}
  */
 exports.img_tag = function (url, alt) {
   return '<img src="' + exports.escape(url) + '" alt="' + exports.escape(alt || '') + '">';
@@ -750,8 +750,8 @@ exports.img_tag = function (url, alt) {
 /**
  * Generate <script> tag
  *
- * @param {string} url
- * @return {string}
+ * @param {String} url
+ * @return {String}
  */
 exports.script_tag = function (url) {
   return '<script src="' + exports.escape(url) + '"></script>';
@@ -760,9 +760,9 @@ exports.script_tag = function (url) {
 /**
  * Generate <link> tag
  *
- * @param {string} url
- * @param {string} media
- * @return {string}
+ * @param {String} url
+ * @param {String} media
+ * @return {String}
  */
 exports.stylesheet_tag = function (url, media) {
   return '<link href="' + exports.escape(url) + '" rel="stylesheet" type="text/css" media="' +
@@ -772,10 +772,10 @@ exports.stylesheet_tag = function (url, media) {
 /**
  * Generate <a> tag
  *
- * @param {string} link
- * @param {string} url
- * @param {string} title
- * @return {string}
+ * @param {String} link
+ * @param {String} url
+ * @param {String} title
+ * @return {String}
  */
 exports.link_to = function (link, url, title) {
   return '<a href="' + exports.escape(url || '') + '" title="' + exports.escape(title || '') + '">' +
@@ -786,9 +786,9 @@ exports.link_to = function (link, url, title) {
 /**
  * Add
  *
- * @param {number} input
- * @param {number} operand
- * @return {number}
+ * @param {Number} input
+ * @param {Number} operand
+ * @return {Number}
  */
 exports.plus = function (input, operand) {
   input = Number(input) || 0;
@@ -799,9 +799,9 @@ exports.plus = function (input, operand) {
 /**
  * Subtract
  *
- * @param {number} input
- * @param {number} operand
- * @return {number}
+ * @param {Number} input
+ * @param {Number} operand
+ * @return {Number}
  */
 exports.minus = function (input, operand) {
   input = Number(input) || 0;
@@ -812,9 +812,9 @@ exports.minus = function (input, operand) {
 /**
  * Multiply
  *
- * @param {number} input
- * @param {number} operand
- * @return {number}
+ * @param {Number} input
+ * @param {Number} operand
+ * @return {Number}
  */
 exports.times = function (input, operand) {
   input = Number(input) || 0;
@@ -825,9 +825,9 @@ exports.times = function (input, operand) {
 /**
  * Divide
  *
- * @param {number} input
- * @param {number} operand
- * @return {number}
+ * @param {Number} input
+ * @param {Number} operand
+ * @return {Number}
  */
 exports.divided_by = function (input, operand) {
   input = Number(input) || 0;
@@ -838,9 +838,9 @@ exports.divided_by = function (input, operand) {
 /**
  * Round (specify how many places after the decimal)
  *
- * @param {number} input
- * @param {int} point
- * @return {number}
+ * @param {Number} input
+ * @param {Number} point
+ * @return {Number}
  */
 exports.round = function (input, point) {
   point = parseInt(point, 10) || 0;
@@ -852,8 +852,8 @@ exports.round = function (input, point) {
 /**
  * Round
  *
- * @param {number} input
- * @return {int}
+ * @param {Number} input
+ * @return {Number}
  */
 exports.integer = function (input) {
   return parseInt(input, 10) || 0;
@@ -862,9 +862,9 @@ exports.integer = function (input) {
 /**
  * Generate random number such that: m <= Number < n
  *
- * @param {number} m
- * @param {number} n
- * @return {number}
+ * @param {Number} m
+ * @param {Number} n
+ * @return {Number}
  */
 exports.random = function (m, n) {
   m = parseInt(m);
@@ -880,10 +880,10 @@ exports.random = function (m, n) {
 /**
  *  If input > 1 return singular, otherwise plural
  *
- * @param {int} input
- * @param {string} singular
- * @param {string} plural
- * @return {string}
+ * @param {Number} input
+ * @param {String} singular
+ * @param {String} plural
+ * @return {String}
  */
 exports.pluralize = function (input, singular, plural) {
   return Number(input) > 1 ? plural : singular;
@@ -893,8 +893,8 @@ exports.pluralize = function (input, singular, plural) {
 /**
  * Take the current time in milliseconds and add 0
  *
- * @param {int} input
- * @return {int}
+ * @param {Number} input
+ * @return {Number}
  */
 exports.timestamp = function (input) {
   input = parseInt(input, 10) || 0;
@@ -905,9 +905,9 @@ exports.timestamp = function (input) {
  * Format date/time
  * see syntax reference: http://liquid.rubyforge.org/classes/Liquid/StandardFilters.html#M000012
  *
- * @param {string} input
- * @param {string} format
- * @return {string}
+ * @param {String} input
+ * @param {String} format
+ * @return {String}
  */
 exports.date = function (input, format) {
   if (toString(input).toLowerCase() == 'now') {
@@ -989,9 +989,9 @@ function weekNo (now, mondayFirst) {
 /**
  * Append to the end of string
  *
- * @param {string} input
- * @param {string} characters
- * @return {string}
+ * @param {String} input
+ * @param {String} characters
+ * @return {String}
  */
 exports.append = function (input, characters) {
   if (!characters) return toString(input);
@@ -1001,9 +1001,9 @@ exports.append = function (input, characters) {
 /**
  * Prepend to the begining
  *
- * @param {string} input
- * @param {string} characters
- * @return {string}
+ * @param {String} input
+ * @param {String} characters
+ * @return {String}
  */
 exports.prepend = function (input, characters) {
   if (!characters) return toString(input);
@@ -1013,8 +1013,8 @@ exports.prepend = function (input, characters) {
 /**
  * Combine to one camelized name
  *
- * @param {string} input
- * @return {string}
+ * @param {String} input
+ * @return {String}
  */
 exports.camelize = function (input) {
   input = toString(input);
@@ -1026,8 +1026,8 @@ exports.camelize = function (input) {
 /**
  * Combine to one capitalized name
  *
- * @param {string} input
- * @return {string}
+ * @param {String} input
+ * @return {String}
  */
 exports.capitalize = function (input) {
   input = toString(input);
@@ -1037,8 +1037,8 @@ exports.capitalize = function (input) {
 /**
  * To lowercase
  *
- * @param {string} input
- * @return {string}
+ * @param {String} input
+ * @return {String}
  */
 exports.downcase = function (input) {
   return toString(input).toLowerCase();
@@ -1047,8 +1047,8 @@ exports.downcase = function (input) {
 /**
  * To uppercase
  *
- * @param {string} input
- * @return {string}
+ * @param {String} input
+ * @return {String}
  */
 exports.upcase = function (input) {
   return toString(input).toUpperCase();
@@ -1057,21 +1057,36 @@ exports.upcase = function (input) {
 /**
  * Escape for use in HTML
  *
- * @param {string} input
- * @return {string}
+ * @param {String} input
+ * @return {String}
  */
 exports.escape = function (input) {
-  return toString(input).replace(/&(?!\w+;)/g, '&amp;')
-                      .replace(/</g, '&lt;')
-                      .replace(/>/g, '&gt;')
-                      .replace(/"/g, '&quot;');
+  return toString(input)
+    .replace(/&(?!\w+;)/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+};
+
+/**
+ * Unescape HTML
+ *
+ * @param {String} input
+ * @return {String}
+ */
+exports.unescape = function (input) {
+  return toString(input)
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&');
 };
 
 /**
  * Combine to hyphen separated word: 'this-is-a-book'
  *
- * @param {string} input
- * @return {string}
+ * @param {String} input
+ * @return {String}
  */
 exports.handleize = function (input) {
   return toString(input).replace(/[^0-9a-zA-Z ]/g, '').replace(/[ ]+/g, '-').toLowerCase();
@@ -1080,10 +1095,10 @@ exports.handleize = function (input) {
 /**
  * Replace the first occurrence of substring with replacement
  *
- * @param {string} input
- * @param {string} substring
- * @param {string} replacement
- * @return {string}
+ * @param {String} input
+ * @param {String} substring
+ * @param {String} replacement
+ * @return {String}
  */
 exports.replace_first = function (input, substring, replacement) {
   return toString(input).replace(substring, replacement);
@@ -1092,10 +1107,10 @@ exports.replace_first = function (input, substring, replacement) {
 /**
  * Replace all occurrences of substring with replacement
  *
- * @param {string} input
- * @param {string} substring
- * @param {string} replacement
- * @return {string}
+ * @param {String} input
+ * @param {String} substring
+ * @param {String} replacement
+ * @return {String}
  */
 exports.replace = function (input, substring, replacement) {
   input = toString(input);
@@ -1108,9 +1123,9 @@ exports.replace = function (input, substring, replacement) {
 /**
  * Remove all occurrences of substring
  *
- * @param {string} input
- * @param {string} substring
- * @return {string}
+ * @param {String} input
+ * @param {String} substring
+ * @return {String}
  */
 exports.remove = function (input, substring) {
   return exports.replace(input, substring, '');
@@ -1119,9 +1134,9 @@ exports.remove = function (input, substring) {
 /**
  * Remove the first occurrence of substring
  *
- * @param {string} input
- * @param {string} substring
- * @return {string}
+ * @param {String} input
+ * @param {String} substring
+ * @return {String}
  */
 exports.remove_first = function (input, substring) {
   return exports.replace_first(input, substring, '');
@@ -1130,8 +1145,8 @@ exports.remove_first = function (input, substring) {
 /**
  * Replace all newline characters with "<br>"
  *
- * @param {string} input
- * @return {string}
+ * @param {String} input
+ * @return {String}
  */
 exports.newline_to_br = function (input) {
   return toString(input).replace(/\n/img, '<br>');
@@ -1140,9 +1155,9 @@ exports.newline_to_br = function (input) {
 /**
  * Split the string at each occurrence of '-' (returns an array)
  *
- * @param {string} input
- * @param {string} delimiter
- * @return {string}
+ * @param {String} input
+ * @param {String} delimiter
+ * @return {String}
  */
 exports.split = function (input, delimiter) {
   if (!delimiter) delimiter = '';
@@ -1153,7 +1168,7 @@ exports.split = function (input, delimiter) {
  * Return the string length
  *
  * @param {array|string} input
- * @return {string}
+ * @return {String}
  */
 exports.size = function (input) {
   if (!input) return 0;
@@ -1164,8 +1179,8 @@ exports.size = function (input) {
 /**
  * Remove all HTML tags
  *
- * @param {string} text
- * @return {string}
+ * @param {String} text
+ * @return {String}
  */
 exports.strip_html = function (text) {
   return toString(text).replace(/<[^>]*>/img, '');
@@ -1174,8 +1189,8 @@ exports.strip_html = function (text) {
 /**
  * Remove all newline characters
  *
- * @param {string} input
- * @return {string}
+ * @param {String} input
+ * @return {String}
  */
 exports.strip_newlines = function (input) {
   return toString(input).replace(/[\r\n]+/g, '');
@@ -1184,9 +1199,9 @@ exports.strip_newlines = function (input) {
 /**
  * Return only the first N characters
  *
- * @param {string} input
- * @param {int} n
- * @return {string}
+ * @param {String} input
+ * @param {Number} n
+ * @return {String}
  */
 exports.truncate = function (input, n) {
   n = parseInt(n, 10);
@@ -1197,9 +1212,9 @@ exports.truncate = function (input, n) {
 /**
  * Return only the first N words
  *
- * @param {string} input
- * @param {int} n
- * @return {string}
+ * @param {String} input
+ * @param {Number} n
+ * @return {String}
  */
 exports.truncatewords = function (input, n) {
   n = parseInt(n, 10);
@@ -1221,10 +1236,10 @@ exports.reverse = function (arr) {
  * Extracts parts of a string, beginning at the character at the specified posistion 'start',
  * and returns the specified number of characters 'length'.
  *
- * @param {string} input
- * @param {int} start
- * @param {int} length
- * @return {string}
+ * @param {String} input
+ * @param {Number} start
+ * @param {Number} length
+ * @return {String}
  */
 exports.substr = function (input, start, length) {
   return toString(input).substr(start, length);
@@ -1234,9 +1249,9 @@ exports.substr = function (input, start, length) {
  * Search a substring, return its index position
  *
  * @param {string|array} arr
- * @param {object} searchvalue
- * @param {int} fromindex
- * @return {int}
+ * @param {Object} searchvalue
+ * @param {Number} fromindex
+ * @return {Number}
  */
 exports.indexOf = function (arr, searchvalue, fromindex) {
   if (!Array.isArray(arr)) arr = toString(arr);
@@ -1281,8 +1296,8 @@ function getLastKey (obj) {
 /**
  * Return an array of the object's keys
  *
- * @param {object} input
- * @return {array}
+ * @param {Object} input
+ * @return {Array}
  */
 exports.keys = function (input) {
   try {
@@ -1295,8 +1310,8 @@ exports.keys = function (input) {
 /**
  * Return the first element of an array
  *
- * @param {array} array
- * @return {object}
+ * @param {Array} array
+ * @return {Object}
  */
 exports.first = function (array) {
   return array[getFirstKey(array)];
@@ -1305,8 +1320,8 @@ exports.first = function (array) {
 /**
  * Return the last element of an array
  *
- * @param {array} array
- * @return {object}
+ * @param {Array} array
+ * @return {Object}
  */
 exports.last = function (array) {
   return array[getLastKey(array)];
@@ -1315,9 +1330,9 @@ exports.last = function (array) {
 /**
  * Join the array's elements into a string
  *
- * @param {array} input
- * @param {string} segmenter
- * @return {string}
+ * @param {Array} input
+ * @param {String} segmenter
+ * @return {String}
  */
 exports.join = function (input, segmenter) {
   if (!segmenter) segmenter = ' ';
@@ -1331,8 +1346,8 @@ exports.join = function (input, segmenter) {
 /**
  * Return a JSON string of the object
  *
- * @param {object} input
- * @return {string}
+ * @param {Object} input
+ * @return {String}
  */
 exports.json = function (input) {
   try {
@@ -1346,9 +1361,9 @@ exports.json = function (input) {
 /**
  * Get an item of the Object by property name
  *
- * @param {object} obj
- * @param {string} prop
- * @return {object}
+ * @param {Object} obj
+ * @param {String} prop
+ * @return {Object}
  */
 exports.get = function(obj, prop){
   if (!obj) obj = {};
@@ -1358,9 +1373,9 @@ exports.get = function(obj, prop){
 /**
  * Take the specified property of each element in the array, returning a new array
  *
- * @param {array} arr
- * @param {string} prop
- * @return {array}
+ * @param {Array} arr
+ * @param {String} prop
+ * @return {Array}
  */
 exports.map = function (arr, prop) {
   if (!Array.isArray(arr)) return [];
@@ -1372,9 +1387,9 @@ exports.map = function (arr, prop) {
 /**
  * Sort the array's elements by asc or desc order
  *
- * @param {array} arr
- * @param {int} order
- * @return {array}
+ * @param {Array} arr
+ * @param {Number} order
+ * @return {Array}
  */
 exports.sort = function (arr, order) {
   if (!Array.isArray(arr)) return [];
@@ -1391,10 +1406,10 @@ exports.sort = function (arr, order) {
 /**
  * Sort the array's elements by each element's specified property
  *
- * @param {array} obj
- * @param {string} prop
- * @param {int} order
- * @return {array}
+ * @param {Array} obj
+ * @param {String} prop
+ * @param {Number} order
+ * @return {Array}
  */
 exports.sort_by = function (obj, prop, order) {
   if (!Array.isArray(obj)) return [];
@@ -1414,10 +1429,10 @@ exports.sort_by = function (obj, prop, order) {
 /**
  * Get page count of the items when paginated
  *
- * @param {int} count
- * @param {int} size
- * @param {int} page
- * @listurn {array}
+ * @param {Number} count
+ * @param {Number} size
+ * @param {Number} page
+ * @listurn {Array}
  */
 exports.pagination = function (count, size, page) {
   if (count % size === 0) {
@@ -1525,7 +1540,7 @@ exports.run = function (astList, context, callback) {
     clearTimeout(tid);
     originCallback.apply(null, arguments);
   };
-  
+
   // timeout
   if (context.options && context.options.timeout > 0) {
     var tid = setTimeout(function () {
@@ -1837,9 +1852,26 @@ var parser = exports = module.exports = function (tpl, options) {
       } else if (text === '{%') {
         var e = textIndexOf(tpl, '%}', i);
         if (e > i) {
+          // optimize: trim left
+          var e2 = strTmp.lastIndexOf('\n');
+          if (e2 !== -1) {
+            if (strTmp.slice(e2 + 1).trim() === '') {
+              strTmp = strTmp.slice(0, e2 + 1);
+            }
+          }
+          // parse tag
           flush();
           parseTag(context, tpl.slice(i + 2, e).trim());
           i = e + 1;
+          // optimize: trim right
+          var e3 = tpl.indexOf('\n', i + 1);
+          if (e3 !== -1) {
+            if ((tpl.slice(i + 1, e3 + 1).trim() === '')) {
+              i = e3;
+              context.line++;
+              context.lineStart = i;
+            }
+          }
         }
       } else {
         strTmp += c;
@@ -2823,8 +2855,12 @@ utils.arraySlice = function (array, offset, limit) {
  * @return {Array}
  */
 utils.getChildValue = function (value, childs) {
+  if (value === null || value === undefined) {
+    return [false, null];
+  }
   if (childs && childs.length > 0) {
     for (var i = 0, len = childs.length; i < len; i++) {
+      if (value === null) return [false, null];
       var c = value[childs[i]];
       if (value && typeof(c) !== 'undefined') {
         value = c;
@@ -3595,7 +3631,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.10",
+  "version":        "0.2.13",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
