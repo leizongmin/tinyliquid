@@ -9,7 +9,6 @@ describe('clear blank line', function () {
   it('#normal', function (done) {
     common.taskList()
       .add(function (done) {
-        context._isAutoEscape= false;
         common.render(context, '{% if true %}\nhello\n{% endif %}\nend', function (err, buf) {
           // console.log(buf);
           assert.equal(err, null);
@@ -19,7 +18,6 @@ describe('clear blank line', function () {
         });
       })
       .add(function (done) {
-        context._isAutoEscape= false;
         common.render(context, '{% if true %} a \nhello\n{% endif %}\nend', function (err, buf) {
           // console.log(buf);
           assert.equal(err, null);
@@ -29,7 +27,6 @@ describe('clear blank line', function () {
         });
       })
       .add(function (done) {
-        context._isAutoEscape= false;
         common.render(context, 'start \n  {% if true %} \nhello\n  {% endif %} \nend', function (err, buf) {
           // console.log(buf);
           assert.equal(err, null);
@@ -39,7 +36,6 @@ describe('clear blank line', function () {
         });
       })/*
       .add(function (done) {
-        context._isAutoEscape= false;
         common.render(context, '  {% if true %} \nhello\n  {% endif %} \nend', function (err, buf) {
           console.log(1, buf);
           assert.equal(err, null);
