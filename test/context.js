@@ -3,7 +3,7 @@ var common = require('./common');
 var me = common.me;
 
 describe('Context', function () {
-  
+
   it('#callFilter', function (done) {
     var c = common.newContext();
     c.setFilter('a', function (a, b) {
@@ -29,8 +29,8 @@ describe('Context', function () {
       });
     });
   });
-  
-  it('#fetchLocals', function (done) {
+
+  it('#fetchLocals - 1', function (done) {
     var c = common.newContext();
     c.setLocals('a', 123);
     c.setSyncLocals('b', function () {
@@ -50,5 +50,26 @@ describe('Context', function () {
       });
     });
   });
-  
+
+  it('#fetchLocals - 2', function (done) {
+    var c = common.newContext();
+    c.setLocals('a', {v: 123});
+    c.setSyncLocals('b', function () {
+      return {v: 456};
+    });
+    c.setAsyncLocals('c', function (name, callback) {
+      callback(null, {v: 789});
+    });
+    c.fetchLocals(['a', 'b', 'c'], function (err, values) {
+      assert.equal(err, null);
+      assert.deepEqual(values, [{v: 123}, {v: 456}, {v: 789}]);
+      // do it again, will use context._astCache
+      c.fetchLocals(['a', 'b', 'c'], function (err, values) {
+        assert.equal(err, null);
+        assert.deepEqual(values, [{v: 123}, {v: 456}, {v: 789}]);
+        done();
+      });
+    });
+  });
+
 });
