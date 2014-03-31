@@ -1281,11 +1281,15 @@ exports.default = function(input, value) {
 
 /*----------------------- Arrays and Objects Filters -------------------------*/
 
+function objectGetKeys (obj) {
+  return ((obj && typeof obj === 'object') ? Object.keys(obj) : []);
+}
+
 function getFirstKey (obj) {
   if (Array.isArray(obj)) {
     return 0;
   } else {
-    var keys = Object.keys(obj);
+    var keys = objectGetKeys(obj);
     return keys[0] || '';
   }
 };
@@ -1294,7 +1298,7 @@ function getLastKey (obj) {
   if (Array.isArray(obj)) {
     return obj.length - 1;
   } else {
-    var keys = Object.keys(obj);
+    var keys = objectGetKeys(obj);
     return keys.pop() || '';
   }
 };
@@ -1307,7 +1311,7 @@ function getLastKey (obj) {
  */
 exports.keys = function (input) {
   try {
-    return Object.keys(input);
+    return objectGetKeys(input);
   } catch (err) {
     return [];
   }
@@ -1320,7 +1324,7 @@ exports.keys = function (input) {
  * @return {Object}
  */
 exports.first = function (array) {
-  return array[getFirstKey(array)];
+  return array && array[getFirstKey(array)];
 };
 
 /**
@@ -1330,7 +1334,7 @@ exports.first = function (array) {
  * @return {Object}
  */
 exports.last = function (array) {
-  return array[getLastKey(array)];
+  return array && array[getLastKey(array)];
 };
 
 /**
@@ -3637,7 +3641,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.14",
+  "version":        "0.2.15",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
