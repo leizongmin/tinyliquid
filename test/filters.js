@@ -145,16 +145,24 @@ describe('filters', function () {
     assert.deepEqual(filters.keys(123), []);
     assert.deepEqual(filters.keys({a: 123, b: 456}), ['a', 'b']);
     assert.deepEqual(filters.keys([1,2,3]), ['0', '1', '2']);
+    assert.deepEqual(filters.keys(), []);
+    assert.deepEqual(filters.keys(null), []);
+    assert.deepEqual(filters.keys(false), []);
+    assert.deepEqual(filters.keys(true), []);
+    assert.deepEqual(filters.keys(123), []);
+    assert.deepEqual(filters.keys('aa456'), []);
   });
 
   it('#first', function () {
     assert.equal(filters.first([5,7,8]), 5);
     assert.equal(filters.first({a: 77, b: 88}), 77);
+    assert.deepEqual(filters.first(null), null);
   });
 
   it('#last', function () {
     assert.equal(filters.last([5,7,8]), 8);
     assert.equal(filters.last({a: 77, b: 88}), 88);
+    assert.deepEqual(filters.first(null), null);
   });
 
   it('#handleize', function () {
