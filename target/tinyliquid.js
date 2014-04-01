@@ -1539,7 +1539,13 @@ exports.run = function (astList, context, callback) {
   }
 
   // if astList is not an AST array, then parse it firstly
-  if (!Array.isArray(astList)) astList = exports.parse(astList);
+  if (!Array.isArray(astList)) {
+    try {
+      astList = exports.parse(astList);
+    } catch (err) {
+      return callback(err);
+    }
+  }
 
   // ensure that the callback function is called only once
   var originCallback = callback;
@@ -1930,8 +1936,12 @@ var baseTags = {
       }
     };
     var list = context.astStack.last();
-    list.pop();
-    list.push(reset(ast));
+    if (list) {
+      list.pop();
+      list.push(reset(ast));
+    } else {
+      context.astStack.list.push(context.astNode(OPCODE.PRINTSTRING, '{% endif %}'));
+    }
   },
 
 
@@ -3641,7 +3651,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.15",
+  "version":        "0.2.16",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
