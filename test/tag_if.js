@@ -416,6 +416,14 @@ describe('Tag: if', function () {
           done();
         });
       })
+      .add(function (done) {
+        common.render(context, '{% if true %}YES{% endif %}{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'YES{% endif %}');
+          context.clearBuffer();
+          done();
+        });
+      })
       .end(done);
   });
 
