@@ -96,6 +96,7 @@ var Context = module.exports = exports = function (options) {
   this._position = {line: 0, column: 0};
   this._astCache = {};
   this._filenameStack = [];
+  this._filterCache = {};
 
   // default configuration
   options = merge({
@@ -106,10 +107,10 @@ var Context = module.exports = exports = function (options) {
   // initialize the configuration
   var me = this;
   var set = function (name) {
-    if (typeof(options[name]) === 'object') {
-      for (var i in options[name]) {
+    if (options[name] && typeof(options[name]) === 'object') {
+      Object.keys(options[name]).keys(function (i) {
         me['_' + name][i] = options[name][i];
-      }
+      });
     }
   };
   set('locals');
@@ -117,7 +118,12 @@ var Context = module.exports = exports = function (options) {
   set('asyncLocals');
   set('asyncLocals2');
   set('filters');
-  set('asyncFilters');
+
+  if (options.asyncFilters && typeof options.asyncFilters === 'object') {
+    Object.keys(options.asyncFilters).forEach(function (i) {
+      me.setAsyncFilter(i, options.asyncFilters[i]);
+    });
+  }
 };
 
 /**
@@ -129,7 +135,7 @@ var Context = module.exports = exports = function (options) {
 Context.prototype.from = function (from) {
   var me = this;
   var set = function (name) {
-    if (typeof(from[name]) === 'object') {
+    if (from[name] && typeof(from[name]) === 'object') {
       for (var i in from[name]) {
         if (i in me[name]) continue;
         me[name][i] = from[name][i];
@@ -149,6 +155,7 @@ Context.prototype.from = function (from) {
   set('options');
   set('_onErrorHandler');
   set('_includeFileHandler');
+  set('_filterCache');
 
   if (Array.isArray(from._filenameStack)) {
     me._filenameStack = from._filenameStack.slice();
@@ -254,6 +261,7 @@ Context.prototype.setFilter = function (name, fn) {
  * @param {Function} fn
  */
 Context.prototype.setAsyncFilter = function (name, fn) {
+  if (fn.enableCache) fn = utils.wrapFilterCache(name, fn);
   this._asyncFilters[name.toLowerCase()] = fn;
 };
 
@@ -277,6 +285,38 @@ Context.prototype.getLocals = function (name) {
 };
 
 /**
+ * Fetch Single Locals
+ *
+ * @param {String} name
+ * @param {Function} callback
+ */
+Context.prototype.fetchSingleLocals = function (name, callback) {
+  var me = this;
+  var info = me.getLocals(name);
+  if (!info) return callback(null, info);
+
+  switch (info[0]) {
+    case me.STATIC_LOCALS:
+      callback(null, info[1]);
+      break;
+    case me.SYNC_LOCALS:
+      var v = info[1](name, me);
+      if (info[2]) me.setLocals(name, v);
+      callback(null, v);
+      break;
+    case me.ASYNC_LOCALS:
+      info[1](name, function (err, v) {
+        if (err) return callback(err);
+        if (info[2]) me.setLocals(name, v);
+        callback(null, v);
+      }, me);
+      break;
+    default:
+      callback(me.throwLocalsUndefinedError(name));
+  }
+};
+
+/**
  * Fetch locals
  *
  * @param {Array|String} list
@@ -289,37 +329,18 @@ Context.prototype.fetchLocals = function (list, callback) {
 
     var values = [];
     utils.asyncEach(list, function (name, i, done) {
-      me.fetchLocals(name, function (err, val) {
-        if (err) return values[i] = err;
-        values[i] = val;
+      me.fetchSingleLocals(name, function (err, val) {
+        if (err) {
+          values[i] = err;
+        } else {
+          values[i] = val;
+        }
         done();
       });
     }, callback, null, values);
 
   } else {
-
-    var name = list;
-    var info = me.getLocals(name);
-    if (!info) return callback(null, info);
-
-    function saveCache (v) {
-      me.setLocals(name, v);
-    }
-
-    switch (info[0]) {
-      case me.STATIC_LOCALS:
-        return callback(null, info[1]);
-      case me.SYNC_LOCALS:
-        var v = info[1](name, me);
-        if (info[2]) saveCache(v);
-        return callback(null, v);
-      case me.ASYNC_LOCALS:
-        return info[1](name, function (err, v) {
-          if (err) return callback(err);
-          if (info[2]) saveCache(v);
-          callback(null, v);
-        }, me);
-    }
+    me.fetchSingleLocals(list, callback);
   }
 };
 
@@ -350,7 +371,7 @@ Context.prototype.callFilter = function (method, args, callback) {
   }
 
   var info = this.getFilter(method);
-  if (!info) return callback(new Error('Cannot call undefined filter: ' + method));
+  if (!info) return callback(this.throwFilterUndefinedError(method));
 
   if (info[0] === this.ASYNC_FILTER) {
     args.push(callback);
@@ -2944,6 +2965,73 @@ utils.asyncFor = function (test, fn, callback, a1, a2, a3) {
   next();
 };
 
+/******************************************************************************/
+
+/**
+ * 模板Filter的异步函数缓存
+ *
+ * @param {String} name    函数名称
+ * @param {Function} fn    格式：function (arg1, arg2, callback)
+ * @param {Number} maxAge  有效期，毫秒
+ * @return {Function}
+ */
+utils.wrapFilterCache = function(name, fn, maxAge) {
+  return function() {
+    var me = this;
+    var args = getFilterArguments(arguments);
+    var callback = getFilterArgumentCallback(arguments);
+    var context = getFilterArgumentContext(arguments);
+
+    var ret = findFilterCache(context, name, args);
+    if (ret) {
+      callback(null, ret.value);
+    } else {
+      fn.apply(me, newFilterArguments(args, function (err, value) {
+        if (err) return callback(err);
+        setFilterCache(context, name, args, value);
+        callback(null, value);
+      }));
+    }
+  };
+};
+
+function getFilterArguments(args) {
+  return Array.prototype.slice.call(args, 0, args.length - 2);
+}
+
+function getFilterArgumentCallback(args) {
+  return args[args.length - 2];
+}
+
+function getFilterArgumentContext(args) {
+  return args[args.length - 1];
+}
+
+function newFilterArguments(args, callback, context) {
+  return [].concat(args).concat([callback, context]);
+}
+
+function getArgumentsKey(args) {
+  return md5(JSON.stringify(args)).slice(0, 10);
+}
+
+function findFilterCache (context, name, args) {
+  var map = context._filterCache[name];
+  if (!map) return false;
+  var key = getArgumentsKey(args);
+  if (key in map) {
+    return {args: args, value: map[key]};
+  } else {
+    return false;
+  }
+}
+
+function setFilterCache (context, name, args, value) {
+  var key = getArgumentsKey(args);
+  if (!context._filterCache[name]) context._filterCache[name] = {};
+  context._filterCache[name][key] = value;
+}
+
 },{"./md5":5,"./opcode":6,"__browserify_process":1}],9:[function(require,module,exports){
 /**
  * Run AST
@@ -3127,51 +3215,24 @@ execOpcode[OPCODE.DEBUG] = function (context, callback, ast) {
 execOpcode[OPCODE.LOCALS] = function (context, callback, ast) {
   getLocals(ast[1], ast[2], ast[3], context, callback);
 };
-var getLocals = function (fullName, mainName, childs, context, callback, a1, a2, a3) {
-  var info = context.getLocals(mainName);
-  if (info === null) {
-    callback(context.throwLocalsUndefinedError(mainName), null, a1, a2, a3);
-  } else {
-    getLocalsCase[info[0]](info, fullName, childs, context, callback, a1, a2, a3);
-  }
-};
-var getLocalsCase = [];
-getLocalsCase[Context.prototype.STATIC_LOCALS] = function (info, fullName, childs, context, callback, a1, a2, a3) {
-  if (childs) {
-    var v = getChildValue(info[1], childs);
-    if (v[0]) {
-      callback(null, v[1], a1, a2, a3);
-    } else {
-      callback(context.throwLocalsUndefinedError(fullName), null, a1, a2, a3);
-    }
-  } else {
-    callback(null, info[1], a1, a2, a3);
-  }
-};
-getLocalsCase[Context.prototype.SYNC_LOCALS] = function (info, fullName, childs, context, callback, a1, a2, a3) {
-  var v = getChildValue(info[1](fullName, context), childs);
-  if (v[0]) {
-    if (info[2]) context.setLocals(fullName, v[1]);
-    callback(null, v[1], a1, a2, a3);
-  } else {
-    callback(context.throwLocalsUndefinedError(fullName), null, a1, a2, a3);
-  }
-};
-getLocalsCase[Context.prototype.ASYNC_LOCALS] = function (info, fullName, childs, context, callback, a1, a2, a3) {
-  info[1](fullName, function (err, val) {
+function getLocals (fullName, mainName, childs, context, callback, a1, a2, a3) {
+  context.fetchSingleLocals(mainName, function (err, val) {
     if (err) {
       callback(err, null, a1, a2, a3);
     } else {
-      var v = getChildValue(val, childs)
-      if (v[0]) {
-        if (info[2]) context.setLocals(fullName, v[1]);
-        callback(null, v[1], a1, a2, a3);
+      if (childs) {
+        var v = getChildValue(val, childs);
+        if (v[0]) {
+          callback(null, v[1], a1, a2, a3);
+        } else {
+          callback(context.throwLocalsUndefinedError(fullName), null, a1, a2, a3);
+        }
       } else {
-        callback(context.throwLocalsUndefinedError(fullName), null, a1, a2, a3);
+        callback(null, val, a1, a2, a3);
       }
     }
-  }, context);
-};
+  });
+}
 
 
 execOpcode[OPCODE.FORLOOPITEM] = function (context, callback, ast) {
@@ -3235,7 +3296,7 @@ execOpcode[OPCODE.FORLOOPLOCALS] = function (context, callback, ast) {
       case OPCODE.LOOPLOCALS_RINDEX:  val = loop.length - loop.index;       break;
       case OPCODE.LOOPLOCALS_FIRST:   val = loop.index < 1;                 break;
       case OPCODE.LOOPLOCALS_LAST:    val = loop.index + 1 >= loop.length;  break;
-      default: 
+      default:
         callback(context.throwLoopLocalsUndefinedError('forloop.' + ast[2]), val);
         return;
     }
@@ -3271,25 +3332,13 @@ execOpcode[OPCODE.TABLEROWLOOPLOCALS] = function (context, callback, ast) {
 
 
 execOpcode[OPCODE.FILTER] = function (context, callback, ast) {
-  var info = context.getFilter(ast[1]);
-  if (info === null) {
-    callback(context.throwFilterUndefinedError(ast[1]), null);
-  } else {
-    getOpArgs(ast.slice(2), context, function (err, args) {
-      if (err) {
-        callback(err);
-      } else {
-        if (info[0] === context.ASYNC_FILTER) {
-          args.push(callback);
-          args.push(context);
-          info[1].apply(context, args);
-        } else {
-          args.push(context);
-          callback(err, info[1].apply(context, args));
-        }
-      }
-    });
-  }
+  getOpArgs(ast.slice(2), context, function (err, args) {
+    if (err) {
+      callback(err);
+    } else {
+      context.callFilter(ast[1], args, callback);
+    }
+  });
 };
 
 
@@ -3651,7 +3700,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.16",
+  "version":        "0.2.17",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
