@@ -1,4 +1,5 @@
 var assert = require('assert');
+var common = require('./common');
 var filters = require('./common').me.filters;
 
 describe('filters', function () {
@@ -332,6 +333,22 @@ describe('filters', function () {
     assert.deepEqual(filters.default('', 'aaa'), 'aaa');
     assert.equal(filters.default('bbb', 'aaa'), 'bbb');
     assert.deepEqual(filters.default([1,2], 'aaa'), [1,2].toString());
+  });
+
+  // ----------------------------------------
+
+  var context = common.newContext();
+  it('#multi parameter', function (done) {
+    common.taskList()
+      .add(function (done) {
+        common.render(context, '{{"abcdefg"|replace:"a","1"|replace:"d",2}}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, '1bc2efg');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .end(done);
   });
 
 });
