@@ -2208,7 +2208,9 @@ var parseFilter = parser.parseFilter = function (text, firstArg, link, context) 
     var args = [];
   } else {
     var name = text.slice(0, i);
-    var args = splitText(text.slice(i + 1).trim(), [',']);
+    var args = splitText(text.slice(i + 1).trim(), [',']).filter(function (item) {
+      return (item !== ',');
+    });
   }
   args = args.map(function (item) {
     return localsAstNode(item.trim(), context);
@@ -3700,7 +3702,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.17",
+  "version":        "0.2.18",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
