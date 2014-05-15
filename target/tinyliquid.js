@@ -3218,7 +3218,15 @@ execOpcode[OPCODE.LOCALS] = function (context, callback, ast) {
   getLocals(ast[1], ast[2], ast[3], context, callback);
 };
 function getLocals (fullName, mainName, childs, context, callback, a1, a2, a3) {
-  context.fetchSingleLocals(mainName, function (err, val) {
+  // try to get the fullName first
+  var info = context.getLocals(fullName);
+  if (info) {
+    var name = fullName;
+    childs = null;
+  } else {
+    var name = mainName;
+  }
+  context.fetchSingleLocals(name, function (err, val) {
     if (err) {
       callback(err, null, a1, a2, a3);
     } else {
@@ -3702,7 +3710,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.18",
+  "version":        "0.2.19",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
