@@ -3,7 +3,7 @@ var common = require('./common');
 
 
 describe('Async: locals', function () {
-  
+
   var context = common.newContext();
   context.setLocals('a', 123);
   context.setSyncLocals('b', function (name) {
@@ -32,7 +32,7 @@ describe('Async: locals', function () {
       }
     });
   });
-  
+
   it('#normal', function (done) {
     common.taskList()
       .add(function (done) {
@@ -53,7 +53,7 @@ describe('Async: locals', function () {
       })
       .end(done);
   });
-  
+
   it('#timeout & error', function (done) {
     context.options.timeout = 100;
     context.setAsyncLocals('timeout', function (name, callback) {

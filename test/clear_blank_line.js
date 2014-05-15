@@ -34,7 +34,7 @@ describe('clear blank line', function () {
           context.clearBuffer();
           done();
         });
-      })/*
+      })/* // test fail
       .add(function (done) {
         common.render(context, '  {% if true %} \nhello\n  {% endif %} \nend', function (err, buf) {
           console.log(1, buf);
