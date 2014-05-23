@@ -108,7 +108,7 @@ var Context = module.exports = exports = function (options) {
   var me = this;
   var set = function (name) {
     if (options[name] && typeof(options[name]) === 'object') {
-      Object.keys(options[name]).keys(function (i) {
+      Object.keys(options[name]).forEach(function (i) {
         me['_' + name][i] = options[name][i];
       });
     }
@@ -3710,7 +3710,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.19",
+  "version":        "0.2.20",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
