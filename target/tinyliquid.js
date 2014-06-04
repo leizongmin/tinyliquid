@@ -78,6 +78,7 @@ var merge = utils.merge;
  *   - {Object} syncLocals
  *   - {Object} asyncLocals
  *   - {Integer} timeout  unit:ms, default:120000
+ *   - {Object} parent
  */
 var Context = module.exports = exports = function (options) {
   this._locals = {};
@@ -103,6 +104,9 @@ var Context = module.exports = exports = function (options) {
     timeout: 0
   }, options);
   this.options = options;
+
+  // parent
+  this._parent = options.parent || null;
 
   // initialize the configuration
   var me = this;
@@ -209,6 +213,9 @@ Context.prototype.run = function (astList, callback) {
  */
 Context.prototype.setLocals = function (name, val) {
   this._locals[name] = val;
+  if (this._parent) {
+    this._parent.setLocals(name, val);
+  }
 };
 
 /**
@@ -561,7 +568,7 @@ Context.prototype.include = function (name, localsAst, headerAst, callback) {
       if (err) return callback(err);
 
       // all include files run on new context
-      var c = new Context();
+      var c = new Context({parent: me});
       c.from(me);
 
       function start () {
@@ -578,9 +585,9 @@ Context.prototype.include = function (name, localsAst, headerAst, callback) {
       if (localsAst) {
         me.run(localsAst, function (err, locals) {
           if (err) locals = {};
-          for (var i in locals) {
-            c.setLocals(i, locals[i]);
-          }
+          Object.keys(locals).forEach(function (n) {
+            c._locals[n] = locals[n];
+          });
           start();
         });
       } else {
@@ -1572,7 +1579,10 @@ exports.run = function (astList, context, callback) {
   var originCallback = callback;
   var hasCallback = false;
   var callback = function (err) {
-    if (hasCallback) return;
+    if (hasCallback) {
+      if (err) throw err;
+      return;
+    }
     hasCallback = true;
     clearTimeout(tid);
     originCallback.apply(null, arguments);
@@ -1731,7 +1741,10 @@ var OPCODE = {
 
   // extension instruction
   TEMPLATE_FILENAME_PUSH: 80,
-  TEMPLATE_FILENAME_POP:  81
+  TEMPLATE_FILENAME_POP:  81,
+
+  // this "assign" will only affected current context
+  WEAK_ASSIGN: 82
 
 };
 
@@ -2150,7 +2163,7 @@ var baseTags = {
             var left = part.substr(0, i).trim();
             var right = part.substr(i + 1).trim();
             var ast = parseVariables(right, context);
-            parameters.push(context.astNode(OPCODE.ASSIGN, left, ast));
+            parameters.push(context.astNode(OPCODE.WEAK_ASSIGN, left, ast));
           }
         });
       }
@@ -3645,6 +3658,18 @@ execOpcode[OPCODE.ASSIGN] = function (context, callback, ast) {
 };
 
 
+execOpcode[OPCODE.WEAK_ASSIGN] = function (context, callback, ast) {
+  run(ast[2], context, function (err, val) {
+    if (err) {
+      callback(err);
+    } else {
+      context._locals[ast[1]] = val;
+      callback(err);
+    }
+  });
+};
+
+
 execOpcode[OPCODE.CAPTURE] = function (context, callback, ast) {
   var oldBuf = context.getBuffer();
   context.setBuffer('');
@@ -3710,7 +3735,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.20",
+  "version":        "0.2.21",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
