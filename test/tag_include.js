@@ -28,6 +28,9 @@ describe('Tag: include', function () {
       case 'file7':
         var tpl = '{% for item in arr %}{{item}},{% endfor %}{{forloop.index}}|';
         break;
+      case 'file8':
+        var tpl = 'v={{v}}{% assign v=234 %}';
+        break;
       default:
         var tpl = '';
     }
@@ -68,7 +71,7 @@ describe('Tag: include', function () {
       .end(done);
   });
 
-it('#variables within include', function (done) {
+  it('#variables within include', function (done) {
     context.setLocals('a', 123);
     context.setLocals('b', 456);
     context.setLocals('c', {
@@ -176,6 +179,22 @@ it('#variables within include', function (done) {
           assert.equal(err, null);
           // console.log('#nested', buf)
           assert.equal(buf, 'v=123,v=789');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .end(done);
+  });
+
+  it('#assign can affected parent template', function (done) {
+    context.setLocals('v', 789);
+    common.taskList()
+      .add(function (done) {
+        var tpl = '{% include file8 v=123 %},v={{v}}';
+        common.render(context, tpl, function (err, buf) {
+          assert.equal(err, null);
+          // console.log('#nested', buf)
+          assert.equal(buf, 'v=123,v=234');
           context.clearBuffer();
           done();
         });
