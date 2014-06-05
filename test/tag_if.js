@@ -416,6 +416,48 @@ describe('Tag: if', function () {
           done();
         });
       })
+      .end(done);
+  });
+
+  it('#empty', function (done) {
+    common.taskList()
+      .add(function (done) {
+        common.render(context, '{% if false %}{% elseif true %}{% else %}{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, '');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if false %}{% elseif true %}YES{% else %}{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'YES');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if false %}{% elseif false %}{% else %}YES{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'YES');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if true %}YES{% elseif true %}{% else %}{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'YES');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .end(done);
+  });
+/*
+  it('#Unexpected', function (done) {
+    common.taskList()
       .add(function (done) {
         common.render(context, '{% if true %}YES{% endif %}{% endif %}', function (err, buf) {
           assert.equal(err, null);
@@ -426,5 +468,5 @@ describe('Tag: if', function () {
       })
       .end(done);
   });
-
+*/
 });
