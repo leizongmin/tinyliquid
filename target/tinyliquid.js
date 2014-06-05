@@ -1857,12 +1857,10 @@ var parser = exports = module.exports = function (tpl, options) {
   var mainAst = context.astNode(OPCODE.LIST);
 
   var strTmp = '';
-  var flush = function () {
-    if (strTmp.length > 0) {
-      context.astStack.push(context.astNode(OPCODE.PRINTSTRING, strTmp));
-    }
+  function flush () {
+    context.astStack.push(context.astNode(OPCODE.PRINTSTRING, strTmp));
     strTmp = '';
-  };
+  }
 
   for (var i = 0, len = tpl.length; i < len; i++) {
     context.position = i;
@@ -2809,7 +2807,7 @@ ASTStack.prototype.push = function (ast) {
 ASTStack.prototype.close = function () {
   var list = this.last();
   if (list[2] === OPCODE.LIST && list.length < 5) {
-    // pptimization for only one element of the OPCODE.LIST
+    // optimization for only one element of the OPCODE.LIST
     var ast = list[3];
     list.length = 0;
     for (var i = 0, len = ast.length; i < len; i++) {
@@ -3735,7 +3733,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.21",
+  "version":        "0.2.22",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
