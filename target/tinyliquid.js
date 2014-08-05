@@ -2303,7 +2303,8 @@ var parseCondition = parser.parseCondition = function (body, context) {
     }
   });
   var mergeCond = function (op) {
-    if (blocks.length < 3) return;
+    var ret = false;
+    if (blocks.length < 3) return ret;
     var _condAst = condAst;
     condAst = [];
     for (var i = 0, len = _condAst.length; i < len; i++) {
@@ -2312,15 +2313,20 @@ var parseCondition = parser.parseCondition = function (body, context) {
         var code = OPCODE[op.toUpperCase()] || OPCODE.DEBUG;
         condAst.push(context.astNode(code, _condAst[i], _condAst[i + 2]));
         i += 2;
+        ret = true;
       } else {
         condAst.push(_condAst[i]);
       }
     }
+    return ret;
   };
   // and > or
-  mergeCond('and');
-  mergeCond('or');
-
+  while (mergeCond('and')) {
+    // do nothing
+  }
+  while (mergeCond('or')) {
+    // do nothing
+  }
   return condAst[0];
 };
 
@@ -3733,7 +3739,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.22",
+  "version":        "0.2.23",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
