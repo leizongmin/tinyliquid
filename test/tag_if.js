@@ -455,6 +455,52 @@ describe('Tag: if', function () {
       })
       .end(done);
   });
+
+  it('#multi condition', function (done) {
+    common.taskList()
+      .add(function (done) {
+        common.render(context, '{% if false or false %}YES{% else %}NO{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'NO');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if false or false or true %}YES{% else %}NO{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'YES');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if false or false or false or true %}YES{% else %}NO{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'YES');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if true and true and false %}YES{% else %}NO{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'NO');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if true and true and true and false %}YES{% else %}NO{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'NO');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .end(done);
+  });
+
 /*
   it('#Unexpected', function (done) {
     common.taskList()
