@@ -1065,6 +1065,7 @@ exports.camelize = function (input) {
  */
 exports.capitalize = function (input) {
   input = toString(input);
+  if (input.length < 1) return input;
   return input[0].toUpperCase() + input.substr(1);
 };
 
@@ -3739,7 +3740,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.23",
+  "version":        "0.2.24",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
