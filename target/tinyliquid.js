@@ -2604,6 +2604,10 @@ utils.splitText = function (text, separators) {
     }
   });
 
+  list = list.filter(function (item) {
+    return item.trim();
+  });
+
   return list;
 };
 
@@ -3688,7 +3692,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.24",
+  "version":        "0.2.25",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
