@@ -37,6 +37,26 @@ describe('Parse filters', function () {
           done();
         });
       })
+      .add(function (done) {
+        var tpl = "{{ 'Test Replace' | replace: 'a', 'A' }}";
+        common.render(context, tpl, function (err, buf) {
+          assert.equal(err, null);
+          // console.log(buf);
+          assert.equal(buf, 'Test ReplAce');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        var tpl = "{{ 'Test Replace' | replace: ' ', '%20' }}";
+        common.render(context, tpl, function (err, buf) {
+          assert.equal(err, null);
+          // console.log(buf);
+          assert.equal(buf, 'Test%20Replace');
+          context.clearBuffer();
+          done();
+        });
+      })
       .end(done);
   });
 
