@@ -23,10 +23,13 @@ var merge = utils.merge;
  *   - {Object} locals
  *   - {Object} syncLocals
  *   - {Object} asyncLocals
+ *   - {Object} blocks
+ *   - {Boolean} isLayout   default:false
  *   - {Integer} timeout  unit:ms, default:120000
  *   - {Object} parent
  */
 var Context = module.exports = exports = function (options) {
+  options = options || {};
   this._locals = {};
   this._syncLocals = {};
   this._asyncLocals = {};
@@ -44,6 +47,8 @@ var Context = module.exports = exports = function (options) {
   this._astCache = {};
   this._filenameStack = [];
   this._filterCache = {};
+  this._blocks = {};
+  this._isLayout = !!options.isLayout;
 
   // default configuration
   options = merge({
@@ -68,6 +73,7 @@ var Context = module.exports = exports = function (options) {
   set('asyncLocals');
   set('asyncLocals2');
   set('filters');
+  set('blocks');
 
   if (options.asyncFilters && typeof options.asyncFilters === 'object') {
     Object.keys(options.asyncFilters).forEach(function (i) {
@@ -106,6 +112,7 @@ Context.prototype.from = function (from) {
   set('_onErrorHandler');
   set('_includeFileHandler');
   set('_filterCache');
+  set('_blocks');
 
   if (Array.isArray(from._filenameStack)) {
     me._filenameStack = from._filenameStack.slice();
@@ -120,6 +127,8 @@ Context.prototype.from = function (from) {
   me._forloops = from._forloops.slice();
   me._isInTablerowloop = from._isInTablerowloop;
   me._tablerowloops = from._tablerowloops;
+
+  me._isLayout = from._isLayout;
 
   return this;
 };
@@ -216,6 +225,50 @@ Context.prototype.setFilter = function (name, fn) {
 Context.prototype.setAsyncFilter = function (name, fn) {
   if (fn.enableCache) fn = utils.wrapFilterCache(name, fn);
   this._asyncFilters[name.toLowerCase()] = fn;
+};
+
+/**
+ * Set layout file
+ *
+ * @param {String} filename
+ */
+Context.prototype.setLayout = function (filename) {
+  this._layout = filename;
+};
+
+/**
+ * Set block
+ *
+ * @param {String} name
+ * @param {String} buf
+ */
+Context.prototype.setBlock = function (name, buf) {
+  this._blocks[name] = buf;
+  if (this._parent) {
+    this._parent.setBlock(name, buf);
+  }
+};
+
+/**
+ * Set block if empty
+ *
+ * @param {String} name
+ * @param {String} buf
+ */
+Context.prototype.setBlockIfEmpty = function (name, buf) {
+  if (!(name in this._blocks)) {
+    this._blocks[name] = buf;
+  }
+};
+
+/**
+ * Get block
+ *
+ * @param {String} name
+ * @return {String}
+ */
+Context.prototype.getBlock = function (name) {
+  return this._blocks[name] || null;
 };
 
 /**
@@ -540,6 +593,20 @@ Context.prototype.include = function (name, localsAst, headerAst, callback) {
         start();
       }
     });
+  } else {
+    return callback(new Error('please set an include file handler'));
+  }
+};
+
+/**
+ * Extends layout
+ *
+ * @param {String} name
+ * @param {Function} callback
+ */
+Context.prototype.extends = function (name, callback) {
+  if (typeof(this._includeFileHandler) === 'function') {
+    this._includeFileHandler(name, callback);
   } else {
     return callback(new Error('please set an include file handler'));
   }
@@ -1544,7 +1611,27 @@ exports.run = function (astList, context, callback) {
 
   // if it throws an error, catch it
   try {
-    vm.run(astList, context, callback);
+    vm.run(astList, context, function (err, ret) {
+      if (err) return callback(err);
+      if (!context._layout) {
+        return callback(err, ret);
+      }
+
+      // if layout was set, then render the layout template
+      var c = exports.newContext();
+      c.from(context);
+      c._isLayout = true;
+      c.extends(c._layout, function (err, astList) {
+        if (err) return callback(err);
+
+        delete c._layout;
+        vm.run(astList, c, function (err) {
+          context.setBuffer(c.getBuffer());
+          callback(err);
+        });
+      });
+
+    });
   } catch (err) {
     return callback(err);
   }
@@ -1691,14 +1778,18 @@ var OPCODE = {
   TEMPLATE_FILENAME_POP:  81,
 
   // this "assign" will only affected current context
-  WEAK_ASSIGN: 82
+  WEAK_ASSIGN: 82,
+
+  // extends and block
+  EXTENDS: 83,
+  BLOCK: 84
 
 };
 
 module.exports = exports = OPCODE;
 
 // just for test
-// for (var i in OPCODE) OPCODE[i] = i;
+for (var i in OPCODE) OPCODE[i] = i;
 
 },{}],6:[function(require,module,exports){
 /**
@@ -2017,6 +2108,18 @@ var baseTags = {
   },
 
 
+  'block': function (context, name, body) {
+    var blocks = arrayRemoveEmptyString(splitText(body, [' ']));
+    var name = blocks[0] || genRandomName();
+    context.astStack.newChild(context.astNode(OPCODE.BLOCK, name));
+  },
+
+
+  'endblock': function (context, name, body) {
+    context.astStack.close();
+  },
+
+
   'cycle': function (context, name, body) {
     var blocks = arrayRemoveEmptyString(splitText(body, [' ', ',']));
     blocks = blocks.filter(function (item) {
@@ -2038,6 +2141,38 @@ var baseTags = {
       });
       context.astStack.push(context.astNode(OPCODE.CYCLE, key).concat(blocks));
     }
+  },
+
+
+  'extends': function (context, name, body) {
+    var blocks = arrayRemoveEmptyString(splitText(body, [' ']));
+
+    if (blocks.length === 0) {
+      // syntax error
+      context.astStack.push(context.astNode(OPCODE.PRINTSTRING, '{% extends ' + body + ' %}'));
+      return;
+    }
+
+    // get the filename
+    var bf = blocks[0];
+    if (bf.substr(0, 2) === '{{') {
+      // filename is a variable
+      for (var i = 1; i < blocks.length; i++) {
+        var b = blocks[i];
+        bf += b;
+        if (b.substr(-2) === '}}') {
+          break;
+        }
+      }
+      filename = parseVariables(bf.slice(2, -2), context);
+      blocks = blocks.slice(i + 1);
+    } else {
+      // filename is a string
+      filename = stripQuoteWrap(bf);
+      blocks = blocks.slice(1);
+    }
+
+    context.astStack.push(context.astNode(OPCODE.EXTENDS, filename));
   },
 
 
@@ -3643,6 +3778,30 @@ execOpcode[OPCODE.CAPTURE] = function (context, callback, ast) {
 };
 
 
+execOpcode[OPCODE.BLOCK] = function (context, callback, ast) {
+  var oldBuf = context.getBuffer();
+  context.setBuffer('');
+  run(ast.slice(2), context, function (err) {
+    if (err) {
+      callback(err);
+    } else {
+      var buf = context.getBuffer();
+      context.setBuffer(oldBuf);
+
+      // if on layout, output the block buffer
+      if (context._isLayout) {
+        context.setBlockIfEmpty(ast[1], buf);
+        context.print(context.getBlock(ast[1]));
+      } else {
+        context.setBlock(ast[1], buf);
+      }
+
+      callback(err);
+    }
+  });
+};
+
+
 execOpcode[OPCODE.RANGE] = function (context, callback, ast) {
   var val = range(ast[1], ast[2]);
   callback(null, val);
@@ -3656,6 +3815,15 @@ execOpcode[OPCODE.OBJECT] = function (context, callback, ast) {
 
 execOpcode[OPCODE.COMMENT] = function (context, callback, ast) {
   callback(null);
+};
+
+
+execOpcode[OPCODE.EXTENDS] = function (context, callback, ast) {
+  run(ast[1], context, function (err, filename) {
+    if (err) return callback(err);
+    context.setLayout(filename);
+    callback(null);
+  });
 };
 
 
@@ -3692,7 +3860,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name":           "tinyliquid",
   "main":           "./lib/index.js",
-  "version":        "0.2.25",
+  "version":        "0.2.26",
   "description":    "A liquid template engine",
   "keywords":       ["liquid", "template"],
   "author":         "Zongmin Lei <leizongmin@gmail.com>",
