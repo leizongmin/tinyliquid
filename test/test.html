@@ -3,34 +3,110 @@
 <head>
 <meta charset="utf-8">
 <title>Test</title>
+<style>
+.box {
+  width: 300px;
+  border: 1px solid #AAA;
+  float: left;
+  margin: 10px;
+  padding: 8px;
+}
+.done {
+  background-color: green;
+  color: #fff;
+  padding: 4px 12px;
+  text-align: center;
+}
+</style>
 </head>
 <body>
-  <pre id="code" style="display:none;">
-  <div style="width: 300px; margin: auto; border: 1px solid #aaa;">
-    <ul>
-    {% for item in list %}
-      <li>{{item.name|escape}} = {{item.value|to_string}}</li>
-    {% endfor %}
-    </ul>
-    <div style="background-color: green; color: #fff; padding: 4px 12px; text-align: center;">All things done.</div>
+  <div class="box">
+    <script type="template/liquid" id="code-liquid">
+      <div class="done">All things done.</div>
+      <ul>
+      {% for item in list %}
+        <li>{{item.name|escape}} = {{item.value|to_string}}</li>
+      {% endfor %}
+      </ul>
+    </script>
+    <div id="spent-liquid"></div>
+    <div id="container-liquid"></div>
   </div>
-  </pre>
-  <div id="tpl"></div>
+  <div class="box">
+    <script type="template/ejs" id="code-ejs">
+      <div class="done">All things done.</div>
+      <ul>
+      <% data.forEach(function (item) { %>
+        <li><%= item.name %> = <%= to_string(item.value) %></li>
+      <% }); %>
+      </ul>
+    </script>
+    <div id="spent-ejs"></div>
+    <div id="container-ejs"></div>
+  </div>
 </body>
 </html>
 <script src="../target/tinyliquid.js"></script>
+<script src="../other/ejs.js"></script>
 <script>
-var code = document.querySelector('#code').innerHTML;
-var c = TinyLiquid.newContext();
 var data = Object.keys(TinyLiquid).map(function (k) {
   return {name: k, value: TinyLiquid[k]};
 });
-c.setLocals('list', data);
-c.setFilter('to_string', function (v) {
-  return typeof v === 'function' ? '[Function]' : v;
+for (var i = 0; i < 10; i++) {
+  data = data.concat(data);
+}
+
+function renderLiquid (callback) {
+
+  var code = document.querySelector('#code-liquid').innerHTML;
+  var ast = TinyLiquid.parse(code);
+  var c = TinyLiquid.newContext();
+  c.setLocals('list', data);
+  c.setFilter('to_string', function (v) {
+    return typeof v === 'function' ? '[Function]' : v;
+  });
+
+  var timestamp = Date.now();
+
+  TinyLiquid.run(ast, c, function (err) {
+    if (err) throw err;
+
+    var spent = Date.now() - timestamp;
+
+    document.querySelector('#spent-liquid').innerHTML = 'total ' + data.length + ' items, spent ' + spent + 'ms';
+    document.querySelector('#container-liquid').innerHTML = c.getBuffer();
+
+    callback && callback();
+  });
+}
+
+function renderEjs (callback) {
+
+  var code = document.querySelector('#code-ejs').innerHTML;
+  var render = ejs.compile(code);
+
+  var timestamp = Date.now();
+
+  var html = render({
+    data: data,
+    to_string: function (v) {
+      return typeof v === 'function' ? '[Function]' : v;
+    }
+  });
+
+  var spent = Date.now() - timestamp;
+
+  document.querySelector('#spent-ejs').innerHTML = 'total ' + data.length + ' items, spent ' + spent + 'ms';
+  document.querySelector('#container-ejs').innerHTML = html;
+
+  callback && callback();
+}
+
+
+renderLiquid(function () {
+  setTimeout(function () {
+    renderEjs();
+  });
 });
-TinyLiquid.run(code, c, function (err) {
-  if (err) throw err;
-  document.querySelector('#tpl').innerHTML = c.getBuffer();
-});
+
 </script>
