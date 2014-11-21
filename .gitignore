@@ -1,6 +1,5 @@
 node_modules
 examples
-benchmark
 lib-cov
 coverage.html
 *.log
