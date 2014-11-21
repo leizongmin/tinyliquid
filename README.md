@@ -77,7 +77,7 @@ License
 =======
 
 ```
-Copyright (c) 2012-2013 Zongmin Lei (雷宗民) <leizongmin@gmail.com>
+Copyright (c) 2012-2014 Zongmin Lei (雷宗民) <leizongmin@gmail.com>
 http://ucdok.com
 
 The MIT License
