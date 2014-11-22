@@ -1,5 +1,5 @@
 <ul>
 {% for item in list %}
-  <li>{{item.name|escape}} = {{item.value|to_string}}</li>
+  <li>{{item.name|escape}} = {{item.value|to_string|escape}}</li>
 {% endfor %}
 </ul>
