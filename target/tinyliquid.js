@@ -3096,7 +3096,7 @@ utils.wrapFilterCache = function(name, fn, maxAge) {
         if (err) return callback(err);
         setFilterCache(context, name, args, value);
         callback(null, value);
-      }));
+      }, context));
     }
   };
 };
@@ -3858,42 +3858,51 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 
 },{"./context":1,"./filters":2,"./opcode":5,"./parser":6,"./utils":7}],9:[function(require,module,exports){
 module.exports={
-  "name":           "tinyliquid",
-  "main":           "./lib/index.js",
-  "version":        "0.2.26",
-  "description":    "A liquid template engine",
-  "keywords":       ["liquid", "template"],
-  "author":         "Zongmin Lei <leizongmin@gmail.com>",
+  "name": "tinyliquid",
+  "main": "./lib/index.js",
+  "version": "0.2.27",
+  "description": "A liquid template engine",
+  "keywords": [
+    "liquid",
+    "template"
+  ],
+  "author": "Zongmin Lei <leizongmin@gmail.com>",
   "contributors": [
-    {"name": "Zongmin Lei", "email": "leizongmin@gmail.com"}
+    {
+      "name": "Zongmin Lei",
+      "email": "leizongmin@gmail.com"
+    }
   ],
   "repository": {
-    "type":         "git",
-    "url":          "git://github.com/leizongmin/tinyliquid.git"
+    "type": "git",
+    "url": "git://github.com/leizongmin/tinyliquid.git"
   },
-  "licenses":     [{
-    "type":         "MIT",
-    "url":          "https://raw.github.com/leizongmin/tinyliquid/master/MIT-License"
-  }],
-  "bugs":{
-    "url":          "https://github.com/leizongmin/tinyliquid/issues"
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/leizongmin/tinyliquid/master/MIT-License"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/leizongmin/tinyliquid/issues"
   },
   "engines": {
-    "node":         ">= 0.6.0"
+    "node": ">= 0.6.0"
   },
-  "dependencies":	{},
+  "dependencies": {},
   "devDependencies": {
-    "mocha":        "~1.8.1",
-    "async":        "~0.2.9",
-    "blanket":      "~1.1.5",
-    "browserify":   "*",
-    "uglify-js":    "*"
+    "async": "^0.9.0",
+    "blanket": "~1.1.5",
+    "browserify": "*",
+    "ejs": "^1.0.0",
+    "mocha": "~1.8.1",
+    "uglify-js": "*"
   },
   "scripts": {
-     "blanket": {
+    "blanket": {
       "pattern": "tinyliquid/lib"
     },
-    "test":         "mocha --require blanket -R html-cov > coverage.html -t 5000"
+    "test": "mocha --require blanket -R html-cov > coverage.html -t 5000"
   }
 }
 
