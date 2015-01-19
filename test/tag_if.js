@@ -7,6 +7,7 @@ describe('Tag: if', function () {
   var context = common.newContext();
   context.setLocals('array', [1,2,3,4,5]);
   context.setLocals('object', {a: 1, b: 2, c: 3, d: 4, e: 5});
+  context.setLocals('aBc', true);
 
   it('#if', function (done) {
     common.taskList()
@@ -494,6 +495,22 @@ describe('Tag: if', function () {
         common.render(context, '{% if true and true and true and false %}YES{% else %}NO{% endif %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, 'NO');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if aBC %}YES{% else %}NO{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'NO');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% if aBc %}YES{% else %}NO{% endif %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, 'YES');
           context.clearBuffer();
           done();
         });
