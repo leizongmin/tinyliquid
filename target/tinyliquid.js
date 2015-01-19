@@ -213,7 +213,7 @@ Context.prototype.setAsyncLocals = function (name, fn) {
  * @param {Function} fn
  */
 Context.prototype.setFilter = function (name, fn) {
-  this._filters[name.toLowerCase()] = fn;
+  this._filters[name.trim()] = fn;
 };
 
 /**
@@ -224,7 +224,7 @@ Context.prototype.setFilter = function (name, fn) {
  */
 Context.prototype.setAsyncFilter = function (name, fn) {
   if (fn.enableCache) fn = utils.wrapFilterCache(name, fn);
-  this._asyncFilters[name.toLowerCase()] = fn;
+  this._asyncFilters[name.trim()] = fn;
 };
 
 /**
@@ -357,7 +357,7 @@ Context.prototype.fetchLocals = function (list, callback) {
  * @return {Array} [type, function]  return null if the filter not found
  */
 Context.prototype.getFilter = function (name) {
-  name = name.toLowerCase();
+  name = name.trim();
   if (name in this._filters) return [this.SYNC_FILTER, this._filters[name]];
   if (name in this._asyncFilters) return [this.ASYNC_FILTER, this._asyncFilters[name]];
   return null;
@@ -2343,7 +2343,7 @@ var parseCondition = parser.parseCondition = function (body, context) {
     '!':  'not'
   };
   blocks = blocks.map(function (item) {
-    return (trans[item] || item).toLowerCase();
+    return (trans[item] || item);
   });
 
   // extract the "and" and "or"
@@ -2357,9 +2357,9 @@ var parseCondition = parser.parseCondition = function (body, context) {
     }
   };
   _blocks.forEach(function (item) {
-    if (item === 'and' || item === 'or') {
+    if (item.toLowerCase() === 'and' || item.toLowerCase() === 'or') {
       flush();
-      blocks.push(item);
+      blocks.push(item.toLowerCase());
     } else {
       tmp.push(item);
     }
@@ -3860,7 +3860,7 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 module.exports={
   "name": "tinyliquid",
   "main": "./lib/index.js",
-  "version": "0.2.27",
+  "version": "0.2.28",
   "description": "A liquid template engine",
   "keywords": [
     "liquid",
