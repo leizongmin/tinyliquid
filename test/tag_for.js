@@ -3,10 +3,12 @@ var common = require('./common');
 
 
 describe('Tag: for', function () {
-  
+
   var context = common.newContext();
   context.setLocals('array', [1,2,3,4,5,6]);
   context.setLocals('object', {a:123, b:456, c:'abc'});
+  context.setLocals('range_start', 1);
+  context.setLocals('range_end', 5);
 
   it('#for', function (done) {
     common.taskList()
@@ -79,6 +81,30 @@ describe('Tag: for', function () {
       })
       .add(function (done) {
         common.render(context, '{% for item in (1..5) %}{{ item }}{% endfor %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, '12345');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% for item in (1..range_end) %}{{ item }}{% endfor %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, '12345');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% for item in (range_start..5) %}{{ item }}{% endfor %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, '12345');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .add(function (done) {
+        common.render(context, '{% for item in (range_start..range_end) %}{{ item }}{% endfor %}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, '12345');
           context.clearBuffer();
