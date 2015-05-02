@@ -1789,7 +1789,7 @@ var OPCODE = {
 module.exports = exports = OPCODE;
 
 // just for test
-for (var i in OPCODE) OPCODE[i] = i;
+// for (var i in OPCODE) OPCODE[i] = i;
 
 },{}],6:[function(require,module,exports){
 /**
