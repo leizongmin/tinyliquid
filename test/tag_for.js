@@ -295,7 +295,7 @@ describe('Tag: for', function () {
       posts: []
     };
     var result = '';
-    for (var i = 0; i < 10000; i++) {
+    for (var i = 0; i < 1000000; i++) {
       var title = 'Post ' + i;
       site.posts.push({ title: title });
       result.concat(title);
