@@ -222,7 +222,7 @@ describe('Tag: for', function () {
       })
       .end(done);
   });
-  
+
   it('#else', function (done) {
     context.setLocals('array2', []);
     context.setLocals('array3', null);
@@ -283,6 +283,29 @@ describe('Tag: for', function () {
         common.render(context, '{%for item in array5%}{{item.v}}{%endfor%}', function (err, buf) {
           assert.equal(err, null);
           assert.equal(buf, '123456789');
+          context.clearBuffer();
+          done();
+        });
+      })
+      .end(done);
+  });
+
+  it('large #for', function (done) {
+    var site = {
+      posts: []
+    };
+    var result = '';
+    for (var i = 0; i < 10000; i++) {
+      var title = 'Post ' + i;
+      site.posts.push({ title: title });
+      result.concat(title);
+    }
+    context.setLocals('posts', site);
+    common.taskList()
+      .add(function (done) {
+        common.render(context, '{% for post in site.posts %}{{ post.title }}{% endfor %}', function (err, buf) {
+          assert.equal(err, null);
+          assert.equal(buf, result);
           context.clearBuffer();
           done();
         });
