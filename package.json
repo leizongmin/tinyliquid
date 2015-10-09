@@ -1,7 +1,7 @@
 {
   "name": "tinyliquid",
   "main": "./lib/index.js",
-  "version": "0.2.29",
+  "version": "0.2.30",
   "description": "A liquid template engine",
   "keywords": [
     "liquid",
