@@ -52,7 +52,7 @@ var Context = module.exports = exports = function (options) {
 
   // default configuration
   options = merge({
-    timeout: 0
+    timeout: 120000
   }, options);
   this.options = options;
 
