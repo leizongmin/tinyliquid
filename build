@@ -1,3 +1,0 @@
-browserify -e ./lib/index.js -s TinyLiquid -o ./target/tinyliquid.js
-uglifyjs ./target/tinyliquid.js -o ./target/tinyliquid.min.js
-echo done.

@@ -3971,7 +3971,7 @@ process.umask = function() { return 0; };
 module.exports={
   "name": "tinyliquid",
   "main": "./lib/index.js",
-  "version": "0.2.30",
+  "version": "0.2.31",
   "description": "A liquid template engine",
   "keywords": [
     "liquid",
@@ -4002,18 +4002,17 @@ module.exports={
   },
   "dependencies": {},
   "devDependencies": {
-    "async": "^0.9.0",
-    "blanket": "~1.1.5",
-    "browserify": "*",
-    "ejs": "^1.0.0",
-    "mocha": "~1.8.1",
-    "uglify-js": "*"
+    "async": "^1.5.2",
+    "browserify": "^13.0.0",
+    "ejs": "^2.4.1",
+    "mocha": "^2.4.5",
+    "uglify-js": "^2.6.1"
   },
   "scripts": {
-    "blanket": {
-      "pattern": "tinyliquid/lib"
-    },
-    "test": "mocha --require blanket -R html-cov > coverage.html -t 5000"
+    "test": "mocha --require blanket -R html-cov > coverage.html -t 5000",
+    "browserify": "browserify -e ./lib/index.js -s TinyLiquid -o ./target/tinyliquid.js",
+    "uglifyjs": "uglifyjs ./target/tinyliquid.js -o ./target/tinyliquid.min.js",
+    "build": "npm run browserify && npm run uglifyjs"
   }
 }
 
