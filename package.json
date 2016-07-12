@@ -1,7 +1,7 @@
 {
   "name": "tinyliquid",
   "main": "./lib/index.js",
-  "version": "0.2.31",
+  "version": "0.2.32",
   "description": "A liquid template engine",
   "keywords": [
     "liquid",
@@ -33,13 +33,15 @@
   "dependencies": {},
   "devDependencies": {
     "async": "^1.5.2",
+    "blanket": "^1.2.3",
     "browserify": "^13.0.0",
     "ejs": "^2.4.1",
     "mocha": "^2.4.5",
     "uglify-js": "^2.6.1"
   },
   "scripts": {
-    "test": "mocha --require blanket -R html-cov > coverage.html -t 5000",
+    "test": "mocha -t 5000",
+    "test:cov": "mocha --require blanket -R html-cov > coverage.html -t 5000",
     "browserify": "browserify -e ./lib/index.js -s TinyLiquid -o ./target/tinyliquid.js",
     "uglifyjs": "uglifyjs ./target/tinyliquid.js -o ./target/tinyliquid.min.js",
     "build": "npm run browserify && npm run uglifyjs"
