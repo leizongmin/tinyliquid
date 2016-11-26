@@ -1,7 +1,14 @@
 TinyLiquid [![Build Status](https://secure.travis-ci.org/leizongmin/tinyliquid.png?branch=master)](http://travis-ci.org/leizongmin/tinyliquid) [![Dependencies Status](https://david-dm.org/leizongmin/tinyliquid.png)](http://david-dm.org/leizongmin/tinyliquid)
 ==============
 
-A Liquid syntax template engine. 
+A Liquid syntax template engine.
+
+------
+
+**Notice: this project will never add any new features, if you are the first time to this project,
+you may consider other Liquid template engine implement, such as [Nunjucks](https://mozilla.github.io/nunjucks/).**
+
+------
 
 __Notes__: The new version 0.2 is almost a full rewrite. Version 0.1 will continue to be maintained for fixing show-stopper bugs, but no new features should be expected.
 **The new version is not compatible with the old version**. The version 0.1 documents: https://github.com/leizongmin/tinyliquid/blob/v0.1/README_en.md
@@ -77,7 +84,7 @@ License
 =======
 
 ```
-Copyright (c) 2012-2014 Zongmin Lei (雷宗民) <leizongmin@gmail.com>
+Copyright (c) 2012-2016 Zongmin Lei (雷宗民) <leizongmin@gmail.com>
 http://ucdok.com
 
 The MIT License
