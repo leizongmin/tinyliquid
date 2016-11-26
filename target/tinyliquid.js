@@ -384,6 +384,7 @@ Context.prototype.callFilter = function (method, args, callback) {
     args.push(this);
     info[1].apply(null, args);
   } else {
+    args.push(this);
     callback(null, info[1].apply(null, args));
   }
 };
@@ -2099,6 +2100,9 @@ var baseTags = {
   'capture': function (context, name, body) {
     var blocks = arrayRemoveEmptyString(splitText(body, [' ']));
     var name = blocks[0] || genRandomName();
+    if (!blocks[0]) {
+      context.astStack.push(context.astNode(OPCODE.PRINTSTRING, 'warning: missing name in {% capture %}'));
+    }
     context.astStack.newChild(context.astNode(OPCODE.CAPTURE, name));
   },
 
@@ -2111,6 +2115,9 @@ var baseTags = {
   'block': function (context, name, body) {
     var blocks = arrayRemoveEmptyString(splitText(body, [' ']));
     var name = blocks[0] || genRandomName();
+    if (!blocks[0]) {
+      context.astStack.push(context.astNode(OPCODE.PRINTSTRING, 'warning: missing name in {% block %}'));
+    }
     context.astStack.newChild(context.astNode(OPCODE.BLOCK, name));
   },
 
@@ -2192,7 +2199,7 @@ var baseTags = {
     } else if (blocks.length === 1 &&
                !(blocks[0].substr(0, 2) === '{{' && blocks[0].substr(-2) === '}}')) {
       // filename is a string
-      filename = stripQuoteWrap(blocks[0]);
+      filename = stripQuoteWrap(blocks[0]).trim();
     } else {
       if (blocks.length >= 3 && blocks[blocks.length - 2].toLowerCase() === 'with') {
         // if include "with" syntax
@@ -2214,7 +2221,7 @@ var baseTags = {
         blocks = blocks.slice(i + 1);
       } else {
         // filename is a string
-        filename = stripQuoteWrap(bf);
+        filename = stripQuoteWrap(bf).trim();
         blocks = blocks.slice(1);
       }
 
@@ -3078,6 +3085,16 @@ utils.asyncFor = function (test, fn, callback, a1, a2, a3) {
   next();
 };
 
+utils.genRandomName = function () {
+  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  var max = chars.length;
+  var ret = '';
+  for (var i = 0; i < 10; i++) {
+    ret += chars.charAt(Math.floor(Math.random() * max));
+  }
+  return ret;
+};
+
 /******************************************************************************/
 
 /**
@@ -3876,14 +3893,103 @@ execOpcode[OPCODE.TEMPLATE_FILENAME_POP] = function (context, callback, ast) {
 
 },{"./context":1,"./filters":2,"./opcode":5,"./parser":6,"./utils":7}],9:[function(require,module,exports){
 // shim for using process in browser
-
 var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
 var queue = [];
 var draining = false;
 var currentQueue;
 var queueIndex = -1;
 
 function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
     draining = false;
     if (currentQueue.length) {
         queue = currentQueue.concat(queue);
@@ -3899,7 +4005,7 @@ function drainQueue() {
     if (draining) {
         return;
     }
-    var timeout = setTimeout(cleanUpNextTick);
+    var timeout = runTimeout(cleanUpNextTick);
     draining = true;
 
     var len = queue.length;
@@ -3916,7 +4022,7 @@ function drainQueue() {
     }
     currentQueue = null;
     draining = false;
-    clearTimeout(timeout);
+    runClearTimeout(timeout);
 }
 
 process.nextTick = function (fun) {
@@ -3928,7 +4034,7 @@ process.nextTick = function (fun) {
     }
     queue.push(new Item(fun, args));
     if (queue.length === 1 && !draining) {
-        setTimeout(drainQueue, 0);
+        runTimeout(drainQueue);
     }
 };
 
@@ -3971,7 +4077,11 @@ process.umask = function() { return 0; };
 module.exports={
   "name": "tinyliquid",
   "main": "./lib/index.js",
-  "version": "0.2.31",
+  "files": [
+    "lib",
+    "target"
+  ],
+  "version": "0.2.33",
   "description": "A liquid template engine",
   "keywords": [
     "liquid",
@@ -4003,18 +4113,19 @@ module.exports={
   "dependencies": {},
   "devDependencies": {
     "async": "^1.5.2",
+    "blanket": "^1.2.3",
     "browserify": "^13.0.0",
     "ejs": "^2.4.1",
     "mocha": "^2.4.5",
     "uglify-js": "^2.6.1"
   },
   "scripts": {
-    "test": "mocha --require blanket -R html-cov > coverage.html -t 5000",
+    "test": "mocha -t 5000",
+    "test:cov": "mocha --require blanket -R html-cov > coverage.html -t 5000",
     "browserify": "browserify -e ./lib/index.js -s TinyLiquid -o ./target/tinyliquid.js",
     "uglifyjs": "uglifyjs ./target/tinyliquid.js -o ./target/tinyliquid.min.js",
     "build": "npm run browserify && npm run uglifyjs"
   }
 }
-
 },{}]},{},[3])(3)
 });
