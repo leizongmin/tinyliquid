@@ -1,5 +1,7 @@
 ------
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/leizongmin/tinyliquid.svg)](https://greenkeeper.io/)
+
 **Notice: this project will never add any new features, if you are the first time to this project,
 you may consider other Liquid template engine implement, such as [Nunjucks](https://mozilla.github.io/nunjucks/).**
 
